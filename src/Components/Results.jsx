@@ -82,36 +82,6 @@ const AXIS_COLORS = {
   },
 };
 
-// Build axis summary for Standard & Premium (uses % and intensity)
-function buildAxisSummary(code, value) {
-  const meta = getAxisMeta(code);
-  const { firstLabel, secondLabel, axisLabel } = meta;
-  const { firstPercent, secondPercent } = axisPercentages(value);
-  const abs = Math.abs(value || 0);
-
-  let intensity;
-  if (abs === 0) {
-    intensity = "a balanced position";
-  } else if (abs <= 2) {
-    intensity = "a slight preference";
-  } else if (abs <= 5) {
-    intensity = "a moderate preference";
-  } else {
-    intensity = "a strong preference";
-  }
-
-  // Neutral / balanced
-  if (value === 0) {
-    return `${code}: about ${firstPercent}% / ${secondPercent}% — ${intensity} on this axis. You can move fairly easily between both sides of ${axisLabel}.`;
-  }
-
-  // Correct side + correct percentage
-  const toward = value > 0 ? firstLabel : secondLabel;
-  const leaningPercent = value > 0 ? firstPercent : secondPercent;
-
-  return `${code}: about ${leaningPercent}% toward ${toward} (${firstPercent}% / ${secondPercent}%). That shows ${intensity} in ${axisLabel}.`;
-}
-
 // Examples of life events that can shift each axis
 const FLEX_EXAMPLES = {
   EI: {
@@ -453,14 +423,14 @@ export default function Results({
                   <button
                     type="button"
                     className="secondary-btn"
-                    onClick={() => onUpgradeClick("standard")}
+                    onClick={() => onUpgradeClick && onUpgradeClick("standard")}
                   >
                     Unlock Standard Insights – $6.99
                   </button>
                   <button
                     type="button"
                     className="primary-btn"
-                    onClick={() => onUpgradeClick("premium")}
+                    onClick={() => onUpgradeClick && onUpgradeClick("premium")}
                   >
                     Unlock Full Deep Dive – $14.99
                   </button>
@@ -495,7 +465,7 @@ export default function Results({
                 <button
                   type="button"
                   className="primary-btn"
-                  onClick={() => onUpgradeClick("premium")}
+                  onClick={() => onUpgradeClick && onUpgradeClick("premium")}
                 >
                   Unlock Premium Deep Dive – $14.99
                 </button>
@@ -840,6 +810,59 @@ export default function Results({
           )}
         </section>
 
+        {/* COMPATIBILITY SNAPSHOT */}
+        <section
+          className="results-section"
+          style={{
+            marginBottom: "1.5rem",
+            padding: "1.2rem 1.3rem",
+            borderRadius: "18px",
+            background: "#020617",
+            border: "1px solid #1f2937",
+          }}
+        >
+          <h2 style={{ fontSize: "1.05rem", marginBottom: "0.6rem" }}>
+            Compatibility Snapshot
+          </h2>
+          {isFree ? (
+            <p style={{ fontSize: "0.92rem", margin: 0 }}>
+              Some personality types tend to click with you fast — conversation
+              is easy, energy feels natural, and you don&apos;t have to explain
+              yourself as much. Others take more work: different pacing,
+              different values, or different ways of handling stress.
+              <br />
+              <br />
+              Upgrade to Standard or Premium to see{" "}
+              <strong>which specific types</strong> usually feel most natural
+              for you — and which types tend to be your most challenging matches
+              so you know what you&apos;re walking into.
+            </p>
+          ) : (
+            <>
+              <p style={{ fontSize: "0.92rem", marginBottom: "0.5rem" }}>
+                <strong>Most naturally compatible types:</strong> {bestTypes}
+              </p>
+              <p style={{ fontSize: "0.92rem", marginBottom: "0.75rem" }}>
+                <strong>Types that can feel most challenging:</strong>{" "}
+                {challengingTypes}
+              </p>
+              <p
+                style={{
+                  fontSize: "0.8rem",
+                  margin: 0,
+                  color: "#c7d2fe",
+                }}
+              >
+                <strong>Standard / Premium Insight:</strong> This doesn&apos;t
+                mean you can&apos;t make other combinations work. It means these
+                are the patterns where your wiring is most likely to feel either
+                smooth or high-friction — so you can adjust expectations and
+                communication before things get messy.
+              </p>
+            </>
+          )}
+        </section>
+
         {/* COMMUNICATION TIPS */}
         <section
           className="results-section"
@@ -1173,10 +1196,11 @@ export default function Results({
                     </li>
                   </ul>
                   <p>
-                    You&apos;re not &quot;too much&quot; or &quot;too intense&quot; — you&apos;re just
-                    wired in a way that needs better systems, better
-                    boundaries, and better fits. The more intentional you are
-                    about that, the less drama you have to manage later.
+                    You&apos;re not &quot;too much&quot; or &quot;too
+                    intense&quot; — you&apos;re just wired in a way that needs
+                    better systems, better boundaries, and better fits. The more
+                    intentional you are about that, the less drama you have to
+                    manage later.
                   </p>
                 </div>
               )}
@@ -1340,7 +1364,7 @@ export default function Results({
               <button
                 type="button"
                 className="primary-btn"
-                onClick={() => onUpgradeClick("premium")}
+                onClick={() => onUpgradeClick && onUpgradeClick("premium")}
               >
                 Unlock Full Premium Deep Dive
               </button>
@@ -1386,7 +1410,7 @@ export default function Results({
               <button
                 type="button"
                 className="primary-btn"
-                onClick={() => onUpgradeClick("premium")}
+                onClick={() => onUpgradeClick && onUpgradeClick("premium")}
               >
                 Go Premium for Full Deep Dive
               </button>
