@@ -1,6 +1,5 @@
 // src/Components/ModeSelector.jsx
 import React from "react";
-import PricingSection from "./PricingSection";
 
 export default function ModeSelector({
   plan,
@@ -11,6 +10,7 @@ export default function ModeSelector({
 }) {
   const isStandard = plan === "standard";
   const isPremium = plan === "premium";
+  const isFree = !isStandard && !isPremium;
 
   // Classic/Modern only appears AFTER a plan is considered chosen
   const showStyleCard = hasChosenPlan;
@@ -20,6 +20,24 @@ export default function ModeSelector({
     : isStandard
     ? "Standard"
     : "Free (RealYou Starter)";
+
+  const handleChooseFree = () => {
+    if (onPlanChosen) {
+      onPlanChosen("free");
+    }
+  };
+
+  const handleUpgradeStandard = () => {
+    if (onUpgradeClick) {
+      onUpgradeClick("standard");
+    }
+  };
+
+  const handleUpgradePremium = () => {
+    if (onUpgradeClick) {
+      onUpgradeClick("premium");
+    }
+  };
 
   return (
     <div
@@ -84,13 +102,202 @@ export default function ModeSelector({
         </p>
       </section>
 
-      {/* PLAN CARD */}
-      <div style={{ maxWidth: "960px", margin: "0 auto" }}>
-        <PricingSection
-          plan={plan}
-          onUpgradeClick={onUpgradeClick}
-          onPlanChosen={onPlanChosen}
-        />
+      {/* PLAN CARDS INLINE (replacing PricingSection) */}
+      <div
+        style={{
+          maxWidth: "960px",
+          margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+          gap: "1rem",
+        }}
+      >
+        {/* FREE PLAN */}
+        <div
+          style={{
+            borderRadius: "20px",
+            padding: "1.6rem 1.2rem",
+            background: "#020617",
+            border: "1px solid #1f2937",
+            boxShadow: "0 18px 40px rgba(0,0,0,0.7)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <h2
+              style={{
+                fontSize: "1.1rem",
+                fontWeight: 700,
+                marginBottom: "0.35rem",
+              }}
+            >
+              Free
+            </h2>
+            <p
+              style={{
+                fontSize: "1.4rem",
+                fontWeight: 800,
+                marginBottom: "0.3rem",
+              }}
+            >
+              $0
+            </p>
+            <ul
+              style={{
+                fontSize: "0.9rem",
+                color: "#e5e7eb",
+                paddingLeft: "1.1rem",
+                margin: 0,
+              }}
+            >
+              <li>Core type & basic trait breakdown</li>
+              <li>Good for a quick snapshot</li>
+              <li>Upgrade any time</li>
+            </ul>
+          </div>
+          <button
+            type="button"
+            className="primary-btn"
+            style={{ marginTop: "1rem" }}
+            onClick={handleChooseFree}
+            disabled={isFree}
+          >
+            {isFree ? "Current Plan" : "Choose Free"}
+          </button>
+        </div>
+
+        {/* STANDARD PLAN */}
+        <div
+          style={{
+            borderRadius: "20px",
+            padding: "1.6rem 1.2rem",
+            background:
+              "linear-gradient(145deg, #020617 0%, #020617 40%, #111827 100%)",
+            border: "1px solid #4b5563",
+            boxShadow: "0 24px 50px rgba(15,23,42,0.9)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            position: "relative",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                position: "absolute",
+                top: "0.9rem",
+                right: "1rem",
+                fontSize: "0.7rem",
+                padding: "0.2rem 0.5rem",
+                borderRadius: "999px",
+                background: "#22c55e1a",
+                color: "#22c55e",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+              }}
+            >
+              Most Popular
+            </div>
+            <h2
+              style={{
+                fontSize: "1.1rem",
+                fontWeight: 700,
+                marginBottom: "0.35rem",
+              }}
+            >
+              Standard
+            </h2>
+            <p
+              style={{
+                fontSize: "1.4rem",
+                fontWeight: 800,
+                marginBottom: "0.3rem",
+              }}
+            >
+              $6.99
+            </p>
+            <ul
+              style={{
+                fontSize: "0.9rem",
+                color: "#e5e7eb",
+                paddingLeft: "1.1rem",
+                margin: 0,
+              }}
+            >
+              <li>Full RealYou core report</li>
+              <li>Deeper explanations of your type</li>
+              <li>Relationship & work insights</li>
+            </ul>
+          </div>
+          <button
+            type="button"
+            className="primary-btn"
+            style={{ marginTop: "1rem" }}
+            onClick={handleUpgradeStandard}
+            disabled={isStandard}
+          >
+            {isStandard ? "Current Plan" : "Unlock Standard"}
+          </button>
+        </div>
+
+        {/* PREMIUM PLAN */}
+        <div
+          style={{
+            borderRadius: "20px",
+            padding: "1.6rem 1.2rem",
+            background:
+              "linear-gradient(150deg, #020617 0%, #020617 30%, #1f2937 100%)",
+            border: "1px solid #6366f1",
+            boxShadow: "0 24px 55px rgba(37,99,235,0.7)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <h2
+              style={{
+                fontSize: "1.1rem",
+                fontWeight: 700,
+                marginBottom: "0.35rem",
+              }}
+            >
+              Premium
+            </h2>
+            <p
+              style={{
+                fontSize: "1.4rem",
+                fontWeight: 800,
+                marginBottom: "0.3rem",
+              }}
+            >
+              $14.99
+            </p>
+            <ul
+              style={{
+                fontSize: "0.9rem",
+                color: "#e5e7eb",
+                paddingLeft: "1.1rem",
+                margin: 0,
+              }}
+            >
+              <li>Everything in Standard</li>
+              <li>Deep Dive Story & Coach Mode</li>
+              <li>Downloadable RealYou PDF report</li>
+            </ul>
+          </div>
+          <button
+            type="button"
+            className="secondary-btn"
+            style={{ marginTop: "1rem" }}
+            onClick={handleUpgradePremium}
+            disabled={isPremium}
+          >
+            {isPremium ? "Current Plan" : "Unlock Premium"}
+          </button>
+        </div>
       </div>
 
       {/* ASSESSMENT STYLE CARD – ONLY AFTER PLAN IS CHOSEN */}
