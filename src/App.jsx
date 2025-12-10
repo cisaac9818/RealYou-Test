@@ -138,15 +138,11 @@ function App() {
       const priceId =
         tier === "standard" ? STANDARD_PRICE_ID : PREMIUM_PRICE_ID;
 
-      const res = await fetch(
-  "/api/create-checkout-session",
-
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ priceId, tier }),
-        }
-      );
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId, tier }),
+      });
 
       if (!res.ok) throw new Error("Failed to create checkout session");
 
