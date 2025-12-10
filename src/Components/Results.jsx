@@ -82,7 +82,7 @@ const AXIS_COLORS = {
   },
 };
 
-// 🔹 MISSING BEFORE – now added back
+// 🔹 Axis summary for Trait Breakdown
 function buildAxisSummary(code, value) {
   const meta = getAxisMeta(code);
   const { firstLabel, secondLabel, axisLabel } = meta;
@@ -137,6 +137,58 @@ const FLEX_EXAMPLES = {
       "Military experience, running your own business, taking a high-responsibility role, long-term chaos that forces you to either tighten structure or loosen control.",
     minor:
       "New job with strict deadlines, switching to gig/freelance work, living with someone more structured or more spontaneous than you, managing multiple projects at once.",
+  },
+};
+
+// 🔹 Plain-language meaning for each MBTI letter
+const MBTI_LETTER_INFO = {
+  I: {
+    title: "I — Introvert",
+    line: "You recharge by pulling back, not by being around a crowd all the time.",
+    example:
+      "Example: After a long day, you’d rather have a quiet reset than be the life of the party.",
+  },
+  E: {
+    title: "E — Extravert",
+    line: "You get energy from interaction, movement, and being around people.",
+    example:
+      "Example: A good night out or a live environment can wake you up more than a nap.",
+  },
+  N: {
+    title: "N — Intuition",
+    line: "You pay attention to patterns, possibilities, and what something could turn into.",
+    example:
+      "Example: You’re drawn to ideas, concepts, and ‘what if’ conversations more than pure facts.",
+  },
+  S: {
+    title: "S — Sensing",
+    line: "You focus on details, facts, and what’s real right in front of you.",
+    example:
+      "Example: You like concrete examples and receipts, not just theories or vibes.",
+  },
+  T: {
+    title: "T — Thinking",
+    line: "You lean on logic, fairness, and what makes sense even when feelings are loud.",
+    example:
+      "Example: In decisions, you ask ‘What’s the smartest move?’ before ‘How will everyone feel?’",
+  },
+  F: {
+    title: "F — Feeling",
+    line: "You factor in values, impact, and people when you decide what to do.",
+    example:
+      "Example: You’d rather keep things real but respectful than ‘win’ and leave damage behind.",
+  },
+  J: {
+    title: "J — Judging",
+    line: "You like plans, decisions, and knowing where things are going.",
+    example:
+      "Example: You’d rather lock something in and adjust later than float with no structure.",
+  },
+  P: {
+    title: "P — Perceiving",
+    line: "You like options, flexibility, and keeping things open until they feel right.",
+    example:
+      "Example: You’re comfortable pivoting last-minute if something better shows up.",
   },
 };
 
@@ -196,11 +248,6 @@ export default function Results({
   );
   const visibleGrowth = getVisibleItems(profile.growthFocus || [], plan, 2);
 
-  const joinedCareers =
-    Array.isArray(profile.idealCareers) && profile.idealCareers.length
-      ? profile.idealCareers.join(", ")
-      : "Varied paths that fit your style.";
-
   const bestTypes =
     profile.compatibility?.bestTypes?.length
       ? profile.compatibility.bestTypes.join(", ")
@@ -250,6 +297,9 @@ export default function Results({
     justUpgradedTier === "premium"
       ? "You’ve unlocked the full Deep Dive: Story Mode, Coach Mode, trait flexibility insights, and the downloadable PDF."
       : "You’ve unlocked the full core report: all strengths, blindspots, relationship style, communication tips, and growth focus.";
+
+  // Split MBTI into letters for explanation
+  const mbtiLetters = (mbtiType || "").split("");
 
   return (
     <div
@@ -320,6 +370,91 @@ export default function Results({
             {profile.summary}
           </p>
         </header>
+
+        {/* NEW: Quick MBTI letter explanation block */}
+        {mbtiLetters.length === 4 && (
+          <section
+            style={{
+              marginBottom: "1.5rem",
+              padding: "1rem 1.1rem",
+              borderRadius: "18px",
+              background: "#020617",
+              border: "1px solid rgba(148,163,184,0.4)",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "1rem",
+                marginBottom: "0.45rem",
+              }}
+            >
+              What {mbtiType} Means in Plain Language
+            </h2>
+            <p
+              style={{
+                fontSize: "0.88rem",
+                marginBottom: "0.7rem",
+                color: "#e5e7eb",
+              }}
+            >
+              Each letter in your type points to a real pattern in how you move
+              through life. Here&apos;s the quick breakdown before we dive into
+              the Trait Breakdown numbers:
+            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: "0.8rem",
+              }}
+            >
+              {mbtiLetters.map((letter, idx) => {
+                const info = MBTI_LETTER_INFO[letter];
+                if (!info) return null;
+                return (
+                  <div
+                    key={`${letter}-${idx}`}
+                    style={{
+                      padding: "0.7rem 0.8rem",
+                      borderRadius: "14px",
+                      background:
+                        "linear-gradient(135deg, rgba(15,23,42,0.9), rgba(15,23,42,0.96))",
+                      border: "1px solid rgba(55,65,81,0.8)",
+                      fontSize: "0.86rem",
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontWeight: 600,
+                        marginBottom: "0.25rem",
+                        color: "#e5e7eb",
+                      }}
+                    >
+                      {info.title}
+                    </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        marginBottom: "0.3rem",
+                        color: "#d1d5db",
+                      }}
+                    >
+                      {info.line}
+                    </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "#9ca3af",
+                      }}
+                    >
+                      {info.example}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* JUST-UPGRADED TOAST */}
         {showUpgradeToast && justUpgradedTier && (
@@ -673,7 +808,83 @@ export default function Results({
           )}
         </section>
 
-        {/* CORE STRENGTHS & BLINDSPOTS */}
+        {/* 🔹 MID-PAGE UPGRADE CTA (Option A) */}
+        {(isFree || isStandard) && (
+          <section
+            style={{
+              marginBottom: "1.6rem",
+              padding: "1.1rem 1.3rem",
+              borderRadius: "18px",
+              background: "rgba(15,23,42,0.98)",
+              border: "1px solid rgba(59,130,246,0.45)",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "1rem",
+                marginBottom: "0.4rem",
+              }}
+            >
+              You&apos;re Seeing the Snapshot — Not the Full Picture
+            </h2>
+            <p
+              style={{
+                fontSize: "0.9rem",
+                marginBottom: "0.6rem",
+                color: "#e5e7eb",
+              }}
+            >
+              What you&apos;re looking at right now is the top layer — enough to
+              recognize your pattern. Standard unlocks the{" "}
+              <strong>full core report</strong> with deeper explanations,
+              relationship patterns, and everyday communication moves. Premium
+              adds the <strong>Deep Dive story</strong>,{" "}
+              <strong>Coach Mode</strong>, trait flexibility map, and your{" "}
+              <strong>downloadable PDF</strong>.
+            </p>
+            <div
+              style={{
+                display: "flex",
+                gap: "0.75rem",
+                flexWrap: "wrap",
+              }}
+            >
+              {isFree && (
+                <>
+                  <button
+                    type="button"
+                    className="secondary-btn"
+                    onClick={() =>
+                      onUpgradeClick && onUpgradeClick("standard")
+                    }
+                  >
+                    Unlock Standard Insights – $6.99
+                  </button>
+                  <button
+                    type="button"
+                    className="primary-btn"
+                    onClick={() =>
+                      onUpgradeClick && onUpgradeClick("premium")
+                    }
+                  >
+                    Go Straight to Premium – $14.99
+                  </button>
+                </>
+              )}
+              {isStandard && (
+                <button
+                  type="button"
+                  className="primary-btn"
+                  onClick={() => onUpgradeClick && onUpgradeClick("premium")}
+                >
+                  Upgrade to Premium Deep Dive – $14.99
+                </button>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* CORE STRENGTHS & BLIND SPOTS */}
         <section
           className="results-section"
           style={{
