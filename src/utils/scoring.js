@@ -1,0 +1,160 @@
+// src/utils/scoring.js
+import MBTI_PROFILES from "../data/mbtiProfiles";
+import questions from "../data/questions.json";
+
+/**
+ * answers: Array<{ id: string, value: 1|2|3|4|5 }>
+ * We reconstruct the dimension (EI/SN/TF/JP) from questions.json by id.
+ */
+export function scoreAssessment(answers) {
+  const traitScores = {
+    EI: 0, // + = E, - = I
+    SN: 0, // + = N, - = S
+    TF: 0, // + = T, - = F
+    JP: 0, // + = J, - = P
+  };
+
+  // Build map from question id -> dimension ("EI", "SN", "TF", "JP")
+  const dimensionById = {};
+  questions.forEach((q) => {
+    if (q.id && q.dimension) {
+      dimensionById[q.id] = q.dimension;
+    }
+  });
+
+  // Walk through the answers the user gave
+  answers.forEach((ans) => {
+    const { id, value } = ans;
+    const dimension = dimensionById[id];
+    if (!dimension) return;
+
+    // Only update if this dimension is one of the four keys
+    if (!Object.prototype.hasOwnProperty.call(traitScores, dimension)) return;
+
+    const numeric = Number(value);
+    if (Number.isNaN(numeric)) return;
+
+    const delta = numeric - 3; // 1..5 -> -2..+2
+    traitScores[dimension] += delta;
+  });
+
+  const mbtiType = inferMbtiType(traitScores);
+  const profile = buildProfile(traitScores, mbtiType);
+
+  return {
+    mbtiType,
+    traitScores,
+    profile,
+  };
+}
+
+function inferMbtiType(traitScores) {
+  const { EI, SN, TF, JP } = traitScores;
+
+  const eOrI = EI >= 0 ? "E" : "I";
+  const sOrN = SN >= 0 ? "N" : "S";
+  const tOrF = TF >= 0 ? "T" : "F";
+  const jOrP = JP >= 0 ? "J" : "P";
+
+  return `${eOrI}${sOrN}${tOrF}${jOrP}`;
+}
+
+function buildProfile(traitScores, mbtiType) {
+  const rawBase = MBTI_PROFILES[mbtiType];
+
+  const fallback = {
+    label: "Unknown Type",
+    summary: "Your responses are balanced across several traits.",
+    coreTraits: [],
+    strengths: [],
+    blindspots: [],
+    idealCareers: [],
+    relationshipStyle: "",
+    communicationTips: [],
+    growthFocus: [],
+    friendsPerception: "",
+    compatibility: {
+      bestTypes: [],
+      challengingTypes: [],
+    },
+  };
+
+  const base = {
+    ...fallback,
+    ...(rawBase || {}),
+    compatibility: {
+      ...fallback.compatibility,
+      ...(rawBase && rawBase.compatibility ? rawBase.compatibility : {}),
+    },
+  };
+
+  const positiveExtras = derivePositiveTraits(traitScores);
+
+  return {
+    type: mbtiType,
+    label: base.label,
+    summary: base.summary,
+    coreTraits: [...base.coreTraits, ...positiveExtras.coreTraits],
+    strengths: [...base.strengths, ...positiveExtras.strengths],
+    blindspots: [...base.blindspots, ...positiveExtras.blindspots],
+    idealCareers: base.idealCareers,
+    relationshipStyle: base.relationshipStyle,
+    communicationTips: base.communicationTips,
+    growthFocus: base.growthFocus,
+    friendsPerception: base.friendsPerception,
+    compatibility: base.compatibility,
+    rawTraitScores: traitScores,
+  };
+}
+
+function derivePositiveTraits(traitScores) {
+  const extras = {
+    coreTraits: [],
+    strengths: [],
+    blindspots: [],
+  };
+
+  const { EI, SN, TF, JP } = traitScores;
+
+  // EI – Extraversion / Introversion
+  if (EI >= 3) {
+    extras.coreTraits.push("Energized by people and interaction");
+    extras.strengths.push("Comfortable networking and connecting groups");
+  } else if (EI <= -3) {
+    extras.coreTraits.push("Energized by time alone or in small groups");
+    extras.strengths.push("Good at deep focus and reflection");
+  }
+
+  // SN – Sensing / Intuition
+  if (SN >= 3) {
+    extras.coreTraits.push("Future-focused and imaginative");
+    extras.strengths.push("Sees patterns and possibilities others miss");
+  } else if (SN <= -3) {
+    extras.coreTraits.push("Grounded in reality and practical details");
+    extras.strengths.push("Good at noticing what’s concrete and proven");
+  }
+
+  // TF – Thinking / Feeling
+  if (TF >= 3) {
+    extras.coreTraits.push("Logical and principle-driven");
+    extras.strengths.push("Can stay objective during tough decisions");
+    extras.blindspots.push("May come off as blunt if stressed");
+  } else if (TF <= -3) {
+    extras.coreTraits.push("Empathy and harmony matter a lot to you");
+    extras.strengths.push("Good at reading emotional tone in a room");
+    extras.blindspots.push("May avoid necessary conflict too long");
+  }
+
+  // JP – Judging / Perceiving
+  if (JP >= 3) {
+    extras.coreTraits.push("Likes structure, plans, and clarity");
+    extras.strengths.push("Good at organizing and driving closure");
+    extras.blindspots.push("May get frustrated with last-minute changes");
+  } else if (JP <= -3) {
+    extras.coreTraits.push("Flexible, go-with-the-flow approach");
+    extras.strengths.push("Adaptable when plans shift suddenly");
+    extras.blindspots.push("Can procrastinate or leave things open too long");
+  }
+
+  return extras;
+}

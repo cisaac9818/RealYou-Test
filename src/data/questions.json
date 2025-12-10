@@ -1,0 +1,786 @@
+[
+  {
+    "id": "Q1",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I gain energy from social interaction.",
+    "genz": "After spending time with people, you usually feel more energized than drained.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q2",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I enjoy being the center of attention.",
+    "genz": "When attention shifts toward you, you’re mostly comfortable with it instead of wanting to fade into the background.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q3",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "In social environments, you often become the steady center of the group—keeping conversations moving and the vibe balanced.",
+    "genz": "In group settings, you tend to join in and help keep the conversation going instead of staying off to the side.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q4",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I feel energized after spending time with others.",
+    "genz": "Being around others usually leaves you feeling refueled instead of worn out.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q5",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "You prefer conversations grounded in what’s happening right now rather than theories that drift into the abstract.",
+    "genz": "If a convo starts floating into 'deep hypothetical land,' you’re like, ‘Okay but what’s actually going on though?’",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q6",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "I rely more on experience than on theoretical possibilities.",
+    "genz": "You trust what you lived—not someone’s long-winded theory.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q7",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "You anchor decisions in concrete details, resisting ideas that feel vague or untested.",
+    "genz": "If someone gives you a plan with no details, you’re instantly like, ‘See, that’s why stuff falls apart.’",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q8",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "I trust my senses more than abstract ideas.",
+    "genz": "If your eyes didn’t see it, you’re not co-signing it.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q9",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "You prioritize the truth of a situation even when emotions are running high.",
+    "genz": "You’ll listen, but at some point you’re like, ‘Okay, but what’s the actual truth here?’",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q10",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "I stay calm even when emotions rise in a situation.",
+    "genz": "Everyone else is emotional—your brain is on airplane mode, calm and collected.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q11",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "I value honesty even if it causes discomfort.",
+    "genz": "You’d rather hurt someone with the truth than comfort them with a lie.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q12",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "I use logic to guide my decisions.",
+    "genz": "Feelings are cool, but logic runs the show.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q13",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "You create structure to keep things on track, especially when people around you are disorganized.",
+    "genz": "If nobody’s organizing the plan, you’ll do it—because somebody has to.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q14",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "You prefer clarity early rather than waiting for last-minute decisions.",
+    "genz": "Last-minute plans? No thanks — you’d rather know the play from the beginning.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q15",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "You maintain organization to avoid unnecessary stress later.",
+    "genz": "You like your stuff where you put it — you don’t have time to be losing things every five minutes.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q16",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "Sudden changes disrupt your flow and make situations harder to manage.",
+    "genz": "When someone changes plans last second, your whole soul hits the ‘error’ screen.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q17",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "When people hesitate to speak up, you naturally fill the space and keep the interaction flowing.",
+    "genz": "If a conversation starts to slow down, you’re more likely to speak up than stay silent and wait on others.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q18",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "You often take initiative in group conversations, guiding the direction without overpowering others.",
+    "genz": "In group conversations, you usually jump in and help shape where the discussion goes instead of only listening.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q19",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I feel energized in busy, active environments.",
+    "genz": "Lively, fast-moving places tend to give you energy more than they drain it.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q20",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I often talk more than I listen.",
+    "genz": "In most conversations, you find yourself talking at least as much as you listen, sometimes more.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q21",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "You trust information you can observe directly rather than abstract assumptions.",
+    "genz": "You’re not buying the ‘trust me bro’ energy—you need to see it, hear it, or experience it.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q22",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "You rely on tangible facts and real outcomes more than speculation.",
+    "genz": "Receipts > theories. If someone’s story doesn’t have details, you’re not convinced.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q23",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "Complex, theoretical ideas can feel disconnected if they lack immediate real-world relevance.",
+    "genz": "If someone starts talking in circles with no point, your soul instantly checks out.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q24",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "You prefer step-by-step clarity rather than open-ended possibilities.",
+    "genz": "You like plans that won't fall apart just because someone ‘thought it would work.’",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q25",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "You make decisions by weighing logic more heavily than emotional influence.",
+    "genz": "You don’t get pulled into drama—you break things down like a detective.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q26",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "I try to remain impartial in emotional situations.",
+    "genz": "You don’t pick sides—you pick facts.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q27",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "You value direct honesty even when it risks temporary discomfort.",
+    "genz": "You don’t sugarcoat. If something needs to be said, you’ll say it clean.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q28",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "You break down conflicts by evaluating the logical roots rather than reacting emotionally.",
+    "genz": "You don’t get caught in the yelling—you get to the actual problem fast.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q29",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "You prefer predictable order and feel most effective when routines are solid.",
+    "genz": "You function way better when you know what’s happening instead of freestyling life every day.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q30",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "You feel relief once decisions are made and pathways are defined.",
+    "genz": "Once you decide something, your brain finally relaxes. Indecision is your enemy.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q31",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "You prefer to finish tasks before relaxing to keep momentum steady.",
+    "genz": "You can’t chill until the thing you need to do is DONE — your brain won’t allow it.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q32",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I enjoy being part of group activities.",
+    "genz": "You generally like being involved in group plans and shared activities instead of always doing things solo.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q33",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I naturally take the lead in conversations.",
+    "genz": "Once you’re comfortable, you often guide where the conversation goes instead of waiting for others to lead it.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q34",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I enjoy fast-paced social dynamics.",
+    "genz": "When social situations move quickly, you’re usually okay keeping up with the pace instead of wanting to slow it down.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q35",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "Fast-moving social settings sharpen your energy rather than drain it.",
+    "genz": "Busy social settings tend to keep you alert and engaged rather than immediately tiring you out.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q36",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I feel comfortable speaking with strangers.",
+    "genz": "Talking to new people is something you can usually do without a lot of stress or hesitation.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q37",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "You lean toward practical insights that come from direct experience.",
+    "genz": "You don’t trust ‘vibes-only’ decisions—you trust what actually happened last time.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q38",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "I focus on facts over abstract ideas.",
+    "genz": "You want the real story—not the fantasy version.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q39",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "You rely on your senses to evaluate situations rather than abstract interpretations.",
+    "genz": "You’re the ‘let me see it for myself’ friend. You don’t run off imagination alone.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q40",
+    "dimension": "SN",
+    "positiveTrait": "S",
+    "pro": "You’re most confident when instructions and expectations are clearly defined.",
+    "genz": "You need people to stop playing guessing games—just say what we’re doing.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q41",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "You maintain composure in emotional situations, reducing decisions to actionable facts.",
+    "genz": "Even when everyone else is emotional, you’re the one who keeps your cool and sorts the facts.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q42",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "I prefer objective problem-solving methods.",
+    "genz": "You’re allergic to overthinking—you get straight to the solution.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q43",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "You prioritize clear truths over maintaining surface-level harmony.",
+    "genz": "You’d rather deal with the real issue than sit in fake peaceful energy.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q44",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "You assess situations using structured thinking, even when emotions complicate them.",
+    "genz": "When people get messy, you get logical—it’s your superpower.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q45",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "You feel grounded when life follows a predictable rhythm.",
+    "genz": "Your peace comes from knowing the plan — not guessing it.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q46",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "A structured environment helps you operate at your best.",
+    "genz": "You thrive when things are organized — mess slows your whole life down.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q47",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "You stay consistent and structured even when others drift into chaos.",
+    "genz": "Your vibe is: ‘If y’all not gonna stay organized, I’ll do it myself.’",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q48",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "You’re most comfortable when expectations are clear and stable.",
+    "genz": "You can adapt — but don’t blindside you with random changes and expect you to smile.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q49",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "You stay alert and energized when the environment is lively and unpredictable.",
+    "genz": "In loud or unpredictable environments, you tend to stay engaged instead of shutting down or withdrawing.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q50",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I feel comfortable joining group discussions.",
+    "genz": "If a group is already talking, you can usually join in without feeling overly awkward or out of place.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q51",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I enjoy socializing at events and gatherings.",
+    "genz": "Most of the time, you actually enjoy talking with people at events instead of just wanting to leave early.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q52",
+    "dimension": "EI",
+    "positiveTrait": "E",
+    "pro": "I gain momentum from being around people.",
+    "genz": "Being around people tends to give you a bit more energy and momentum, not less.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q53",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "You approach conflict by focusing on clarity and fairness rather than sympathy alone.",
+    "genz": "When people argue, you’re the one who steps in like, ‘Y’all are missing the real point.’",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q54",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "I handle disagreements with logic rather than emotional intensity.",
+    "genz": "You cool the room down—you don’t add to the fire.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q55",
+    "dimension": "TF",
+    "positiveTrait": "T",
+    "pro": "You communicate directly and expect the same level of clarity from others.",
+    "genz": "You’re allergic to vague communication—say what you mean, please.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  },
+  {
+    "id": "Q56",
+    "dimension": "JP",
+    "positiveTrait": "J",
+    "pro": "I prefer having a plan instead of improvising.",
+    "genz": "Winging it sounds fun… until people start acting up—you’d rather know the move.",
+    "options": {
+      "1": "Strongly disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly agree"
+    }
+  }
+]

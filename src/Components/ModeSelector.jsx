@@ -1,0 +1,245 @@
+// src/Components/ModeSelector.jsx
+import React from "react";
+import PricingSection from "./PricingSection";
+
+export default function ModeSelector({
+  plan,
+  hasChosenPlan,
+  onPlanChosen,
+  onSelect,
+  onUpgradeClick,
+}) {
+  const isStandard = plan === "standard";
+  const isPremium = plan === "premium";
+
+  // Classic/Modern only appears AFTER a plan is considered chosen
+  const showStyleCard = hasChosenPlan;
+
+  const currentPlanLabel = isPremium
+    ? "Premium"
+    : isStandard
+    ? "Standard"
+    : "Free (RealYou Starter)";
+
+  return (
+    <div
+      className="mode-selector-page"
+      style={{
+        padding: "2.5rem 1.5rem",
+        background: "#020617",
+        minHeight: "100vh",
+      }}
+    >
+      {/* REALYOU PRODUCT HEADER */}
+      <section
+        className="mode-hero"
+        style={{ maxWidth: "960px", margin: "0 auto 1.5rem" }}
+      >
+        <p
+          className="page-eyebrow"
+          style={{
+            fontSize: "0.75rem",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "#a5b4fc",
+            marginBottom: "0.3rem",
+          }}
+        >
+          RealYou Test™
+        </p>
+        <h1 className="page-title" style={{ fontSize: "1.9rem" }}>
+          Get your RealYou personality snapshot
+        </h1>
+        <p
+          className="page-subtitle"
+          style={{ maxWidth: "640px", color: "#e5e7eb", marginTop: "0.35rem" }}
+        >
+          Start free, then unlock deeper RealYou insights, coaching language,
+          and a downloadable report. Choose how deep you want to go.
+        </p>
+
+        <ul
+          className="mode-header__highlights"
+          style={{
+            marginTop: "0.6rem",
+            paddingLeft: "1.1rem",
+            fontSize: "0.9rem",
+            color: "#cbd5f5",
+          }}
+        >
+          <li>🔍 Free: core type + basic trait breakdown</li>
+          <li>⭐ Standard: extra insights and “coach whisper” tips</li>
+          <li>💎 Premium: full story, coach mode & RealYou PDF report</li>
+        </ul>
+
+        <p
+          className="page-current-plan"
+          style={{
+            marginTop: "0.6rem",
+            fontSize: "0.88rem",
+            color: "#9ca3af",
+          }}
+        >
+          Current plan: <strong>{currentPlanLabel}</strong>
+        </p>
+      </section>
+
+      {/* PLAN CARD */}
+      <div style={{ maxWidth: "960px", margin: "0 auto" }}>
+        <PricingSection
+          plan={plan}
+          onUpgradeClick={onUpgradeClick}
+          onPlanChosen={onPlanChosen}
+        />
+      </div>
+
+      {/* ASSESSMENT STYLE CARD – ONLY AFTER PLAN IS CHOSEN */}
+      {showStyleCard && (
+        <div style={{ maxWidth: "960px", margin: "2.5rem auto 0" }}>
+          <section
+            className="mode-style-card"
+            style={{
+              borderRadius: "26px",
+              padding: "2rem 1.75rem 1.8rem",
+              background:
+                "linear-gradient(145deg, #020617 0%, #020617 45%, #050816 100%)",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.85)",
+              color: "#f9fafb",
+            }}
+          >
+            <header
+              style={{
+                marginBottom: "1.3rem",
+                textAlign: "left",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: 800,
+                  marginBottom: "0.35rem",
+                }}
+              >
+                Choose Your Assessment Style
+              </h2>
+              <p
+                style={{
+                  fontSize: "0.95rem",
+                  color: "#e5e7eb",
+                  marginBottom: "0.4rem",
+                }}
+              >
+                Same RealYou personality engine — just different wording vibes.
+              </p>
+              <p
+                style={{
+                  fontSize: "0.9rem",
+                  color: "#9ca3af",
+                  margin: 0,
+                }}
+              >
+                Current plan: <strong>{currentPlanLabel}</strong>
+              </p>
+            </header>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+                gap: "1rem",
+              }}
+            >
+              {/* CLASSIC MODE */}
+              <div
+                style={{
+                  borderRadius: "18px",
+                  padding: "1.4rem 1.2rem 1.2rem",
+                  background: "#020617",
+                  border: "1px solid #1f2937",
+                  boxShadow: "0 18px 40px rgba(0,0,0,0.7)",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  minHeight: "170px",
+                }}
+              >
+                <div>
+                  <h3
+                    style={{
+                      fontSize: "1.1rem",
+                      fontWeight: 700,
+                      marginBottom: "0.35rem",
+                    }}
+                  >
+                    Classic Mode
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: "0.92rem",
+                      color: "#e5e7eb",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    Clean, timeless wording. Great for work, coaching, job
+                    insight, and serious personal development.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="primary-btn"
+                  onClick={() => onSelect("pro")}
+                >
+                  Use Classic Mode
+                </button>
+              </div>
+
+              {/* MODERN MODE */}
+              <div
+                style={{
+                  borderRadius: "18px",
+                  padding: "1.4rem 1.2rem 1.2rem",
+                  background: "#020617",
+                  border: "1px solid #1f2937",
+                  boxShadow: "0 18px 40px rgba(0,0,0,0.7)",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  minHeight: "170px",
+                }}
+              >
+                <div>
+                  <h3
+                    style={{
+                      fontSize: "1.1rem",
+                      fontWeight: 700,
+                      marginBottom: "0.35rem",
+                    }}
+                  >
+                    Modern Mode
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: "0.92rem",
+                      color: "#e5e7eb",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    Relaxed, conversational wording. Great for everyday life,
+                    friendships, dating, and social media sharing.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  onClick={() => onSelect("genz")}
+                >
+                  Use Modern Mode
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+    </div>
+  );
+}
