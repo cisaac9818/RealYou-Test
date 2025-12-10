@@ -82,6 +82,36 @@ const AXIS_COLORS = {
   },
 };
 
+// 🔹 MISSING BEFORE – now added back
+function buildAxisSummary(code, value) {
+  const meta = getAxisMeta(code);
+  const { firstLabel, secondLabel, axisLabel } = meta;
+  const { firstPercent, secondPercent } = axisPercentages(value);
+  const abs = Math.abs(value || 0);
+
+  let intensity;
+  if (abs === 0) {
+    intensity = "a balanced position";
+  } else if (abs <= 2) {
+    intensity = "a slight preference";
+  } else if (abs <= 5) {
+    intensity = "a moderate preference";
+  } else {
+    intensity = "a strong preference";
+  }
+
+  // Neutral / balanced
+  if (value === 0) {
+    return `${code}: about ${firstPercent}% / ${secondPercent}% — ${intensity} on this axis. You can move fairly easily between both sides of ${axisLabel}.`;
+  }
+
+  // Correct side + correct percentage
+  const toward = value > 0 ? firstLabel : secondLabel;
+  const leaningPercent = value > 0 ? firstPercent : secondPercent;
+
+  return `${code}: about ${leaningPercent}% toward ${toward} (${firstPercent}% / ${secondPercent}%). That shows ${intensity} in ${axisLabel}.`;
+}
+
 // Examples of life events that can shift each axis
 const FLEX_EXAMPLES = {
   EI: {
