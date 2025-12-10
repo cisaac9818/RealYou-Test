@@ -7,8 +7,15 @@ import Results from "./Components/Results";
 import { scoreAssessment } from "./utils/scoring";
 
 // REAL STRIPE PRICE IDS (LIVE MODE)
+// (kept for reference, not used in Payment Link mode)
 const STANDARD_PRICE_ID = "price_1ScYHxPw7L4bxLNhPUs7AmXI"; // $6.99 LIVE
 const PREMIUM_PRICE_ID = "price_1ScYN6Pw7L4bxLNhTuP1AE75"; // $14.99 LIVE
+
+// Stripe Payment Links (LIVE, no backend)
+const STANDARD_CHECKOUT_URL =
+  "https://buy.stripe.com/eVqeVf6JV3Nx8YO0Fw1gs00";
+const PREMIUM_CHECKOUT_URL =
+  "https://buy.stripe.com/8x28wR7NZesb0sidsi1gs01";
 
 function getInitialPlan() {
   const storedPlan = localStorage.getItem("pp_plan");
@@ -133,31 +140,13 @@ function App() {
     setHasChosenPlan(true);
   }
 
-  async function handleUpgradeClick(tier = "premium") {
-    try {
-      const priceId =
-        tier === "standard" ? STANDARD_PRICE_ID : PREMIUM_PRICE_ID;
+  // NEW: Use Stripe Payment Links instead of backend API
+  function handleUpgradeClick(tier = "premium") {
+    const url =
+      tier === "standard" ? STANDARD_CHECKOUT_URL : PREMIUM_CHECKOUT_URL;
 
-      const res = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId, tier }),
-      });
-
-      if (!res.ok) throw new Error("Failed to create checkout session");
-
-      const data = await res.json();
-
-      if (data.url) {
-        // Results are already saved – go ahead and redirect
-        window.location.href = data.url;
-      } else {
-        throw new Error("No URL returned from Stripe server");
-      }
-    } catch (err) {
-      console.error("Upgrade error:", err);
-      alert("Unable to start checkout. Please try again.");
-    }
+    // Send user straight to Stripe Checkout (hosted Payment Link)
+    window.location.href = url;
   }
 
   function handleModeSelect(selectedMode) {
