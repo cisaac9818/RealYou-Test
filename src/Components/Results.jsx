@@ -192,6 +192,178 @@ const MBTI_LETTER_INFO = {
   },
 };
 
+// 🔹 Helpers for compatibility engine
+
+function normalizeMbtiType(raw) {
+  if (!raw) return "";
+  return raw.toUpperCase().replace(/[^A-Z]/g, "");
+}
+
+function isValidMbtiType(type) {
+  const t = normalizeMbtiType(type);
+  if (t.length !== 4) return false;
+  const [a, b, c, d] = t;
+  const validA = a === "E" || a === "I";
+  const validB = b === "S" || b === "N";
+  const validC = c === "T" || c === "F";
+  const validD = d === "J" || d === "P";
+  return validA && validB && validC && validD;
+}
+
+function computeCompatibilityScore(myType, otherType) {
+  const me = normalizeMbtiType(myType);
+  const them = normalizeMbtiType(otherType);
+  if (!isValidMbtiType(me) || !isValidMbtiType(them)) {
+    return 50;
+  }
+
+  let score = 50;
+
+  // E/I: different can be magnetic but tiring
+  if (me[0] === them[0]) {
+    score += 8;
+  } else {
+    score -= 4;
+  }
+
+  // S/N: world-view alignment
+  if (me[1] === them[1]) {
+    score += 10;
+  } else {
+    score -= 6;
+  }
+
+  // T/F: decision-making
+  if (me[2] === them[2]) {
+    score += 8;
+  } else {
+    score -= 8;
+  }
+
+  // J/P: lifestyle / structure
+  if (me[3] === them[3]) {
+    score += 8;
+  } else {
+    score -= 5;
+  }
+
+  // Clamp
+  if (score < 15) score = 15;
+  if (score > 95) score = 95;
+
+  return score;
+}
+
+function getCompatibilityLabel(score) {
+  if (score >= 75) return "High Potential Match";
+  if (score >= 55) return "Good Fit With Friction Points";
+  if (score >= 40) return "Mixed Match — Depends on Communication";
+  return "High Challenge Match";
+}
+
+function buildCompatibilityInsights(myType, otherType) {
+  const me = normalizeMbtiType(myType);
+  const them = normalizeMbtiType(otherType);
+  const strengths = [];
+  const challenges = [];
+
+  if (!isValidMbtiType(me) || !isValidMbtiType(them)) {
+    return { strengths, challenges };
+  }
+
+  // E vs I
+  if (me[0] !== them[0]) {
+    strengths.push(
+      "One of you brings energy and momentum; the other brings calm and reflection."
+    );
+    challenges.push(
+      "You won’t always recharge the same way — one may want to go out when the other is done for the day."
+    );
+  } else if (me[0] === "E") {
+    strengths.push("You both feed off interaction and shared experiences.");
+    challenges.push(
+      "You might both over-book life and forget to slow down or check in emotionally."
+    );
+  } else {
+    strengths.push(
+      "You both respect space, depth, and time to process before reacting."
+    );
+    challenges.push(
+      "If nobody initiates, important conversations can get delayed or avoided."
+    );
+  }
+
+  // S vs N
+  if (me[1] !== them[1]) {
+    strengths.push(
+      "One of you keeps track of real-world details; the other spots patterns and possibilities."
+    );
+    challenges.push(
+      "You may clash over ‘proof vs potential’ — one wants receipts, the other wants vision."
+    );
+  } else if (me[1] === "N") {
+    strengths.push(
+      "You both like possibilities, patterns, and long-term thinking."
+    );
+    challenges.push(
+      "You might both skip practical details until they become urgent."
+    );
+  } else {
+    strengths.push(
+      "You both prefer concrete facts, experiences, and what’s real right now."
+    );
+    challenges.push(
+      "You may resist change until things are uncomfortable or obviously necessary."
+    );
+  }
+
+  // T vs F
+  if (me[2] !== them[2]) {
+    strengths.push(
+      "One of you protects fairness and logic; the other protects people and values."
+    );
+    challenges.push(
+      "Under stress, one can feel ‘cold’ and the other ‘too sensitive’ if you don’t name what you’re both trying to protect."
+    );
+  } else if (me[2] === "T") {
+    strengths.push(
+      "You both value logic and straightforward problem solving when things get intense."
+    );
+    challenges.push(
+      "Feelings can get pushed aside until they blow up or show up as distance."
+    );
+  } else {
+    strengths.push(
+      "You both care about how decisions land on people, not just the outcome."
+    );
+    challenges.push(
+      "Hard calls can be delayed because neither wants to be the ‘bad guy’."
+    );
+  }
+
+  // J vs P
+  if (me[3] !== them[3]) {
+    strengths.push(
+      "One of you brings structure and follow-through; the other brings flexibility and last-minute adaptability."
+    );
+    challenges.push(
+      "You won’t agree on what ‘on time’ or ‘planned’ means unless you spell it out."
+    );
+  } else if (me[3] === "J") {
+    strengths.push("You both like plans, clarity, and locking things in.");
+    challenges.push(
+      "You can both get rigid or controlling when things don’t go according to plan."
+    );
+  } else {
+    strengths.push("You both stay open to options and new opportunities.");
+    challenges.push(
+      "Important decisions can float because neither wants to commit too early."
+    );
+  }
+
+  return { strengths, challenges };
+}
+
 // Build a description line for flexibility ranking in Premium
 function buildFlexibilityLine(axis, rankIndex) {
   const { code, firstLabel, secondLabel, axisLabel, value } = axis;
@@ -238,6 +410,11 @@ export default function Results({
 
   const [premiumView, setPremiumView] = useState("story"); // "story" | "coach"
   const [showUpgradeToast, setShowUpgradeToast] = useState(!!justUpgradedTier);
+
+  // NEW: compatibility state (Premium)
+  const [otherTypeInput, setOtherTypeInput] = useState("");
+  const [compatResult, setCompatResult] = useState(null);
+  const [compatError, setCompatError] = useState("");
 
   const visibleStrengths = getVisibleItems(profile.strengths || [], plan, 2);
   const visibleBlindspots = getVisibleItems(profile.blindspots || [], plan, 2);
@@ -300,6 +477,36 @@ export default function Results({
 
   // Split MBTI into letters for explanation
   const mbtiLetters = (mbtiType || "").split("");
+
+  function handleCompareClick() {
+    const cleaned = normalizeMbtiType(otherTypeInput);
+    if (!mbtiType || !isValidMbtiType(mbtiType)) {
+      setCompatError("Your type needs to be a valid 4-letter type first.");
+      setCompatResult(null);
+      return;
+    }
+    if (!isValidMbtiType(cleaned)) {
+      setCompatError(
+        "Enter a valid 4-letter type like ENFP, ISTJ, ENTJ, etc."
+      );
+      setCompatResult(null);
+      return;
+    }
+    const score = computeCompatibilityScore(mbtiType, cleaned);
+    const label = getCompatibilityLabel(score);
+    const { strengths, challenges } = buildCompatibilityInsights(
+      mbtiType,
+      cleaned
+    );
+    setCompatResult({
+      otherType: cleaned,
+      score,
+      label,
+      strengths,
+      challenges,
+    });
+    setCompatError("");
+  }
 
   return (
     <div
@@ -1051,7 +1258,7 @@ export default function Results({
           )}
         </section>
 
-        {/* COMPATIBILITY SNAPSHOT */}
+        {/* COMPATIBILITY SNAPSHOT + PREMIUM MATCH TOOL */}
         <section
           className="results-section"
           style={{
@@ -1092,6 +1299,7 @@ export default function Results({
                   fontSize: "0.8rem",
                   margin: 0,
                   color: "#c7d2fe",
+                  marginBottom: "0.9rem",
                 }}
               >
                 <strong>Standard / Premium Insight:</strong> This doesn&apos;t
@@ -1100,6 +1308,315 @@ export default function Results({
                 smooth or high-friction — so you can adjust expectations and
                 communication before things get messy.
               </p>
+
+              {/* PREMIUM: Live compatibility tool */}
+              {isPremium && (
+                <div
+                  style={{
+                    marginTop: "1rem",
+                    padding: "1rem 1.05rem",
+                    borderRadius: "16px",
+                    background:
+                      "radial-gradient(circle at top left, rgba(56,189,248,0.12), rgba(15,23,42,0.98))",
+                    border: "1px solid rgba(59,130,246,0.6)",
+                  }}
+                >
+                  <h3
+                    style={{
+                      fontSize: "0.96rem",
+                      marginBottom: "0.4rem",
+                      color: "#bfdbfe",
+                    }}
+                  >
+                    Compare Your Type With Someone Else
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: "0.88rem",
+                      marginBottom: "0.55rem",
+                      color: "#e5e7eb",
+                    }}
+                  >
+                    Plug in a friend, partner, or coworker&apos;s type (like
+                    ENFP, ISTJ, ENTJ) to see where this combo tends to win —
+                    and where it gets messy fast.
+                  </p>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "0.6rem",
+                      alignItems: "center",
+                      marginBottom: "0.55rem",
+                    }}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Their type (e.g. ENFP)"
+                      value={otherTypeInput}
+                      onChange={(e) => setOtherTypeInput(e.target.value)}
+                      style={{
+                        padding: "0.45rem 0.7rem",
+                        borderRadius: "999px",
+                        border: "1px solid rgba(148,163,184,0.8)",
+                        background: "rgba(15,23,42,0.95)",
+                        color: "#f9fafb",
+                        fontSize: "0.85rem",
+                        minWidth: "150px",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="primary-btn"
+                      onClick={handleCompareClick}
+                    >
+                      See Your Match
+                    </button>
+                  </div>
+                  {compatError && (
+                    <p
+                      style={{
+                        fontSize: "0.8rem",
+                        color: "#fecaca",
+                        marginBottom: "0.55rem",
+                      }}
+                    >
+                      {compatError}
+                    </p>
+                  )}
+                  {compatResult && (
+                    <div
+                      style={{
+                        marginTop: "0.4rem",
+                        paddingTop: "0.6rem",
+                        borderTop: "1px solid rgba(148,163,184,0.6)",
+                        fontSize: "0.88rem",
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          marginBottom: "0.45rem",
+                          fontWeight: 600,
+                          color: "#e5e7eb",
+                        }}
+                      >
+                        You ({mbtiType}) + {compatResult.otherType} →{" "}
+                        {compatResult.score}% Natural Fit (
+                        {compatResult.label})
+                      </p>
+
+                      {/* Good Fit vs Challenge bar */}
+                      <div
+                        style={{
+                          marginBottom: "0.6rem",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            fontSize: "0.78rem",
+                            marginBottom: "0.2rem",
+                            color: "#e5e7eb",
+                          }}
+                        >
+                          <span>
+                            Good Fit: {compatResult.score}
+                            %
+                          </span>
+                          <span>
+                            Challenging: {100 - compatResult.score}
+                            %
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            height: "7px",
+                            borderRadius: "999px",
+                            overflow: "hidden",
+                            background: "#020617",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: `${compatResult.score}%`,
+                              background: "#22c55e",
+                            }}
+                          />
+                          <div
+                            style={{
+                              width: `${100 - compatResult.score}%`,
+                              background: "#f97316",
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns:
+                            "repeat(auto-fit, minmax(220px, 1fr))",
+                          gap: "0.75rem",
+                        }}
+                      >
+                        <div>
+                          <p
+                            style={{
+                              fontWeight: 600,
+                              marginBottom: "0.25rem",
+                              color: "#bbf7d0",
+                            }}
+                          >
+                            Where this combo wins
+                          </p>
+                          {compatResult.strengths.length ? (
+                            <ul
+                              style={{
+                                paddingLeft: "1.1rem",
+                                margin: 0,
+                                fontSize: "0.86rem",
+                                lineHeight: 1.5,
+                              }}
+                            >
+                              {compatResult.strengths.map((s, idx) => (
+                                <li key={idx}>{s}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: "0.86rem",
+                              }}
+                            >
+                              This pairing can bring balance when you both stay
+                              curious instead of assuming you&apos;re the only
+                              one who&apos;s right.
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <p
+                            style={{
+                              fontWeight: 600,
+                              marginBottom: "0.25rem",
+                              color: "#fed7aa",
+                            }}
+                          >
+                            Where it gets messy
+                          </p>
+                          {compatResult.challenges.length ? (
+                            <ul
+                              style={{
+                                paddingLeft: "1.1rem",
+                                margin: 0,
+                                fontSize: "0.86rem",
+                                lineHeight: 1.5,
+                              }}
+                            >
+                              {compatResult.challenges.map((c, idx) => (
+                                <li key={idx}>{c}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: "0.86rem",
+                              }}
+                            >
+                              The main friction here will be pace, decisions,
+                              and how directly you talk about what you both
+                              need.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <p
+                        style={{
+                          marginTop: "0.7rem",
+                          marginBottom: 0,
+                          fontSize: "0.8rem",
+                          color: "#9ca3af",
+                        }}
+                      >
+                        Use this as a starting point for conversations — not a
+                        verdict. If this person is in your real life (family,
+                        partner, money, or business), the more honest you are
+                        about pacing, decisions, and recovery time, the smoother
+                        this combo runs.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* STANDARD: tease the Premium comparison tool */}
+              {isStandard && (
+                <div
+                  style={{
+                    marginTop: "1rem",
+                    padding: "1rem 1.05rem",
+                    borderRadius: "16px",
+                    background: "rgba(15,23,42,0.96)",
+                    border: "1px dashed rgba(148,163,184,0.7)",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background:
+                        "linear-gradient(135deg, rgba(15,23,42,0.3), rgba(15,23,42,0.9))",
+                      pointerEvents: "none",
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "relative",
+                    }}
+                  >
+                    <h3
+                      style={{
+                        fontSize: "0.96rem",
+                        marginBottom: "0.35rem",
+                        color: "#e5e7eb",
+                      }}
+                    >
+                      Premium Matchups (Locked in your plan)
+                    </h3>
+                    <p
+                      style={{
+                        fontSize: "0.86rem",
+                        marginBottom: "0.6rem",
+                        color: "#e5e7eb",
+                      }}
+                    >
+                      In <strong>Premium</strong> you can plug in a friend,
+                      partner, or situationship&apos;s type and see a{" "}
+                      <strong>Good Fit vs Challenge %</strong>, with a breakdown
+                      of where your combo wins and where it blows up fast. It&apos;s
+                      designed to help you have real conversations — not just
+                      vibes and guessing.
+                    </p>
+                    <button
+                      type="button"
+                      className="primary-btn"
+                      onClick={() =>
+                        onUpgradeClick && onUpgradeClick("premium")
+                      }
+                    >
+                      Unlock Live Compatibility Matchups in Premium – $14.99
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </section>
