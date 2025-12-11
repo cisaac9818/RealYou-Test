@@ -5,6 +5,7 @@ import ModeSelector from "./Components/ModeSelector";
 import Assessment from "./Components/Assessment";
 import Results from "./Components/Results";
 import LandingPage from "./Components/LandingPage";
+import EmailCapture from "./Components/EmailCapture";
 import { scoreAssessment } from "./utils/scoring";
 
 // REAL STRIPE PRICE IDS (LIVE MODE)
@@ -74,6 +75,21 @@ function App() {
 
   // show “you just upgraded” toast on Results
   const [justUpgradedTier, setJustUpgradedTier] = useState(null);
+
+  // 🔹 NEW: gate results behind email capture
+  const [hasEmailCaptureCompleted, setHasEmailCaptureCompleted] = useState(() => {
+    return !!localStorage.getItem("pp_userProfile");
+  });
+
+  const [userProfile, setUserProfile] = useState(() => {
+    const raw = localStorage.getItem("pp_userProfile");
+    if (!raw) return { name: "", email: "" };
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      return { name: "", email: "" };
+    }
+  });
 
   // Persist plan
   useEffect(() => {
@@ -176,6 +192,25 @@ function App() {
     localStorage.removeItem("pp_results");
     localStorage.setItem("pp_hasCompletedAssessment", "false");
     setHasCompletedAssessment(false);
+    // optional: don’t reset email gate so they don’t have to re-enter
+  }
+
+  // 🔹 NEW: handle email capture submit
+  function handleEmailCaptureSubmit({ name, email, agreeToEmails }) {
+    const profile = {
+      name: name || "",
+      email,
+      agreeToEmails: !!agreeToEmails,
+    };
+
+    setUserProfile(profile);
+    setHasEmailCaptureCompleted(true);
+
+    try {
+      localStorage.setItem("pp_userProfile", JSON.stringify(profile));
+    } catch (e) {
+      console.error("Failed to persist user profile", e);
+    }
   }
 
   // PDF download handler for Premium
@@ -257,7 +292,16 @@ function App() {
         />
       )}
 
-      {stage === "results" && results && (
+      {/* 🔹 NEW: gate results behind email capture */}
+      {stage === "results" && results && !hasEmailCaptureCompleted && (
+        <EmailCapture
+          onSubmit={handleEmailCaptureSubmit}
+          initialName={userProfile.name}
+          initialEmail={userProfile.email}
+        />
+      )}
+
+      {stage === "results" && results && hasEmailCaptureCompleted && (
         <Results
           plan={plan}
           results={results}
@@ -266,6 +310,7 @@ function App() {
           hasCompletedAssessment={hasCompletedAssessment}
           onDownloadPdf={handleDownloadPdf}
           justUpgradedTier={justUpgradedTier}
+          userProfile={userProfile}
         />
       )}
     </div>
