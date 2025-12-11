@@ -225,3 +225,115 @@ button:focus-visible {
   filter: brightness(0.98);
   box-shadow: none;
 }
+/* ===== RealYou Neon Animations ===== */
+
+@keyframes neonFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+    filter: blur(3px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0) scale(1.01);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes neonPulseGlow {
+  0% {
+    box-shadow: 0 0 22px rgba(236, 72, 153, 0.4),
+      0 0 60px rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(236, 72, 153, 0.85),
+      0 0 90px rgba(59, 130, 246, 0.9);
+  }
+  100% {
+    box-shadow: 0 0 22px rgba(236, 72, 153, 0.4),
+      0 0 60px rgba(59, 130, 246, 0.4);
+  }
+}
+
+@keyframes neonButtonPulse {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 0 0 rgba(59, 130, 246, 0.0);
+  }
+  50% {
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 0 24px rgba(59, 130, 246, 0.7);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 0 0 rgba(59, 130, 246, 0.0);
+  }
+}
+
+/* hero container gets bold neon entrance */
+.landing-hero {
+  animation: neonFadeInUp 0.85s ease-out both;
+}
+
+/* right-side hero card / logo container */
+.landing-hero-card {
+  animation: neonPulseGlow 2.6s ease-in-out 0.3s infinite alternate;
+}
+
+/* section slide-ins */
+.section-fade {
+  opacity: 0;
+  animation: neonFadeInUp 0.8s ease-out forwards;
+}
+
+/* add a little staggering manually */
+.section-fade.section-1 {
+  animation-delay: 0.25s;
+}
+.section-fade.section-2 {
+  animation-delay: 0.35s;
+}
+.section-fade.section-3 {
+  animation-delay: 0.45s;
+}
+.section-fade.section-4 {
+  animation-delay: 0.55s;
+}
+.section-fade.section-5 {
+  animation-delay: 0.65s;
+}
+
+/* bold neon button glow */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+}
+
+.btn-glow::before {
+  content: "";
+  position: absolute;
+  inset: -120%;
+  background: radial-gradient(
+    circle at 10% 0%,
+    rgba(248, 250, 252, 0.24),
+    transparent 55%
+  );
+  transform: translateX(-60%);
+  opacity: 0;
+  transition: opacity 0.2s ease-out, transform 0.35s ease-out;
+  pointer-events: none;
+}
+
+.btn-glow:hover {
+  animation: neonButtonPulse 0.8s ease-out forwards;
+}
+
+.btn-glow:hover::before {
+  opacity: 1;
+  transform: translateX(30%);
+}

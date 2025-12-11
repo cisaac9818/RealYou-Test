@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import ModeSelector from "./Components/ModeSelector";
 import Assessment from "./Components/Assessment";
 import Results from "./Components/Results";
+import LandingPage from "./Components/LandingPage";
 import { scoreAssessment } from "./utils/scoring";
 
 // REAL STRIPE PRICE IDS (LIVE MODE)
@@ -46,19 +47,13 @@ function getInitialResults() {
   }
 }
 
-// choose start screen based on whether user already completed assessment
+// ✅ Always start on the landing page
 function getInitialStage() {
-  const hasCompleted =
-    localStorage.getItem("pp_hasCompletedAssessment") === "true";
-  const hasResults = !!localStorage.getItem("pp_results");
-
-  if (hasCompleted && hasResults) return "results";
-  return "mode";
+  return "landing";
 }
 
 function App() {
-  const [plan, setPlan] = useState(getInitialPlan);
-
+  const [plan, setPlan] = useState(() => getInitialPlan());
   const [hasChosenPlan, setHasChosenPlan] = useState(() => {
     const p = getInitialPlan();
     return p === "free" || p === "standard" || p === "premium";
@@ -67,15 +62,15 @@ function App() {
   const [mode, setMode] = useState(null);
 
   // load persisted results
-  const [results, setResults] = useState(getInitialResults);
+  const [results, setResults] = useState(() => getInitialResults());
 
   // track whether user has completed at least one assessment
   const [hasCompletedAssessment, setHasCompletedAssessment] = useState(() => {
     return localStorage.getItem("pp_hasCompletedAssessment") === "true";
   });
 
-  // load stage from persisted data
-  const [stage, setStage] = useState(getInitialStage);
+  // stage: "landing" | "mode" | "assessment" | "results"
+  const [stage, setStage] = useState(() => getInitialStage());
 
   // show “you just upgraded” toast on Results
   const [justUpgradedTier, setJustUpgradedTier] = useState(null);
@@ -104,9 +99,14 @@ function App() {
       setJustUpgradedTier(tier);
 
       // If user already took the test → return them to Results automatically
-      if (hasCompletedAssessment && results) {
+      const hasCompleted =
+        localStorage.getItem("pp_hasCompletedAssessment") === "true";
+      const hasResults = !!localStorage.getItem("pp_results");
+
+      if (hasCompleted && hasResults) {
         setStage("results");
       } else {
+        // After purchase, drop them into plan/mode flow
         setStage("mode");
       }
 
@@ -140,7 +140,7 @@ function App() {
     setHasChosenPlan(true);
   }
 
-  // NEW: Use Stripe Payment Links instead of backend API
+  // Use Stripe Payment Links instead of backend API
   function handleUpgradeClick(tier = "premium") {
     const url =
       tier === "standard" ? STANDARD_CHECKOUT_URL : PREMIUM_CHECKOUT_URL;
@@ -170,7 +170,8 @@ function App() {
   function handleRestart() {
     setResults(null);
     setMode(null);
-    setStage("mode");
+    // ✅ Send them back to the landing page when they restart
+    setStage("landing");
 
     localStorage.removeItem("pp_results");
     localStorage.setItem("pp_hasCompletedAssessment", "false");
@@ -213,8 +214,31 @@ function App() {
     }
   }
 
+  // Landing-page button handlers
+  function handleLandingStartFree() {
+    // Go straight into plan/mode selection
+    setStage("mode");
+  }
+
+  function handleLandingStandardClick() {
+    handleUpgradeClick("standard");
+  }
+
+  function handleLandingPremiumClick() {
+    handleUpgradeClick("premium");
+  }
+
   return (
     <div className="app-shell">
+      {/* Marketing landing page */}
+      {stage === "landing" && (
+        <LandingPage
+          onStartTest={handleLandingStartFree}
+          onStandardClick={handleLandingStandardClick}
+          onPremiumClick={handleLandingPremiumClick}
+        />
+      )}
+
       {stage === "mode" && (
         <ModeSelector
           plan={plan}
