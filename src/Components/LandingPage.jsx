@@ -14,27 +14,18 @@ export default function LandingPage({
   }
 
   function handleStartClick() {
-    if (onStartTest) {
-      onStartTest();
-    } else {
-      scrollToId("plans");
-    }
+    if (onStartTest) onStartTest();
+    else scrollToId("plans");
   }
 
   function handleStandardClick() {
-    if (onStandardClick) {
-      onStandardClick();
-    } else {
-      scrollToId("plans");
-    }
+    if (onStandardClick) onStandardClick();
+    else scrollToId("plans");
   }
 
   function handlePremiumClick() {
-    if (onPremiumClick) {
-      onPremiumClick();
-    } else {
-      scrollToId("plans");
-    }
+    if (onPremiumClick) onPremiumClick();
+    else scrollToId("plans");
   }
 
   return (
@@ -52,10 +43,13 @@ export default function LandingPage({
     >
       {/* PAGE WIDTH WRAPPER */}
       <div
+        className="landing-wrapper"
         style={{
+          width: "100%",
           maxWidth: "1040px",
           margin: "0 auto",
-          padding: "2.5rem 1.5rem 3.5rem",
+          padding:
+            "clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 3vw, 1.5rem) 3.5rem",
         }}
       >
         {/* HERO */}
@@ -63,18 +57,18 @@ export default function LandingPage({
           id="top"
           className="landing-hero"
           style={{
-            padding: "2.5rem 2rem",
+            padding: "clamp(1.2rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem)",
             borderRadius: "28px",
             background:
               "linear-gradient(135deg, rgba(59,130,246,0.2), rgba(129,140,248,0.04))",
             border: "1px solid rgba(148,163,184,0.6)",
-            marginBottom: "2.5rem",
+            marginBottom: "clamp(1.5rem, 4vw, 2.5rem)",
             boxShadow: "0 30px 80px rgba(15,23,42,0.8)",
             position: "relative",
             overflow: "hidden",
             display: "grid",
             gridTemplateColumns: "minmax(0, 1.4fr) minmax(0, 1fr)",
-            gap: "1.8rem",
+            gap: "clamp(1rem, 3vw, 1.8rem)",
             alignItems: "center",
           }}
         >
@@ -87,8 +81,9 @@ export default function LandingPage({
               pointerEvents: "none",
             }}
           />
+
           {/* LEFT COPY COLUMN */}
-          <div style={{ position: "relative" }}>
+          <div style={{ position: "relative", minWidth: 0 }}>
             <p
               style={{
                 fontSize: "0.78rem",
@@ -100,9 +95,10 @@ export default function LandingPage({
             >
               RealYou Personality Snapshot
             </p>
+
             <h1
               style={{
-                fontSize: "2.4rem",
+                fontSize: "clamp(1.7rem, 5.2vw, 2.4rem)",
                 lineHeight: 1.1,
                 fontWeight: 800,
                 marginBottom: "0.7rem",
@@ -110,17 +106,18 @@ export default function LandingPage({
             >
               Discover the Real You — not the version you pretend to be.
             </h1>
+
             <p
               style={{
-                fontSize: "1rem",
+                fontSize: "clamp(0.95rem, 2.6vw, 1rem)",
                 maxWidth: "580px",
                 color: "#e5e7eb",
                 marginBottom: "1.2rem",
               }}
             >
-              Answer a few questions to reveal your true personality snapshot, how people
-              actually experience you, and the hidden traits that drive your
-              decisions.
+              Answer a few questions to reveal your true personality snapshot,
+              how people actually experience you, and the hidden traits that
+              drive your decisions.
             </p>
 
             <div
@@ -139,6 +136,7 @@ export default function LandingPage({
               >
                 Reveal My Snapshot
               </button>
+
               <button
                 type="button"
                 className="secondary-btn btn-glow"
@@ -148,7 +146,6 @@ export default function LandingPage({
               </button>
             </div>
 
-            {/* ADDED: one line under CTA (small text) */}
             <p
               style={{
                 fontSize: "0.82rem",
@@ -159,12 +156,7 @@ export default function LandingPage({
               No grades. No labels. Just insight.
             </p>
 
-            <p
-              style={{
-                fontSize: "0.84rem",
-                color: "#cbd5f5",
-              }}
-            >
+            <p style={{ fontSize: "0.84rem", color: "#cbd5f5" }}>
               Takes about 10 minutes. No account needed.
             </p>
           </div>
@@ -175,7 +167,7 @@ export default function LandingPage({
             style={{
               position: "relative",
               borderRadius: "999px",
-              padding: "1.8rem 1.5rem",
+              padding: "clamp(1.1rem, 3vw, 1.8rem) clamp(1rem, 3vw, 1.5rem)",
               background:
                 "radial-gradient(circle at 20% 0%, rgba(244,63,94,0.6), transparent 60%), radial-gradient(circle at 80% 100%, rgba(59,130,246,0.7), #020617 80%)",
               display: "flex",
@@ -184,12 +176,13 @@ export default function LandingPage({
               justifyContent: "center",
               textAlign: "center",
               border: "1px solid rgba(148,163,184,0.6)",
+              minWidth: 0,
             }}
           >
             <div
               style={{
-                width: "210px",
-                height: "210px",
+                width: "clamp(160px, 40vw, 210px)",
+                height: "clamp(160px, 40vw, 210px)",
                 borderRadius: "999px",
                 background:
                   "radial-gradient(circle at 30% 10%, #f973d1, #4f46e5 55%, #0f172a 100%)",
@@ -202,7 +195,6 @@ export default function LandingPage({
                 overflow: "hidden",
               }}
             >
-              {/* If public/realyou-logo.png exists, this will show it */}
               <img
                 src="/realyou-logo.png"
                 alt="RealYou Snapshot Logo"
@@ -214,6 +206,7 @@ export default function LandingPage({
                 }}
               />
             </div>
+
             <p
               style={{
                 fontSize: "0.9rem",
@@ -224,13 +217,8 @@ export default function LandingPage({
               Built to feel like a late-night real talk session, not a dusty
               textbook quiz.
             </p>
-            <p
-              style={{
-                fontSize: "0.8rem",
-                color: "#cbd5f5",
-                margin: 0,
-              }}
-            >
+
+            <p style={{ fontSize: "0.8rem", color: "#cbd5f5", margin: 0 }}>
               Start free, then upgrade only if the snapshot hits home.
             </p>
           </div>
@@ -248,14 +236,10 @@ export default function LandingPage({
             border: "1px solid #111827",
           }}
         >
-          <h2
-            style={{
-              fontSize: "1.3rem",
-              marginBottom: "0.75rem",
-            }}
-          >
+          <h2 style={{ fontSize: "1.3rem", marginBottom: "0.75rem" }}>
             What You’ll Learn in Minutes
           </h2>
+
           <div
             style={{
               display: "grid",
@@ -343,14 +327,10 @@ export default function LandingPage({
             border: "1px solid #111827",
           }}
         >
-          <h2
-            style={{
-              fontSize: "1.25rem",
-              marginBottom: "0.6rem",
-            }}
-          >
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.6rem" }}>
             See Yourself More Clearly
           </h2>
+
           <p
             style={{
               fontSize: "0.95rem",
@@ -359,8 +339,8 @@ export default function LandingPage({
               marginBottom: "1rem",
             }}
           >
-            Your RealYou result breaks down how your answers land across the
-            four major personality axes — with clean visuals that make everything
+            Your RealYou result breaks down how your answers land across the four
+            major personality axes — with clean visuals that make everything
             obvious at a glance.
           </p>
 
@@ -388,13 +368,7 @@ export default function LandingPage({
                   border: "1px solid rgba(55,65,81,0.9)",
                 }}
               >
-                <p
-                  style={{
-                    margin: 0,
-                    color: "#d1d5db",
-                    fontWeight: 500,
-                  }}
-                >
+                <p style={{ margin: 0, color: "#d1d5db", fontWeight: 500 }}>
                   {label}
                 </p>
                 <div
@@ -439,14 +413,10 @@ export default function LandingPage({
             border: "1px solid #111827",
           }}
         >
-          <h2
-            style={{
-              fontSize: "1.25rem",
-              marginBottom: "0.6rem",
-            }}
-          >
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.6rem" }}>
             Who You’re Most Compatible With — and Why
           </h2>
+
           <p
             style={{
               fontSize: "0.95rem",
@@ -496,18 +466,12 @@ export default function LandingPage({
         <section
           id="plans"
           className="section-fade section-4"
-          style={{
-            marginBottom: "2.5rem",
-          }}
+          style={{ marginBottom: "2.5rem" }}
         >
-          <h2
-            style={{
-              fontSize: "1.35rem",
-              marginBottom: "0.4rem",
-            }}
-          >
+          <h2 style={{ fontSize: "1.35rem", marginBottom: "0.4rem" }}>
             Choose How Deep You Want to Go
           </h2>
+
           <p
             style={{
               fontSize: "0.95rem",
@@ -552,22 +516,10 @@ export default function LandingPage({
                 >
                   Free
                 </p>
-                <h3
-                  style={{
-                    fontSize: "1.05rem",
-                    margin: 0,
-                    marginBottom: "0.25rem",
-                  }}
-                >
+                <h3 style={{ fontSize: "1.05rem", margin: 0, marginBottom: "0.25rem" }}>
                   RealYou Starter
                 </h3>
-                <p
-                  style={{
-                    fontSize: "0.86rem",
-                    color: "#e5e7eb",
-                    marginBottom: "0.6rem",
-                  }}
-                >
+                <p style={{ fontSize: "0.86rem", color: "#e5e7eb", marginBottom: "0.6rem" }}>
                   Get your type and a full snapshot of your core wiring — free.
                 </p>
                 <ul
@@ -620,22 +572,10 @@ export default function LandingPage({
                 >
                   Standard
                 </p>
-                <h3
-                  style={{
-                    fontSize: "1.05rem",
-                    margin: 0,
-                    marginBottom: "0.25rem",
-                  }}
-                >
+                <h3 style={{ fontSize: "1.05rem", margin: 0, marginBottom: "0.25rem" }}>
                   RealYou Insight
                 </h3>
-                <p
-                  style={{
-                    fontSize: "0.86rem",
-                    color: "#e5e7eb",
-                    marginBottom: "0.6rem",
-                  }}
-                >
+                <p style={{ fontSize: "0.86rem", color: "#e5e7eb", marginBottom: "0.6rem" }}>
                   Deeper explanations, full lists, and clear next steps.
                 </p>
                 <ul
@@ -650,9 +590,7 @@ export default function LandingPage({
                   <li>Full strengths &amp; blind spots</li>
                   <li>Full communication tips</li>
                   <li>Full relationship style breakdown</li>
-                  <li>
-                    Compatibility snapshot (best &amp; challenging types)
-                  </li>
+                  <li>Compatibility snapshot (best &amp; challenging types)</li>
                   <li>Growth path &amp; focus areas</li>
                 </ul>
               </div>
@@ -691,24 +629,11 @@ export default function LandingPage({
                 >
                   Premium
                 </p>
-                <h3
-                  style={{
-                    fontSize: "1.05rem",
-                    margin: 0,
-                    marginBottom: "0.25rem",
-                  }}
-                >
+                <h3 style={{ fontSize: "1.05rem", margin: 0, marginBottom: "0.25rem" }}>
                   RealYou DeepDive
                 </h3>
-                <p
-                  style={{
-                    fontSize: "0.86rem",
-                    color: "#e5e7eb",
-                    marginBottom: "0.6rem",
-                  }}
-                >
-                  The no-BS full breakdown with live tools and a PDF you can
-                  keep.
+                <p style={{ fontSize: "0.86rem", color: "#e5e7eb", marginBottom: "0.6rem" }}>
+                  The no-BS full breakdown with live tools and a PDF you can keep.
                 </p>
                 <ul
                   style={{
@@ -749,14 +674,10 @@ export default function LandingPage({
             border: "1px solid #111827",
           }}
         >
-          <h2
-            style={{
-              fontSize: "1.25rem",
-              marginBottom: "0.7rem",
-            }}
-          >
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.7rem" }}>
             Early Users Are Already Locked In
           </h2>
+
           <div
             style={{
               display: "grid",
@@ -775,20 +696,14 @@ export default function LandingPage({
               }}
             >
               <p style={{ margin: 0 }}>
-                “This snapshot lowkey read me for FILTH. I sent it to my whole group
-                chat.”
+                “This snapshot lowkey read me for FILTH. I sent it to my whole
+                group chat.”
               </p>
-              <p
-                style={{
-                  margin: 0,
-                  marginTop: "0.4rem",
-                  fontSize: "0.8rem",
-                  color: "#9ca3af",
-                }}
-              >
+              <p style={{ margin: 0, marginTop: "0.4rem", fontSize: "0.8rem", color: "#9ca3af" }}>
                 — T. Johnson
               </p>
             </div>
+
             <div
               style={{
                 padding: "0.9rem 1rem",
@@ -802,17 +717,11 @@ export default function LandingPage({
                 “Me and my girl compared our types… it explained everything we
                 kept arguing about.”
               </p>
-              <p
-                style={{
-                  margin: 0,
-                  marginTop: "0.4rem",
-                  fontSize: "0.8rem",
-                  color: "#9ca3af",
-                }}
-              >
+              <p style={{ margin: 0, marginTop: "0.4rem", fontSize: "0.8rem", color: "#9ca3af" }}>
                 — Cam D.
               </p>
             </div>
+
             <div
               style={{
                 padding: "0.9rem 1rem",
@@ -826,14 +735,7 @@ export default function LandingPage({
                 “Finally a personality snapshot that doesn’t feel like a 2009
                 BuzzFeed quiz.”
               </p>
-              <p
-                style={{
-                  margin: 0,
-                  marginTop: "0.4rem",
-                  fontSize: "0.8rem",
-                  color: "#9ca3af",
-                }}
-              >
+              <p style={{ margin: 0, marginTop: "0.4rem", fontSize: "0.8rem", color: "#9ca3af" }}>
                 — Mia S.
               </p>
             </div>
@@ -851,12 +753,7 @@ export default function LandingPage({
             border: "1px solid #111827",
           }}
         >
-          <h2
-            style={{
-              fontSize: "1.25rem",
-              marginBottom: "0.8rem",
-            }}
-          >
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.8rem" }}>
             Frequently Asked Questions
           </h2>
 
@@ -877,6 +774,7 @@ export default function LandingPage({
                 only pay if you want Standard or Premium.
               </p>
             </div>
+
             <div>
               <p style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
                 Do I need an account?
@@ -885,6 +783,7 @@ export default function LandingPage({
                 No. No login and no sign-up. You go straight to results.
               </p>
             </div>
+
             <div>
               <p style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
                 What’s the difference between Standard and Premium?
@@ -895,6 +794,7 @@ export default function LandingPage({
                 report.
               </p>
             </div>
+
             <div>
               <p style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
                 Can I do it again?
