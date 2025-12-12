@@ -75,8 +75,8 @@ async function saveLeadToBackend(
 
   // 2) Fallback to SUPABASE REST (your original working method)
   const supabaseUrl = "https://zjjctmwatmpkjjgzyqen.supabase.co";
-const supabaseAnonKey = "sb_publishable_ybG6FAO6rPYLJPSX0oJmsg_AVRFqVJf"; // your publishable key (NOT sb_secret)
-
+  const supabaseAnonKey =
+    "sb_publishable_ybG6FAO6rPYLJPSX0oJmsg_AVRFqVJf"; // your publishable key (NOT sb_secret)
 
   console.log("[RealYou] Supabase URL:", supabaseUrl);
   console.log("[RealYou] Supabase anon present?:", !!supabaseAnonKey);
@@ -221,7 +221,7 @@ function App() {
       // flag this run so Results can show an “unlocked” banner
       setJustUpgradedTier(tier);
 
-      // If user already took the test → return them to Results automatically
+      // If user already completed a snapshot → return them to Results automatically
       const hasCompleted =
         localStorage.getItem("pp_hasCompletedAssessment") === "true";
       const hasResults = !!localStorage.getItem("pp_results");

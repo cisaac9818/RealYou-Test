@@ -138,7 +138,7 @@ export default function Assessment({ mode, onComplete, plan }) {
             textAlign: "center",
           }}
         >
-          Personality Assessment
+          Personality Snapshot
         </h1>
 
         <p
@@ -176,95 +176,91 @@ export default function Assessment({ mode, onComplete, plan }) {
           }}
         >
           {[1, 2, 3, 4, 5].map((val) => {
-            const isSelected = selected === val;
-            const label = SCALE_LABELS[val];
-
-            const accentColors = [
-              "#f97373", // red
-              "#fb923c", // orange
-              "#eab308", // yellow
-              "#22c55e", // green
-              "#38bdf8", // blue
-            ];
-            const accent = accentColors[val - 1];
-
+            const isActive = selected === val;
             return (
               <button
                 key={val}
+                type="button"
                 onClick={() => handleSelect(val)}
                 style={{
-                  flex: "1 1 0",
-                  maxWidth: "155px",
-                  padding: "0.9rem 0.75rem",
-                  borderRadius: "18px",
-                  border: isSelected ? `2px solid ${accent}` : "1px solid #27272f",
-                  background: isSelected ? "#020617" : "#111827",
-                  color: "#e5e7eb",
-                  textAlign: "center",
-                  fontSize: "0.9rem",
-                  fontWeight: 600,
+                  width: "150px",
+                  padding: "0.9rem 0.8rem",
+                  borderRadius: "16px",
+                  border: isActive
+                    ? "2px solid rgba(59,130,246,0.95)"
+                    : "1px solid rgba(148,163,184,0.28)",
+                  background: isActive
+                    ? "rgba(59,130,246,0.18)"
+                    : "rgba(15,23,42,0.75)",
+                  color: "white",
                   cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  transition:
-                    "background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease",
-                  boxShadow: isSelected
-                    ? `0 16px 40px rgba(56,189,248,0.45)`
-                    : "0 10px 30px rgba(0,0,0,0.6)",
+                  transition: "transform 120ms ease, background 120ms ease",
+                  transform: isActive ? "scale(1.03)" : "scale(1)",
+                  boxShadow: isActive
+                    ? "0 14px 32px rgba(37,99,235,0.22)"
+                    : "none",
                 }}
               >
-                <span>{label}</span>
+                <div style={{ fontWeight: 800, fontSize: "1.05rem" }}>{val}</div>
+                <div
+                  style={{
+                    fontSize: "0.82rem",
+                    opacity: 0.85,
+                    marginTop: "0.3rem",
+                  }}
+                >
+                  {SCALE_LABELS[val]}
+                </div>
               </button>
             );
           })}
         </div>
 
-        {/* Navigation */}
+        {/* Nav buttons */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
+            gap: "1rem",
           }}
         >
           <button
+            type="button"
             onClick={handleBack}
-            disabled={currentIndex === 0 || isFinished}
+            disabled={currentIndex === 0}
             style={{
-              padding: "0.75rem 1.5rem",
-              borderRadius: "999px",
-              background:
-                currentIndex === 0 || isFinished ? "#27272a" : "#334155",
-              color: "#e5e7eb",
-              cursor:
-                currentIndex === 0 || isFinished ? "default" : "pointer",
-              border: "none",
-              fontWeight: 500,
-              opacity: currentIndex === 0 || isFinished ? 0.5 : 1,
+              opacity: currentIndex === 0 ? 0.35 : 1,
+              cursor: currentIndex === 0 ? "not-allowed" : "pointer",
+              padding: "0.85rem 1.15rem",
+              borderRadius: "14px",
+              border: "1px solid rgba(148,163,184,0.25)",
+              background: "rgba(15,23,42,0.85)",
+              color: "white",
+              fontWeight: 700,
+              minWidth: "140px",
             }}
           >
             Back
           </button>
 
+          {/* Optional manual Next */}
           <button
+            type="button"
             onClick={handleNext}
-            disabled={!selected || isFinished}
+            disabled={!selected}
             style={{
-              padding: "0.75rem 1.9rem",
-              borderRadius: "999px",
-              background: !selected || isFinished ? "#27272a" : "#e0f2fe",
-              color: !selected || isFinished ? "#a1a1aa" : "#0f172a",
-              cursor: !selected || isFinished ? "default" : "pointer",
-              border: "none",
-              fontWeight: 700,
-              opacity: !selected || isFinished ? 0.7 : 1,
-              boxShadow:
-                !selected || isFinished
-                  ? "none"
-                  : "0 18px 50px rgba(59,130,246,0.55)",
+              opacity: !selected ? 0.35 : 1,
+              cursor: !selected ? "not-allowed" : "pointer",
+              padding: "0.85rem 1.15rem",
+              borderRadius: "14px",
+              border: "1px solid rgba(59,130,246,0.55)",
+              background: "rgba(37,99,235,0.22)",
+              color: "white",
+              fontWeight: 800,
+              minWidth: "140px",
             }}
           >
-            {currentIndex === total - 1 ? "Finish" : "Next"}
+            Next
           </button>
         </div>
       </div>

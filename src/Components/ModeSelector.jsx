@@ -63,7 +63,7 @@ export default function ModeSelector({
             marginBottom: "0.3rem",
           }}
         >
-          RealYou Test™
+          RealYou Snapshot™
         </p>
         <h1 className="page-title" style={{ fontSize: "1.9rem" }}>
           Get your RealYou personality snapshot
@@ -300,7 +300,7 @@ export default function ModeSelector({
         </div>
       </div>
 
-      {/* ASSESSMENT STYLE CARD – ONLY AFTER PLAN IS CHOSEN */}
+      {/* SNAPSHOT STYLE CARD – ONLY AFTER PLAN IS CHOSEN */}
       {showStyleCard && (
         <div style={{ maxWidth: "960px", margin: "2.5rem auto 0" }}>
           <section
@@ -327,7 +327,7 @@ export default function ModeSelector({
                   marginBottom: "0.35rem",
                 }}
               >
-                Choose Your Assessment Style
+                Choose Your Snapshot Style
               </h2>
               <p
                 style={{

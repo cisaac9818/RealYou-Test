@@ -606,7 +606,7 @@ export default function Results({
             >
               Each letter in your type points to a real pattern in how you move
               through life. Here&apos;s the quick breakdown before we dive into
-              the Trait Breakdown numbers:
+              the Vibe numbers:
             </p>
             <div
               style={{
@@ -783,7 +783,7 @@ export default function Results({
                   }}
                 >
                   You&apos;re on the <strong>Free</strong> version of the{" "}
-                  <strong>RealYou Test</strong>. Unlock{" "}
+                  <strong>RealYou Snapshot</strong>. Unlock{" "}
                   <strong>Standard ($6.99)</strong> for the full core report, or
                   go all in with <strong>Premium ($14.99)</strong> for the
                   complete Deep Dive story, coach playbook, and PDF.
@@ -807,6 +807,15 @@ export default function Results({
                     Unlock Full Deep Dive – $14.99
                   </button>
                 </div>
+                <p
+                  style={{
+                    fontSize: "0.82rem",
+                    marginTop: "0.55rem",
+                    color: "#c7d2fe",
+                  }}
+                >
+                  No grades. No labels. Just insight.
+                </p>
               </>
             )}
 
@@ -841,6 +850,15 @@ export default function Results({
                 >
                   Unlock Premium Deep Dive – $14.99
                 </button>
+                <p
+                  style={{
+                    fontSize: "0.82rem",
+                    marginTop: "0.55rem",
+                    color: "#c7d2fe",
+                  }}
+                >
+                  No grades. No labels. Just insight.
+                </p>
               </>
             )}
           </section>
@@ -858,7 +876,7 @@ export default function Results({
           }}
         >
           <h2 style={{ fontSize: "1.05rem", marginBottom: "0.6rem" }}>
-            Trait Breakdown
+            Your Vibe
           </h2>
           <p
             style={{
@@ -1088,6 +1106,15 @@ export default function Results({
                 </button>
               )}
             </div>
+            <p
+              style={{
+                fontSize: "0.82rem",
+                marginTop: "0.55rem",
+                color: "#c7d2fe",
+              }}
+            >
+              No grades. No labels. Just insight.
+            </p>
           </section>
         )}
 
@@ -2174,6 +2201,17 @@ export default function Results({
               </button>
             )}
           </div>
+          {!isPremium && (
+            <p
+              style={{
+                fontSize: "0.82rem",
+                marginTop: "0.55rem",
+                color: "#c7d2fe",
+              }}
+            >
+              No grades. No labels. Just insight.
+            </p>
+          )}
         </footer>
       </div>
     </div>

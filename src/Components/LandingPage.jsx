@@ -98,7 +98,7 @@ export default function LandingPage({
                 marginBottom: "0.5rem",
               }}
             >
-              RealYou Personality Test
+              RealYou Personality Snapshot
             </p>
             <h1
               style={{
@@ -118,7 +118,7 @@ export default function LandingPage({
                 marginBottom: "1.2rem",
               }}
             >
-              The RealYou Test reveals your true personality type, how people
+              Answer a few questions to reveal your true personality snapshot, how people
               actually experience you, and the hidden traits that drive your
               decisions.
             </p>
@@ -137,7 +137,7 @@ export default function LandingPage({
                 className="primary-btn btn-glow"
                 onClick={handleStartClick}
               >
-                Take the Free Test
+                Reveal My Snapshot
               </button>
               <button
                 type="button"
@@ -147,6 +147,17 @@ export default function LandingPage({
                 See Plans &amp; Deep Dive
               </button>
             </div>
+
+            {/* ADDED: one line under CTA (small text) */}
+            <p
+              style={{
+                fontSize: "0.82rem",
+                color: "#cbd5f5",
+                marginBottom: "0.4rem",
+              }}
+            >
+              No grades. No labels. Just insight.
+            </p>
 
             <p
               style={{
@@ -194,7 +205,7 @@ export default function LandingPage({
               {/* If public/realyou-logo.png exists, this will show it */}
               <img
                 src="/realyou-logo.png"
-                alt="RealYou Test Logo"
+                alt="RealYou Snapshot Logo"
                 style={{
                   width: "85%",
                   height: "85%",
@@ -744,7 +755,7 @@ export default function LandingPage({
               marginBottom: "0.7rem",
             }}
           >
-            Early Testers Are Already Locked In
+            Early Users Are Already Locked In
           </h2>
           <div
             style={{
@@ -764,7 +775,7 @@ export default function LandingPage({
               }}
             >
               <p style={{ margin: 0 }}>
-                “This test lowkey read me for FILTH. I sent it to my whole group
+                “This snapshot lowkey read me for FILTH. I sent it to my whole group
                 chat.”
               </p>
               <p
@@ -812,7 +823,7 @@ export default function LandingPage({
               }}
             >
               <p style={{ margin: 0 }}>
-                “Finally a personality test that doesn’t feel like a 2009
+                “Finally a personality snapshot that doesn’t feel like a 2009
                 BuzzFeed quiz.”
               </p>
               <p
@@ -859,7 +870,7 @@ export default function LandingPage({
           >
             <div>
               <p style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
-                Is the test really free?
+                Is this really free?
               </p>
               <p style={{ margin: 0, color: "#e5e7eb" }}>
                 Yes. You get your full core type and trait breakdown free. You
@@ -886,7 +897,7 @@ export default function LandingPage({
             </div>
             <div>
               <p style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
-                Can I retake the test?
+                Can I do it again?
               </p>
               <p style={{ margin: 0, color: "#e5e7eb" }}>
                 Yes. You can retake it as many times as you want to track your

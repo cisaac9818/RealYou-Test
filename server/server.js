@@ -1,17 +1,46 @@
+// server.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import Stripe from "stripe";
 import PDFDocument from "pdfkit";
 import { Buffer } from "buffer";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+/**
+ * CORS
+ * - In dev you can keep it open.
+ * - In prod, lock this down to your domain.
+ */
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// -----------------------------
+// Basic health check
+// -----------------------------
+app.get("/health", (req, res) => {
+  res.json({ ok: true });
+});
+
+// -----------------------------
+// Stripe
+// -----------------------------
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.warn("[server] Missing STRIPE_SECRET_KEY in .env");
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+  apiVersion: "2024-06-20",
+});
 
 // ----------------------------------------------
 // STRIPE CHECKOUT SESSION
@@ -27,12 +56,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       ui_mode: "hosted",
       mode: "payment",
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
       success_url: `http://localhost:5173/?checkout=success&tier=${tier}`,
       cancel_url: `http://localhost:5173/?checkout=cancel`,
     });
@@ -44,6 +68,123 @@ app.post("/api/create-checkout-session", async (req, res) => {
   } catch (err) {
     console.error("Stripe session error:", err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// ----------------------------------------------
+// NEW: Lead capture -> Supabase + Gmail notify
+// ----------------------------------------------
+/**
+ * Requires these SERVER env vars (do NOT put service key in Vite):
+ *  SUPABASE_URL=https://xxxxx.supabase.co
+ *  SUPABASE_SERVICE_ROLE_KEY=xxxxx
+ *
+ * You already have these in .env (based on your upload):
+ *  GMAIL_USER=...
+ *  GMAIL_APP_PASSWORD=...
+ *  ADMIN_NOTIFICATION_EMAIL=...
+ */
+app.post("/api/lead-capture", async (req, res) => {
+  try {
+    const payload = req.body;
+
+    // Basic validation
+    if (!payload?.email) {
+      return res.status(400).json({ error: "Missing email" });
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return res.status(500).json({
+        error:
+          "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY on the server.",
+      });
+    }
+
+    // 1) Insert into Supabase securely (server-side)
+    // NOTE: Node 18+ has global fetch. If you're on older Node, upgrade.
+    const insertRes = await fetch(`${supabaseUrl}/rest/v1/realyou_leads`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseServiceKey,
+        Authorization: `Bearer ${supabaseServiceKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({
+        name: payload.name ?? null,
+        email: payload.email,
+        agree_to_emails: payload.agree_to_emails ?? payload.agreeToEmails ?? null,
+        plan_at_signup: payload.plan_at_signup ?? payload.planAtSignup ?? null,
+        has_completed_assessment:
+          payload.has_completed_assessment ?? payload.hasCompletedAssessment ?? false,
+        referral_code: payload.referral_code ?? null,
+        utm_source: payload.utm_source ?? null,
+        utm_medium: payload.utm_medium ?? null,
+        utm_campaign: payload.utm_campaign ?? null,
+        captured_at: payload.captured_at ?? new Date().toISOString(),
+      }),
+    });
+
+    if (!insertRes.ok) {
+      const text = await insertRes.text();
+      console.error("[lead-capture] Supabase insert failed:", insertRes.status, text);
+      return res.status(500).json({
+        error: "Supabase insert failed",
+        status: insertRes.status,
+        details: text,
+      });
+    }
+
+    // 2) Send admin notification via Gmail (optional but recommended)
+    const gmailUser = process.env.GMAIL_USER;
+    const gmailPass = process.env.GMAIL_APP_PASSWORD;
+    const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
+
+    if (gmailUser && gmailPass && adminEmail) {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: { user: gmailUser, pass: gmailPass },
+      });
+
+      const subject = `New RealYou lead: ${payload.email}`;
+      const body = `
+New lead captured:
+
+Name: ${payload.name || ""}
+Email: ${payload.email || ""}
+Plan at signup: ${payload.plan_at_signup || payload.planAtSignup || ""}
+Completed assessment: ${
+        payload.has_completed_assessment || payload.hasCompletedAssessment ? "Yes" : "No"
+      }
+
+UTM:
+Source: ${payload.utm_source || ""}
+Medium: ${payload.utm_medium || ""}
+Campaign: ${payload.utm_campaign || ""}
+
+Referral: ${payload.referral_code || ""}
+Captured at: ${payload.captured_at || ""}
+`.trim();
+
+      await transporter.sendMail({
+        from: `"RealYou" <${gmailUser}>`,
+        to: adminEmail,
+        subject,
+        text: body,
+      });
+    } else {
+      console.warn(
+        "[lead-capture] Gmail env vars missing; saved to Supabase but skipped email notify."
+      );
+    }
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("[lead-capture] route error:", err);
+    return res.status(500).json({ error: "Lead capture failed" });
   }
 });
 
@@ -114,15 +255,10 @@ function buildAxisSummary(code, value) {
   const abs = Math.abs(value || 0);
 
   let intensity;
-  if (abs === 0) {
-    intensity = "a balanced position";
-  } else if (abs <= 2) {
-    intensity = "a slight preference";
-  } else if (abs <= 5) {
-    intensity = "a moderate preference";
-  } else {
-    intensity = "a strong preference";
-  }
+  if (abs === 0) intensity = "a balanced position";
+  else if (abs <= 2) intensity = "a slight preference";
+  else if (abs <= 5) intensity = "a moderate preference";
+  else intensity = "a strong preference";
 
   if (value === 0) {
     return `${code}: about ${firstPercent}% / ${secondPercent}% — ${intensity} on this axis. You can move fairly easily between both sides of ${axisLabel}.`;
@@ -224,9 +360,9 @@ app.post("/api/generate-pdf", async (req, res) => {
 
     const joinedCareers = (profile.idealCareers || []).join(", ");
     const bestTypes = (profile.compatibility?.bestTypes || []).join(", ");
-    const challengingTypes = (
-      profile.compatibility?.challengingTypes || []
-    ).join(", ");
+    const challengingTypes = (profile.compatibility?.challengingTypes || []).join(
+      ", "
+    );
     const friendsPerception =
       profile.friendsPerception ||
       "Someone people watch, even if they don’t always say it out loud.";
@@ -257,18 +393,11 @@ app.post("/api/generate-pdf", async (req, res) => {
     });
 
     // ------------- PAGE 1: CORE / FREE + STANDARD INFO -------------
-
-    // Title + plan
-    doc
-      .fontSize(22)
-      .text("RealYou Test – Personality Report", { align: "center" });
+    doc.fontSize(22).text("RealYou Test – Personality Report", { align: "center" });
     doc.moveDown(0.4);
-    doc.fontSize(13).text("Plan: Premium (includes all insights)", {
-      align: "center",
-    });
+    doc.fontSize(13).text("Plan: Premium (includes all insights)", { align: "center" });
     doc.moveDown(1);
 
-    // Type + label
     doc.fontSize(16).text(`Type: ${mbtiType}`, { align: "left" });
     if (profile.label) {
       doc.moveDown(0.2);
@@ -276,28 +405,21 @@ app.post("/api/generate-pdf", async (req, res) => {
     }
     doc.moveDown(1);
 
-    // Summary
     doc.fontSize(14).text("Summary", { underline: true }).moveDown(0.4);
     doc.fontSize(11).text(profile.summary || "No summary available.");
     doc.moveDown(0.4);
 
-    // Standard-style extra summary
-    doc
-      .fontSize(10)
-      .text(
-        `Standard Summary: Your responses show a clear pattern: you lead with ${dominantTrait}, rely on ${secondaryTrait}, and struggle most when ${topBlindspot}. This version of your report helps you understand why these patterns show up — and what to do with them.`
-      );
+    doc.fontSize(10).text(
+      `Standard Summary: Your responses show a clear pattern: you lead with ${dominantTrait}, rely on ${secondaryTrait}, and struggle most when ${topBlindspot}. This version of your report helps you understand why these patterns show up — and what to do with them.`
+    );
     doc.moveDown(0.8);
 
-    // Trait Scores & Balance
     doc.fontSize(14).text("Trait Scores & Balance", { underline: true });
     doc.moveDown(0.4);
 
-    doc
-      .fontSize(11)
-      .text(
-        `Raw scores — EI: ${traitScores.EI} | SN: ${traitScores.SN} | TF: ${traitScores.TF} | JP: ${traitScores.JP}`
-      );
+    doc.fontSize(11).text(
+      `Raw scores — EI: ${traitScores.EI} | SN: ${traitScores.SN} | TF: ${traitScores.TF} | JP: ${traitScores.JP}`
+    );
     doc.moveDown(0.3);
 
     axes.forEach((axis) => {
@@ -311,24 +433,17 @@ app.post("/api/generate-pdf", async (req, res) => {
 
     doc.fontSize(10).text("How to read your numbers:").moveDown(0.2);
     axes.forEach((axis) => {
-      doc
-        .fontSize(10)
-        .text("• " + buildAxisSummary(axis.code, axis.value));
+      doc.fontSize(10).text("• " + buildAxisSummary(axis.code, axis.value));
     });
 
     doc.moveDown(0.4);
-    doc
-      .fontSize(10)
-      .text(
-        "Standard Insight: Your patterns show where you make your best decisions, but also where you might overplay your strengths. Focus on balancing these traits to unlock your next level."
-      );
+    doc.fontSize(10).text(
+      "Standard Insight: Your patterns show where you make your best decisions, but also where you might overplay your strengths. Focus on balancing these traits to unlock your next level."
+    );
     doc.moveDown(0.8);
 
-    // Strengths
     doc.fontSize(14).text("Strengths", { underline: true }).moveDown(0.3);
-    (profile.strengths || []).forEach((s) =>
-      doc.fontSize(11).text(`• ${s}`)
-    );
+    (profile.strengths || []).forEach((s) => doc.fontSize(11).text(`• ${s}`));
     doc.moveDown(0.3);
     doc
       .fontSize(10)
@@ -341,46 +456,27 @@ app.post("/api/generate-pdf", async (req, res) => {
       );
     doc.moveDown(0.8);
 
-    // Blindspots
     doc.fontSize(14).text("Blindspots", { underline: true }).moveDown(0.3);
-    (profile.blindspots || []).forEach((b) =>
-      doc.fontSize(11).text(`• ${b}`)
-    );
+    (profile.blindspots || []).forEach((b) => doc.fontSize(11).text(`• ${b}`));
     doc.moveDown(0.3);
-    doc
-      .fontSize(10)
-      .text(
-        "Standard Insight: Blindspots don’t mean flaws. They’re early warning signs that you’re tired, stressed, or overextending yourself."
-      );
+    doc.fontSize(10).text(
+      "Standard Insight: Blindspots don’t mean flaws. They’re early warning signs that you’re tired, stressed, or overextending yourself."
+    );
     doc.moveDown(0.8);
 
-    // Relationship Style
-    doc
-      .fontSize(14)
-      .text("Relationship Style", { underline: true })
-      .moveDown(0.3);
-    doc
-      .fontSize(11)
-      .text(
-        profile.relationshipStyle ||
-          "Your type has a distinct way of showing up in relationships and the kinds of bonds you build most naturally."
-      );
+    doc.fontSize(14).text("Relationship Style", { underline: true }).moveDown(0.3);
+    doc.fontSize(11).text(
+      profile.relationshipStyle ||
+        "Your type has a distinct way of showing up in relationships and the kinds of bonds you build most naturally."
+    );
     doc.moveDown(0.3);
-    doc
-      .fontSize(10)
-      .text(
-        "Standard Insight: Here’s the secret to your type’s best relationships — and why people sometimes misunderstand your intentions."
-      );
+    doc.fontSize(10).text(
+      "Standard Insight: Here’s the secret to your type’s best relationships — and why people sometimes misunderstand your intentions."
+    );
     doc.moveDown(0.8);
 
-    // Communication Tips
-    doc
-      .fontSize(14)
-      .text("Communication Tips", { underline: true })
-      .moveDown(0.3);
-    (profile.communicationTips || []).forEach((tip) =>
-      doc.fontSize(11).text(`• ${tip}`)
-    );
+    doc.fontSize(14).text("Communication Tips", { underline: true }).moveDown(0.3);
+    (profile.communicationTips || []).forEach((tip) => doc.fontSize(11).text(`• ${tip}`));
     doc.moveDown(0.3);
     doc
       .fontSize(10)
@@ -388,48 +484,35 @@ app.post("/api/generate-pdf", async (req, res) => {
         "Standard Insight: If you master these communication patterns, you stop arguments before they happen."
       )
       .moveDown(0.2)
-      .text(
-        "Bonus Communication Insight: You connect deeply when conversations have meaning — not when they stay on the surface."
-      );
+      .text("Bonus Communication Insight: You connect deeply when conversations have meaning — not when they stay on the surface.");
     doc.moveDown(0.8);
 
-    // Growth Focus
     doc.fontSize(14).text("Growth Focus", { underline: true }).moveDown(0.3);
-    (profile.growthFocus || []).forEach((g) =>
-      doc.fontSize(11).text(`• ${g}`)
-    );
+    (profile.growthFocus || []).forEach((g) => doc.fontSize(11).text(`• ${g}`));
     doc.moveDown(0.3);
-    doc
-      .fontSize(10)
-      .text(
-        "Standard Insight: Your biggest growth edge is about choosing intention over autopilot."
-      );
+    doc.fontSize(10).text(
+      "Standard Insight: Your biggest growth edge is about choosing intention over autopilot."
+    );
 
     // ------------- PAGE 2: PREMIUM DEEP DIVE + COACH + FLEX -------------
-
     doc.addPage();
 
-    // Premium Deep Dive (short narrative)
     doc.fontSize(16).text("Premium Deep Dive", { underline: true });
     doc.moveDown(0.6);
 
-    doc
-      .fontSize(12)
-      .text(
-        `As a ${mbtiType}, you don’t move through life on default. You move through it as ${profile.label ||
-          "a specific pattern of energy, focus, and instinct"}.`
-      );
+    doc.fontSize(12).text(
+      `As a ${mbtiType}, you don’t move through life on default. You move through it as ${
+        profile.label || "a specific pattern of energy, focus, and instinct"
+      }.`
+    );
     doc.moveDown(0.3);
-    doc
-      .fontSize(11)
-      .text(
-        profile.summary ||
-          "You bring a specific mix of strengths, blindspots, and patterns to how you work, relate, and make decisions."
-      );
+    doc.fontSize(11).text(
+      profile.summary ||
+        "You bring a specific mix of strengths, blindspots, and patterns to how you work, relate, and make decisions."
+    );
     doc.moveDown(0.5);
 
-    doc
-      .fontSize(11)
+    doc.fontSize(11)
       .text(
         `Career & Money: You do your best work in roles like ${
           joinedCareers ||
@@ -438,8 +521,7 @@ app.post("/api/generate-pdf", async (req, res) => {
       )
       .moveDown(0.3);
 
-    doc
-      .fontSize(11)
+    doc.fontSize(11)
       .text(
         `Relationships: You click fastest with types such as ${
           bestTypes || "people who respect your pace and style"
@@ -450,127 +532,87 @@ app.post("/api/generate-pdf", async (req, res) => {
       )
       .moveDown(0.3);
 
-    doc
-      .fontSize(11)
-      .text(
-        "Stress & Reset: When you’re not okay, your blindspots don’t whisper — they get loud. The more you see those patterns early, the less you let one bad week turn into a bad season."
-      );
+    doc.fontSize(11).text(
+      "Stress & Reset: When you’re not okay, your blindspots don’t whisper — they get loud. The more you see those patterns early, the less you let one bad week turn into a bad season."
+    );
     doc.moveDown(0.8);
 
-    // Coach Mode Playbook (three blocks, sharper tone)
     doc.fontSize(14).text("Coach Mode Playbook", { underline: true });
     doc.moveDown(0.4);
 
-    // Career & Money Focus
     doc.fontSize(12).text("Career & Money Focus");
     doc.moveDown(0.2);
-    doc
-      .fontSize(11)
-      .text(
-        `• Best environments: Places where your mind is actually needed — not “just clock in, clock out” work. Think roles where your judgment, ideas, or strategy matter every day${
-          joinedCareers ? ` (for you, that often looks like: ${joinedCareers}).` : "."
-        }`
-      );
-    doc
-      .fontSize(11)
-      .text(
-        `• Watch out for: Staying loyal to the wrong situation. If a job keeps asking for your time but never uses your real strengths, that’s not dedication — that’s a slow leak on your confidence and your money.`
-      );
-    doc
-      .fontSize(11)
-      .text(
-        `• Power move: Pick one move this month that stretches you but also respects your wiring — a new project, a skill upgrade, or a conversation about money and role. Don’t wait for “perfect timing”; move when the window opens.`
-      );
+    doc.fontSize(11).text(
+      `• Best environments: Places where your mind is actually needed — not “just clock in, clock out” work. Think roles where your judgment, ideas, or strategy matter every day${
+        joinedCareers ? ` (for you, that often looks like: ${joinedCareers}).` : "."
+      }`
+    );
+    doc.fontSize(11).text(
+      "• Watch out for: Staying loyal to the wrong situation. If a job keeps asking for your time but never uses your real strengths, that’s not dedication — that’s a slow leak on your confidence and your money."
+    );
+    doc.fontSize(11).text(
+      "• Power move: Pick one move this month that stretches you but also respects your wiring — a new project, a skill upgrade, or a conversation about money and role. Don’t wait for “perfect timing”; move when the window opens."
+    );
     doc.moveDown(0.6);
 
-    // Relationships & Social Energy
     doc.fontSize(12).text("Relationships & Social Energy");
     doc.moveDown(0.2);
-    doc
-      .fontSize(11)
-      .text(
-        `• How you show up: You don’t do fake. People feel your energy right away — whether that’s calm, intense, playful, or focused. When you’re present, you’re really present, and the room adjusts around you.`
-      );
-    doc
-      .fontSize(11)
-      .text(
-        `• Best matches: ${
-          bestTypes ||
-          "People who give you space to be yourself and don’t punish you for how you recharge."
-        }`
-      );
-    doc
-      .fontSize(11)
-      .text(
-        `• Tricky dynamics: ${
-          challengingTypes ||
-          "People who demand constant access, constant reassurance, or constant drama when you’re already drained."
-        }`
-      );
-    doc
-      .fontSize(11)
-      .text(
-        `• Social upgrade: Don’t assume people “just know” what’s going on with you. Say it once, clearly. The right people lean in when you’re honest; the wrong people fall off — and that’s a win too.`
-      );
+    doc.fontSize(11).text(
+      "• How you show up: You don’t do fake. People feel your energy right away — whether that’s calm, intense, playful, or focused. When you’re present, you’re really present, and the room adjusts around you."
+    );
+    doc.fontSize(11).text(
+      `• Best matches: ${bestTypes || "People who give you space to be yourself and don’t punish you for how you recharge."}`
+    );
+    doc.fontSize(11).text(
+      `• Tricky dynamics: ${challengingTypes || "People who demand constant access, constant reassurance, or constant drama when you’re already drained."}`
+    );
+    doc.fontSize(11).text(
+      "• Social upgrade: Don’t assume people “just know” what’s going on with you. Say it once, clearly. The right people lean in when you’re honest; the wrong people fall off — and that’s a win too."
+    );
     doc.moveDown(0.6);
 
-    // Growth & Self-Management
     doc.fontSize(12).text("Growth & Self-Management");
     doc.moveDown(0.2);
-    doc
-      .fontSize(11)
-      .text(
-        `• Stress warning sign: ${
-          profile.blindspots && profile.blindspots.length
-            ? profile.blindspots[0]
-            : "You catch yourself reacting fast, overthinking everything, or shutting down instead of choosing your moves."
-        }`
-      );
-    doc
-      .fontSize(11)
-      .text(
-        `• Reset move: ${
-          profile.growthFocus && profile.growthFocus.length > 1
-            ? profile.growthFocus[1]
-            : "Pull back for a short, intentional reset — sleep, water, one clean meal, and one small task finished start to finish. Your brain needs a “win” to get back in gear."
-        }`
-      );
-    doc
-      .fontSize(11)
-      .text(
-        `• How people really see you: ${friendsPerception} Most of the time, you’re harder on yourself than anybody else is.`
-      );
+    doc.fontSize(11).text(
+      `• Stress warning sign: ${
+        profile.blindspots && profile.blindspots.length
+          ? profile.blindspots[0]
+          : "You catch yourself reacting fast, overthinking everything, or shutting down instead of choosing your moves."
+      }`
+    );
+    doc.fontSize(11).text(
+      `• Reset move: ${
+        profile.growthFocus && profile.growthFocus.length > 1
+          ? profile.growthFocus[1]
+          : "Pull back for a short, intentional reset — sleep, water, one clean meal, and one small task finished start to finish. Your brain needs a “win” to get back in gear."
+      }`
+    );
+    doc.fontSize(11).text(
+      `• How people really see you: ${friendsPerception} Most of the time, you’re harder on yourself than anybody else is.`
+    );
     doc.moveDown(0.8);
 
-    // Trait Flexibility & Life Events
     doc.fontSize(14).text("Trait Flexibility & Life Events");
     doc.moveDown(0.4);
-    doc
-      .fontSize(11)
-      .text(
-        "Some parts of your wiring are highly flexible and respond to life events; others stay almost the same unless life hits you hard. Here’s your axis ranking from most flexible to most stable:"
-      );
+    doc.fontSize(11).text(
+      "Some parts of your wiring are highly flexible and respond to life events; others stay almost the same unless life hits you hard. Here’s your axis ranking from most flexible to most stable:"
+    );
     doc.moveDown(0.4);
 
     flexibilityRanking.forEach((axis, idx) => {
       const line = buildFlexibilityLine(axis, idx);
       doc.fontSize(11).text(line.heading);
-      doc
-        .fontSize(10)
-        .text(
-          `• For you right now, this axis is ${line.flexibility} (${line.axisLabel}).`
-        );
+      doc.fontSize(10).text(
+        `• For you right now, this axis is ${line.flexibility} (${line.axisLabel}).`
+      );
       doc.fontSize(10).text(`• Major shifts: ${line.major}`);
       doc.fontSize(10).text(`• Everyday nudges: ${line.minor}`);
       doc.moveDown(0.4);
     });
 
-    doc
-      .moveDown(0.5)
-      .fontSize(10)
-      .text(
-        "The goal isn’t to become a different person. It’s to use what you’ve got on purpose — so your wiring works for you, not against you."
-      );
+    doc.moveDown(0.5).fontSize(10).text(
+      "The goal isn’t to become a different person. It’s to use what you’ve got on purpose — so your wiring works for you, not against you."
+    );
 
     doc.end();
   } catch (err) {
@@ -580,7 +622,7 @@ app.post("/api/generate-pdf", async (req, res) => {
 });
 
 // ----------------------------------------------
-const PORT = 4242;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 4242;
 app.listen(PORT, () => {
-  console.log(`Stripe + PDF server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
