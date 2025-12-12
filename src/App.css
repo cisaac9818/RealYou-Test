@@ -237,3 +237,11 @@
   padding: 0 !important;
   text-align: initial !important;
 }
+/* HARD OVERRIDE: remove Vite default centered app layout on mobile flows */
+#root {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  width: 100% !important;
+}
