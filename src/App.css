@@ -40,3 +40,200 @@
 .read-the-docs {
   color: #888;
 }
+
+/* === Pricing section styles === */
+
+.pricing-section {
+  padding: 32px 16px 8px;
+  background: radial-gradient(circle at top, #111827 0, #020617 40%, #000 100%);
+  color: #f9fafb;
+}
+
+.pricing-section__header {
+  max-width: 720px;
+  margin: 0 auto 24px;
+  text-align: center;
+}
+
+.pricing-section__title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.pricing-section__subtitle {
+  font-size: 0.95rem;
+  color: #9ca3af;
+}
+
+.pricing-section__grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.pricing-section__disclaimer {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+/* Pricing card */
+
+.pricing-card {
+  position: relative;
+  background: #020617;
+  border-radius: 16px;
+  padding: 20px 18px 16px;
+  border: 1px solid #1f2937;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pricing-card--recommended {
+  border-color: #38bdf8;
+  box-shadow: 0 22px 40px rgba(56, 189, 248, 0.35);
+}
+
+.pricing-card__badge {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  color: #0f172a;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pricing-card__name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.pricing-card__tagline {
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.pricing-card__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.pricing-card__currency {
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.pricing-card__price {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.pricing-card__per {
+  font-size: 0.82rem;
+  color: #9ca3af;
+}
+
+.pricing-card__description {
+  font-size: 0.86rem;
+  color: #9ca3af;
+}
+
+.pricing-card__features {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pricing-card__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #e5e7eb;
+}
+
+.pricing-card__feature-icon {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  margin-top: 1px;
+  color: #22c55e;
+}
+
+.pricing-card__button {
+  margin-top: auto;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: #0b1120;
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out,
+    filter 0.08s ease-out;
+}
+
+.pricing-card__button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.55);
+}
+
+.pricing-card__button:active {
+  transform: translateY(0);
+  filter: brightness(0.98);
+  box-shadow: none;
+}
+
+/* =========================================================
+   ✅ PORTRAIT / MOBILE ALIGNMENT FIXES (APPENDED)
+   - Does NOT remove any of your existing styles
+   - Prevents portrait “off-center / squeezed” look
+   ========================================================= */
+
+#root {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 820px) {
+  #root {
+    max-width: 100%;
+    padding: 1rem; /* reduces heavy side padding on phones */
+  }
+
+  /* Safety: prevent accidental horizontal scroll on mobile */
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* If any pricing buttons are sitting weird on small screens */
+@media (max-width: 520px) {
+  .pricing-card__button {
+    width: 100%;
+  }
+}
+/* Stop Vite default squeeze causing overflow */
+#root {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: initial !important;
+}

@@ -496,3 +496,36 @@ html, body {
   background: transparent; /* let body handle it */
   overflow-x: hidden;
 }
+/* ===============================
+   FIX: Pricing boxes too narrow
+   (Reveal My Snapshot screen)
+   =============================== */
+
+.pricing-section__grid {
+  width: 100%;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Tablets: 2 columns */
+@media (max-width: 960px) {
+  .pricing-section__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Phones: 1 column */
+@media (max-width: 640px) {
+  .pricing-section__grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* Stop text from overflowing cards */
+.pricing-card,
+.pricing-card * {
+  min-width: 0;              /* CRITICAL for grid children */
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
