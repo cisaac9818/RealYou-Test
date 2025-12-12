@@ -21,41 +21,45 @@ export default function PricingSection({ plan, onUpgradeClick, onPlanChosen }) {
   }
 
   return (
-    <section className="pricing-section">
-      <header className="pricing-section__header">
-        <p className="pricing-section__eyebrow">RealYou Test™ Plans</p>
-        <h2 className="pricing-section__title">Choose your depth of insight</h2>
-        <p className="pricing-section__subtitle">
-          Start with a free snapshot, then unlock deeper RealYou insights,
-          coaching, and a downloadable report.
-        </p>
-        <p className="pricing-section__current-plan">
-          Current plan:{" "}
-          <strong>
-            {currentTier ? currentTier.toUpperCase() : "FREE (REALYOU STARTER)"}
-          </strong>
-        </p>
-      </header>
+    <section className="pricing-section" aria-label="RealYou Plans">
+      {/* ✅ Inner wrapper prevents the grid/cards from overflowing the background */}
+      <div className="pricing-section__inner">
+        <header className="pricing-section__header">
+          <p className="pricing-section__eyebrow">RealYou Test™ Plans</p>
+          <h2 className="pricing-section__title">Choose your depth of insight</h2>
+          <p className="pricing-section__subtitle">
+            Start with a free snapshot, then unlock deeper RealYou insights,
+            coaching, and a downloadable report.
+          </p>
 
-      <div className="pricing-section__grid">
-        {pricingPlans.map((planItem) => {
-          const isCurrent = planItem.id === currentTier;
+          <p className="pricing-section__current-plan">
+            Current plan:{" "}
+            <strong>
+              {currentTier ? currentTier.toUpperCase() : "FREE (REALYOU STARTER)"}
+            </strong>
+          </p>
+        </header>
 
-          return (
-            <PricingTierCard
-              key={planItem.id}
-              plan={planItem}
-              isCurrent={isCurrent}
-              onClick={() => handleClick(planItem.id)}
-            />
-          );
-        })}
+        <div className="pricing-section__grid">
+          {pricingPlans.map((planItem) => {
+            const isCurrent = planItem.id === currentTier;
+
+            return (
+              <PricingTierCard
+                key={planItem.id}
+                plan={planItem}
+                isCurrent={isCurrent}
+                onClick={() => handleClick(planItem.id)}
+              />
+            );
+          })}
+        </div>
+
+        <p className="pricing-section__disclaimer">
+          Upgrade or downgrade anytime. Your RealYou type stays the same — you’re
+          just choosing how deep you want to go.
+        </p>
       </div>
-
-      <p className="pricing-section__disclaimer">
-        Upgrade or downgrade anytime. Your RealYou type stays the same — you’re
-        just choosing how deep you want to go.
-      </p>
     </section>
   );
 }
