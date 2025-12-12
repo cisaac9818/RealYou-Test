@@ -19,6 +19,102 @@ const STANDARD_CHECKOUT_URL =
 const PREMIUM_CHECKOUT_URL =
   "https://buy.stripe.com/8x28wR7NZesb0sidsi1gs01";
 
+// ✅ API base (dev vs prod). In production set VITE_API_BASE=https://yourdomain.com
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4242";
+
+/**
+ * Lead capture:
+ * 1) Try your server first (so Gmail can send + server inserts securely)
+ * 2) If server fails, fallback to Supabase REST (your original working method)
+ *
+ * Requires for fallback:
+ *  VITE_SUPABASE_URL
+ *  VITE_SUPABASE_ANON_KEY
+ */
+async function saveLeadToBackend(
+  profile,
+  referralInfo,
+  plan,
+  hasCompletedAssessment
+) {
+  const payload = {
+    name: profile.name || null,
+    email: profile.email,
+    agree_to_emails: profile.agreeToEmails ?? null,
+    plan_at_signup: plan || null,
+    has_completed_assessment: !!hasCompletedAssessment,
+    referral_code:
+      referralInfo?.ref ||
+      referralInfo?.code ||
+      referralInfo?.utm_campaign ||
+      null,
+    utm_source: referralInfo?.utm_source || null,
+    utm_medium: referralInfo?.utm_medium || null,
+    utm_campaign: referralInfo?.utm_campaign || null,
+    captured_at: new Date().toISOString(),
+  };
+
+  // 1) Try SERVER route first
+  try {
+    const res = await fetch(`${API_BASE}/api/lead-capture`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      console.log("[RealYou] Lead captured via SERVER.");
+      return;
+    }
+
+    const text = await res.text();
+    console.warn("[RealYou] Server lead-capture failed:", res.status, text);
+  } catch (err) {
+    console.warn("[RealYou] Server lead-capture error:", err);
+  }
+
+  // 2) Fallback to SUPABASE REST (your original working method)
+  const supabaseUrl = "https://zjjctmwatmpkjjgzyqen.supabase.co";
+const supabaseAnonKey = "sb_publishable_ybG6FAO6rPYLJPSX0oJmsg_AVRFqVJf"; // your publishable key (NOT sb_secret)
+
+
+  console.log("[RealYou] Supabase URL:", supabaseUrl);
+  console.log("[RealYou] Supabase anon present?:", !!supabaseAnonKey);
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn(
+      "[RealYou] Supabase env vars missing; skipping fallback lead capture."
+    );
+    return;
+  }
+
+  console.log("[RealYou] Fallback: Sending lead payload to Supabase:", payload);
+
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/realyou_leads`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("[RealYou] Supabase response status:", res.status);
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.warn("[RealYou] Supabase lead insert failed:", res.status, text);
+    } else {
+      console.log("[RealYou] Lead inserted successfully via Supabase fallback.");
+    }
+  } catch (err) {
+    console.error("[RealYou] Supabase lead insert error:", err);
+  }
+}
+
 function getInitialPlan() {
   const storedPlan = localStorage.getItem("pp_plan");
 
@@ -76,7 +172,7 @@ function App() {
   // show “you just upgraded” toast on Results
   const [justUpgradedTier, setJustUpgradedTier] = useState(null);
 
-  // 🔹 NEW: gate results behind email capture
+  // 🔹 Email gate state
   const [hasEmailCaptureCompleted, setHasEmailCaptureCompleted] = useState(() => {
     return !!localStorage.getItem("pp_userProfile");
   });
@@ -88,6 +184,17 @@ function App() {
       return JSON.parse(raw);
     } catch (e) {
       return { name: "", email: "" };
+    }
+  });
+
+  // 🔹 Hidden referral / coupon tracking state
+  const [referralInfo, setReferralInfo] = useState(() => {
+    const raw = localStorage.getItem("pp_referralInfo");
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
     }
   });
 
@@ -126,7 +233,7 @@ function App() {
         setStage("mode");
       }
 
-      // Clean URL
+      // Clean URL of checkout params
       params.delete("checkout");
       params.delete("tier");
       const newSearch = params.toString();
@@ -135,6 +242,33 @@ function App() {
       window.history.replaceState({}, "", newUrl);
     }
   }, []); // run once on mount
+
+  // 🔹 Hidden coupon / UTM tracking
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    const ref = params.get("ref");
+    const utmSource = params.get("utm_source");
+    const utmMedium = params.get("utm_medium");
+    const utmCampaign = params.get("utm_campaign");
+
+    if (ref || utmSource || utmMedium || utmCampaign) {
+      const info = {
+        ref: ref || null,
+        utm_source: utmSource || null,
+        utm_medium: utmMedium || null,
+        utm_campaign: utmCampaign || null,
+        capturedAt: new Date().toISOString(),
+      };
+
+      setReferralInfo(info);
+      try {
+        localStorage.setItem("pp_referralInfo", JSON.stringify(info));
+      } catch (e) {
+        console.warn("[RealYou] Failed to persist referral info", e);
+      }
+    }
+  }, []);
 
   function handleTierUnlocked(tier) {
     if (tier === "premium") {
@@ -192,10 +326,10 @@ function App() {
     localStorage.removeItem("pp_results");
     localStorage.setItem("pp_hasCompletedAssessment", "false");
     setHasCompletedAssessment(false);
-    // optional: don’t reset email gate so they don’t have to re-enter
+    // we intentionally DO NOT clear email / referral info
   }
 
-  // 🔹 NEW: handle email capture submit
+  // 🔹 Email capture submit
   function handleEmailCaptureSubmit({ name, email, agreeToEmails }) {
     const profile = {
       name: name || "",
@@ -209,8 +343,15 @@ function App() {
     try {
       localStorage.setItem("pp_userProfile", JSON.stringify(profile));
     } catch (e) {
-      console.error("Failed to persist user profile", e);
+      console.error("Failed to cache profile", e);
     }
+
+    // Fire-and-forget lead capture (server -> gmail + supabase, fallback -> supabase)
+    saveLeadToBackend(profile, referralInfo, plan, hasCompletedAssessment).catch(
+      (err) => {
+        console.error("[RealYou] Lead capture failed:", err);
+      }
+    );
   }
 
   // PDF download handler for Premium
@@ -285,14 +426,10 @@ function App() {
       )}
 
       {stage === "assessment" && mode && (
-        <Assessment
-          mode={mode}
-          onComplete={handleAssessmentComplete}
-          plan={plan}
-        />
+        <Assessment mode={mode} onComplete={handleAssessmentComplete} plan={plan} />
       )}
 
-      {/* 🔹 NEW: gate results behind email capture */}
+      {/* 🔹 gate results behind email capture */}
       {stage === "results" && results && !hasEmailCaptureCompleted && (
         <EmailCapture
           onSubmit={handleEmailCaptureSubmit}
