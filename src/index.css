@@ -5,7 +5,6 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,19 +21,34 @@ a:hover {
   color: #535bf2;
 }
 
+/* Global reset / viewport safety */
+html,
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  padding: 0;
+  width: 100%;
   min-width: 320px;
+  min-height: 100%;
+  overflow-x: hidden;
+  background-color: #242424;
+}
+
+#root {
+  width: 100%;
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+* {
+  box-sizing: border-box;
 }
 
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Base button styles */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -54,18 +68,60 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* ===========================
+   RealYou Landing Page Styles
+   =========================== */
+
+.primary-btn,
+.secondary-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1.05rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  max-width: 100%;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: #0b1120;
+}
+
+.secondary-btn {
+  background: rgba(2, 6, 23, 0.55);
+  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+}
+
+/* Hero layout */
+.landing-hero {
+  width: 100%;
+}
+
+@media (max-width: 820px) {
+  .landing-hero {
+    grid-template-columns: 1fr !important;
+    padding: 1.35rem 1.15rem !important;
+    gap: 1rem !important;
   }
-  a:hover {
-    color: #747bff;
+
+  .landing-shell > div {
+    padding: 1.35rem 1rem 2.25rem !important;
   }
-  button {
-    background-color: #f9f9f9;
+
+  .primary-btn,
+  .secondary-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .landing-hero-card > div:first-child {
+    width: 170px !important;
+    height: 170px !important;
   }
 }
+
 /* === Pricing section styles === */
 
 .pricing-section {
@@ -225,6 +281,7 @@ button:focus-visible {
   filter: brightness(0.98);
   box-shadow: none;
 }
+
 /* ===== RealYou Neon Animations ===== */
 
 @keyframes neonFadeInUp {
@@ -262,7 +319,7 @@ button:focus-visible {
 @keyframes neonButtonPulse {
   0% {
     transform: translateY(0) scale(1);
-    box-shadow: 0 0 0 rgba(59, 130, 246, 0.0);
+    box-shadow: 0 0 0 rgba(59, 130, 246, 0);
   }
   50% {
     transform: translateY(-1px) scale(1.03);
@@ -270,27 +327,23 @@ button:focus-visible {
   }
   100% {
     transform: translateY(0) scale(1);
-    box-shadow: 0 0 0 rgba(59, 130, 246, 0.0);
+    box-shadow: 0 0 0 rgba(59, 130, 246, 0);
   }
 }
 
-/* hero container gets bold neon entrance */
 .landing-hero {
   animation: neonFadeInUp 0.85s ease-out both;
 }
 
-/* right-side hero card / logo container */
 .landing-hero-card {
   animation: neonPulseGlow 2.6s ease-in-out 0.3s infinite alternate;
 }
 
-/* section slide-ins */
 .section-fade {
   opacity: 0;
   animation: neonFadeInUp 0.8s ease-out forwards;
 }
 
-/* add a little staggering manually */
 .section-fade.section-1 {
   animation-delay: 0.25s;
 }
@@ -307,7 +360,6 @@ button:focus-visible {
   animation-delay: 0.65s;
 }
 
-/* bold neon button glow */
 .btn-glow {
   position: relative;
   overflow: hidden;
@@ -336,4 +388,111 @@ button:focus-visible {
 .btn-glow:hover::before {
   opacity: 1;
   transform: translateX(30%);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* =========================================================
+   FINAL MOBILE STABILIZER (APPENDED)
+   ========================================================= */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+#root,
+.landing-shell,
+.landing-wrapper {
+  width: 100%;
+  max-width: 100%;
+}
+
+* {
+  max-width: 100%;
+}
+
+@media (max-width: 420px) {
+  .landing-hero {
+    padding: 1.1rem 1rem !important;
+  }
+
+  .landing-shell > div {
+    padding: 1.1rem 0.9rem 2rem !important;
+  }
+
+  .pricing-section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+/* ===============================
+   GLOBAL BACKGROUND + OVERFLOW FIX
+   (stops cards from spilling out)
+   =============================== */
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow-x: hidden; /* prevents horizontal spill */
+  background: radial-gradient(circle at top, #0f172a 0, #020617 45%, #000 100%);
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh; /* ensures background always covers */
+  overflow-x: hidden; /* double safety */
+  background: inherit; /* match body background */
+}
+
+/* If any section has huge shadows, keep it contained */
+.pricing-section {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Make sure card grid never exceeds screen width */
+.pricing-section__grid {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Optional: keep big glows from causing scroll */
+.pricing-card {
+  max-width: 100%;
+}
+/* ==== HARD STOP: mobile overflow + background continuity ==== */
+html, body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow-x: hidden !important;
+  background: radial-gradient(circle at top, #0f172a 0, #020617 45%, #000 100%);
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden !important;
+  background: transparent;
+}
+
+/* Pricing section must always stay inside the page background */
+.pricing-section {
+  width: 100%;
+  background: transparent; /* let body handle it */
+  overflow-x: hidden;
 }
