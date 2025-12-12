@@ -529,3 +529,69 @@ html, body {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+/* =========================================================
+   HARD OVERRIDE — Fix "Reveal My Snapshot" pricing layout
+   - Forces 1 column on phones
+   - 2 columns on tablets
+   - 3 columns on desktop
+   - Stops any text from spilling out of card
+   ========================================================= */
+
+/* Force the pricing grid to behave no matter what earlier CSS says */
+.pricing-section__grid {
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  gap: 16px !important;
+
+  /* MOBILE FIRST: default to 1 column */
+  grid-template-columns: 1fr !important;
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 640px) {
+  .pricing-section__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Desktop: 3 columns */
+@media (min-width: 1024px) {
+  .pricing-section__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+/* HARD STOP: prevent card content from overflowing its own box */
+.pricing-card {
+  min-width: 0 !important;     /* critical for grid children */
+  max-width: 100% !important;
+  overflow: hidden !important; /* prevents visual spill */
+}
+
+/* HARD STOP: force wrapping everywhere inside the card */
+.pricing-card * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  hyphens: auto !important;
+}
+
+/* If PricingTierCard uses flex rows (common), allow wrapping */
+.pricing-card__price-row,
+.pricing-card__feature,
+.pricing-card__header,
+.pricing-card__top {
+  flex-wrap: wrap !important;
+}
+
+/* Make buttons fit the card width on phones */
+@media (max-width: 640px) {
+  .pricing-card__button,
+  .pricing-card button {
+    width: 100% !important;
+  }
+}
