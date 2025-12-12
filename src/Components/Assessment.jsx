@@ -1,5 +1,5 @@
 // src/Components/Assessment.jsx
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import questions from "../data/questions.json";
 
 // Shared labels so Pro & Modern look identical in layout
@@ -14,6 +14,9 @@ const SCALE_LABELS = {
 export default function Assessment({ mode, onComplete, plan }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({}); // { [questionId]: number }
+  const [isFinished, setIsFinished] = useState(false);
+
+  const didFinishRef = useRef(false);
 
   const total = questions.length;
   const current = questions[currentIndex];
@@ -23,6 +26,22 @@ export default function Assessment({ mode, onComplete, plan }) {
   const questionText =
     mode === "genz" && current.genz ? current.genz : current.pro;
 
+  // Build payload only when needed
+  const payload = useMemo(() => {
+    return questions.map((q) => ({
+      id: q.id,
+      value: answers[q.id] ?? 3,
+    }));
+  }, [answers]);
+
+  // ✅ Fire onComplete exactly once, outside of setState/render side-effects
+  useEffect(() => {
+    if (!didFinishRef.current && isFinished) {
+      didFinishRef.current = true;
+      onComplete(payload);
+    }
+  }, [isFinished, onComplete, payload]);
+
   // ---- AUTO-ADVANCE HANDLER ----
   function handleSelect(val) {
     const numeric = Number(val);
@@ -30,27 +49,19 @@ export default function Assessment({ mode, onComplete, plan }) {
     const isLast = indexAtClick === total - 1;
     const qId = currentId;
 
-    setAnswers((prev) => {
-      const updated = { ...prev, [qId]: numeric };
+    // First update answers only
+    setAnswers((prev) => ({ ...prev, [qId]: numeric }));
 
-      if (isLast) {
-        // Build payload immediately on last question
-        const payload = questions.map((q) => ({
-          id: q.id,
-          value: updated[q.id] ?? 3,
-        }));
-        onComplete(payload);
-      } else {
-        // Small delay so the user sees the selection before moving
-        setTimeout(() => {
-          setCurrentIndex((old) =>
-            old === indexAtClick ? indexAtClick + 1 : old
-          );
-        }, 150);
-      }
+    if (isLast) {
+      // Mark finished; effect will call onComplete
+      setIsFinished(true);
+      return;
+    }
 
-      return updated;
-    });
+    // Small delay so the user sees the selection before moving
+    setTimeout(() => {
+      setCurrentIndex((old) => (old === indexAtClick ? indexAtClick + 1 : old));
+    }, 150);
   }
 
   // Manual Next button (optional)
@@ -60,11 +71,7 @@ export default function Assessment({ mode, onComplete, plan }) {
     if (currentIndex < total - 1) {
       setCurrentIndex((i) => i + 1);
     } else {
-      const payload = questions.map((q) => ({
-        id: q.id,
-        value: answers[q.id] ?? 3,
-      }));
-      onComplete(payload);
+      setIsFinished(true);
     }
   }
 
@@ -222,16 +229,18 @@ export default function Assessment({ mode, onComplete, plan }) {
         >
           <button
             onClick={handleBack}
-            disabled={currentIndex === 0}
+            disabled={currentIndex === 0 || isFinished}
             style={{
               padding: "0.75rem 1.5rem",
               borderRadius: "999px",
-              background: currentIndex === 0 ? "#27272a" : "#334155",
+              background:
+                currentIndex === 0 || isFinished ? "#27272a" : "#334155",
               color: "#e5e7eb",
-              cursor: currentIndex === 0 ? "default" : "pointer",
+              cursor:
+                currentIndex === 0 || isFinished ? "default" : "pointer",
               border: "none",
               fontWeight: 500,
-              opacity: currentIndex === 0 ? 0.5 : 1,
+              opacity: currentIndex === 0 || isFinished ? 0.5 : 1,
             }}
           >
             Back
@@ -239,19 +248,20 @@ export default function Assessment({ mode, onComplete, plan }) {
 
           <button
             onClick={handleNext}
-            disabled={!selected}
+            disabled={!selected || isFinished}
             style={{
               padding: "0.75rem 1.9rem",
               borderRadius: "999px",
-              background: !selected ? "#27272a" : "#e0f2fe",
-              color: !selected ? "#a1a1aa" : "#0f172a",
-              cursor: !selected ? "default" : "pointer",
+              background: !selected || isFinished ? "#27272a" : "#e0f2fe",
+              color: !selected || isFinished ? "#a1a1aa" : "#0f172a",
+              cursor: !selected || isFinished ? "default" : "pointer",
               border: "none",
               fontWeight: 700,
-              opacity: !selected ? 0.7 : 1,
-              boxShadow: !selected
-                ? "none"
-                : "0 18px 50px rgba(59,130,246,0.55)",
+              opacity: !selected || isFinished ? 0.7 : 1,
+              boxShadow:
+                !selected || isFinished
+                  ? "none"
+                  : "0 18px 50px rgba(59,130,246,0.55)",
             }}
           >
             {currentIndex === total - 1 ? "Finish" : "Next"}
