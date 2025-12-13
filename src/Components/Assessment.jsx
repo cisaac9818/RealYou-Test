@@ -11,10 +11,16 @@ const SCALE_LABELS = {
   5: "Strongly agree",
 };
 
+// ✅ Checkpoint boundaries (0-based index of the question just answered)
+const CHECKPOINTS = new Set([13, 27, 41]); // after Q14, Q28, Q42
+
 export default function Assessment({ mode, onComplete, plan }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({}); // { [questionId]: number }
   const [isFinished, setIsFinished] = useState(false);
+
+  // ✅ checkpoint banner state
+  const [checkpoint, setCheckpoint] = useState(null); // { title, lines[] }
 
   const didFinishRef = useRef(false);
 
@@ -42,6 +48,87 @@ export default function Assessment({ mode, onComplete, plan }) {
     }
   }, [isFinished, onComplete, payload]);
 
+  // ✅ Copy: Motivation + soft analysis signals
+  function getCheckpointCopy(justAnsweredIndex) {
+    const isModern = mode === "genz";
+
+    // After Q14
+    if (justAnsweredIndex === 13) {
+      return isModern
+        ? {
+            title: "Nice — you’re locked in.",
+            lines: [
+              "You’re already giving clear patterns.",
+              "RealYou is starting to map how you move through situations.",
+            ],
+          }
+        : {
+            title: "Great momentum.",
+            lines: [
+              "Your response patterns are starting to form.",
+              "RealYou is beginning to map your decision style.",
+            ],
+          };
+    }
+
+    // After Q28
+    if (justAnsweredIndex === 27) {
+      return isModern
+        ? {
+            title: "This is getting interesting 👀",
+            lines: [
+              "Your profile is taking shape.",
+              "RealYou is picking up strong consistency in how you respond.",
+            ],
+          }
+        : {
+            title: "You’re doing excellent.",
+            lines: [
+              "Your RealYou profile is taking shape.",
+              "RealYou is detecting consistent patterns in your responses.",
+            ],
+          };
+    }
+
+    // After Q42 — user-specified soft signal
+    if (justAnsweredIndex === 41) {
+      return isModern
+        ? {
+            title: "Almost there.",
+            lines: [
+              "Stay with it — you’re close.",
+              "The RealYou is showing strong clarity.",
+            ],
+          }
+        : {
+            title: "Final stretch.",
+            lines: [
+              "You’re close to completing your snapshot.",
+              "The RealYou is showing strong clarity.",
+            ],
+          };
+    }
+
+    return null;
+  }
+
+  // ✅ Show checkpoint briefly, then proceed
+  function maybeShowCheckpointThen(nextIndex, justAnsweredIndex) {
+    const copy = getCheckpointCopy(justAnsweredIndex);
+    if (!copy) {
+      setCurrentIndex(nextIndex);
+      return;
+    }
+
+    setCheckpoint(copy);
+
+    // Keep it short so it motivates without feeling like a popup
+    setTimeout(() => {
+      setCheckpoint(null);
+      setCurrentIndex(nextIndex);
+    }, 1100);
+  }
+
   // ---- AUTO-ADVANCE HANDLER ----
   function handleSelect(val) {
     const numeric = Number(val);
@@ -60,7 +147,22 @@ export default function Assessment({ mode, onComplete, plan }) {
 
     // Small delay so the user sees the selection before moving
     setTimeout(() => {
-      setCurrentIndex((old) => (old === indexAtClick ? indexAtClick + 1 : old));
+      // ✅ boundary check: after Q14/Q28/Q42 show checkpoint then continue
+      const nextIndex = indexAtClick + 1;
+
+      setCurrentIndex((old) => {
+        // only proceed if we’re still on the same index
+        if (old !== indexAtClick) return old;
+
+        if (CHECKPOINTS.has(indexAtClick)) {
+          // temporarily keep the same question while we show checkpoint
+          // then we will advance via maybeShowCheckpointThen
+          maybeShowCheckpointThen(nextIndex, indexAtClick);
+          return old;
+        }
+
+        return nextIndex;
+      });
     }, 150);
   }
 
@@ -69,6 +171,13 @@ export default function Assessment({ mode, onComplete, plan }) {
     if (!selected) return;
 
     if (currentIndex < total - 1) {
+      const nextIndex = currentIndex + 1;
+
+      if (CHECKPOINTS.has(currentIndex)) {
+        maybeShowCheckpointThen(nextIndex, currentIndex);
+        return;
+      }
+
       setCurrentIndex((i) => i + 1);
     } else {
       setIsFinished(true);
@@ -95,6 +204,42 @@ export default function Assessment({ mode, onComplete, plan }) {
         overflowX: "hidden", // ✅ stop any horizontal spill
       }}
     >
+      {/* ✅ Checkpoint banner (non-blocking) */}
+      {checkpoint && (
+        <div
+          style={{
+            position: "absolute",
+            top: "16px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "min(900px, calc(100% - 2rem))",
+            borderRadius: "18px",
+            padding: "0.9rem 1rem",
+            background: "rgba(2, 6, 23, 0.92)",
+            border: "1px solid rgba(99, 102, 241, 0.35)",
+            boxShadow: "0 18px 60px rgba(0,0,0,0.65)",
+            color: "#f9fafb",
+            zIndex: 50,
+          }}
+        >
+          <div style={{ fontWeight: 900, marginBottom: "0.25rem" }}>
+            {checkpoint.title}
+          </div>
+          {checkpoint.lines.map((line) => (
+            <div
+              key={line}
+              style={{
+                fontSize: "0.92rem",
+                color: "#e5e7eb",
+                lineHeight: 1.25,
+              }}
+            >
+              {line}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Centered assessment card */}
       <div
         style={{
@@ -143,15 +288,17 @@ export default function Assessment({ mode, onComplete, plan }) {
           Personality Assessment
         </h1>
 
+        {/* ✅ Removed the "Question X of 56" counter entirely */}
         <p
           style={{
-            opacity: 0.8,
+            opacity: 0.78,
             marginBottom: "1.5rem",
             textAlign: "center",
             fontSize: "0.95rem",
+            color: "#cbd5f5",
           }}
         >
-          Question {currentIndex + 1} of {total}
+          Answer honestly — RealYou is learning your style.
         </p>
 
         {/* Question text */}
@@ -169,7 +316,7 @@ export default function Assessment({ mode, onComplete, plan }) {
 
         {/* ✅ Answer choices — desktop 5-col, tablet 2-col, mobile 1-col */}
         <div
-          className="realyou-answers-grid"  // ✅ FIX: class added so media queries work
+          className="realyou-answers-grid" // ✅ FIX: class added so media queries work
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
