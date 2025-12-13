@@ -28,6 +28,24 @@ export default function LandingPage({
     else scrollToId("plans");
   }
 
+  // ✅ Shared line style for "one-time / no subs"
+  const oneTimeLineStyle = {
+    marginTop: "0.35rem",
+    fontSize: "0.82rem",
+    color: "#cbd5f5",
+    letterSpacing: "0.03em",
+    textTransform: "uppercase",
+    fontWeight: 700,
+  };
+
+  // ✅ Shared line style for free note
+  const freeLineStyle = {
+    marginTop: "0.35rem",
+    fontSize: "0.82rem",
+    color: "#cbd5f5",
+    letterSpacing: "0.02em",
+  };
+
   return (
     <div
       className="landing-shell"
@@ -104,7 +122,7 @@ export default function LandingPage({
                 marginBottom: "0.7rem",
               }}
             >
-              Discover the Real You — not the version you pretend to be.
+              Discover the Real You — the one that actually shows up.
             </h1>
 
             <p
@@ -516,16 +534,33 @@ export default function LandingPage({
                 >
                   Free
                 </p>
-                <h3 style={{ fontSize: "1.05rem", margin: 0, marginBottom: "0.25rem" }}>
+                <h3
+                  style={{
+                    fontSize: "1.05rem",
+                    margin: 0,
+                    marginBottom: "0.25rem",
+                  }}
+                >
                   RealYou Starter
                 </h3>
-                <p style={{ fontSize: "0.86rem", color: "#e5e7eb", marginBottom: "0.6rem" }}>
+                <p
+                  style={{
+                    fontSize: "0.86rem",
+                    color: "#e5e7eb",
+                    marginBottom: "0.6rem",
+                  }}
+                >
                   Get your type and a full snapshot of your core wiring — free.
                 </p>
+
+                {/* ✅ Added: free clarity line */}
+                <div style={freeLineStyle}>No card required • Start instantly</div>
+
                 <ul
                   style={{
                     paddingLeft: "1.1rem",
-                    margin: 0,
+                    marginTop: "0.6rem",
+                    marginBottom: 0,
                     fontSize: "0.86rem",
                     color: "#e5e7eb",
                     lineHeight: 1.6,
@@ -572,16 +607,35 @@ export default function LandingPage({
                 >
                   Standard
                 </p>
-                <h3 style={{ fontSize: "1.05rem", margin: 0, marginBottom: "0.25rem" }}>
+                <h3
+                  style={{
+                    fontSize: "1.05rem",
+                    margin: 0,
+                    marginBottom: "0.25rem",
+                  }}
+                >
                   RealYou Insight
                 </h3>
-                <p style={{ fontSize: "0.86rem", color: "#e5e7eb", marginBottom: "0.6rem" }}>
+                <p
+                  style={{
+                    fontSize: "0.86rem",
+                    color: "#e5e7eb",
+                    marginBottom: "0.6rem",
+                  }}
+                >
                   Deeper explanations, full lists, and clear next steps.
                 </p>
+
+                {/* ✅ Added: one-time / no subs */}
+                <div style={oneTimeLineStyle}>
+                  ONE-TIME PURCHASE • NO SUBSCRIPTIONS
+                </div>
+
                 <ul
                   style={{
                     paddingLeft: "1.1rem",
-                    margin: 0,
+                    marginTop: "0.6rem",
+                    marginBottom: 0,
                     fontSize: "0.86rem",
                     color: "#e5e7eb",
                     lineHeight: 1.6,
@@ -629,16 +683,35 @@ export default function LandingPage({
                 >
                   Premium
                 </p>
-                <h3 style={{ fontSize: "1.05rem", margin: 0, marginBottom: "0.25rem" }}>
+                <h3
+                  style={{
+                    fontSize: "1.05rem",
+                    margin: 0,
+                    marginBottom: "0.25rem",
+                  }}
+                >
                   RealYou DeepDive
                 </h3>
-                <p style={{ fontSize: "0.86rem", color: "#e5e7eb", marginBottom: "0.6rem" }}>
+                <p
+                  style={{
+                    fontSize: "0.86rem",
+                    color: "#e5e7eb",
+                    marginBottom: "0.6rem",
+                  }}
+                >
                   The no-BS full breakdown with live tools and a PDF you can keep.
                 </p>
+
+                {/* ✅ Added: one-time / no subs */}
+                <div style={oneTimeLineStyle}>
+                  ONE-TIME PURCHASE • NO SUBSCRIPTIONS
+                </div>
+
                 <ul
                   style={{
                     paddingLeft: "1.1rem",
-                    margin: 0,
+                    marginTop: "0.6rem",
+                    marginBottom: 0,
                     fontSize: "0.86rem",
                     color: "#e5e7eb",
                     lineHeight: 1.6,
@@ -699,7 +772,14 @@ export default function LandingPage({
                 “This snapshot lowkey read me for FILTH. I sent it to my whole
                 group chat.”
               </p>
-              <p style={{ margin: 0, marginTop: "0.4rem", fontSize: "0.8rem", color: "#9ca3af" }}>
+              <p
+                style={{
+                  margin: 0,
+                  marginTop: "0.4rem",
+                  fontSize: "0.8rem",
+                  color: "#9ca3af",
+                }}
+              >
                 — T. Johnson
               </p>
             </div>
@@ -717,7 +797,14 @@ export default function LandingPage({
                 “Me and my girl compared our types… it explained everything we
                 kept arguing about.”
               </p>
-              <p style={{ margin: 0, marginTop: "0.4rem", fontSize: "0.8rem", color: "#9ca3af" }}>
+              <p
+                style={{
+                  margin: 0,
+                  marginTop: "0.4rem",
+                  fontSize: "0.8rem",
+                  color: "#9ca3af",
+                }}
+              >
                 — Cam D.
               </p>
             </div>
@@ -735,7 +822,14 @@ export default function LandingPage({
                 “Finally a personality snapshot that doesn’t feel like a 2009
                 BuzzFeed quiz.”
               </p>
-              <p style={{ margin: 0, marginTop: "0.4rem", fontSize: "0.8rem", color: "#9ca3af" }}>
+              <p
+                style={{
+                  margin: 0,
+                  marginTop: "0.4rem",
+                  fontSize: "0.8rem",
+                  color: "#9ca3af",
+                }}
+              >
                 — Mia S.
               </p>
             </div>
