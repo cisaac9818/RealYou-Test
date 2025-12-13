@@ -22,21 +22,15 @@ export default function ModeSelector({
     : "Free (RealYou Starter)";
 
   const handleChooseFree = () => {
-    if (onPlanChosen) {
-      onPlanChosen("free");
-    }
+    if (onPlanChosen) onPlanChosen("free");
   };
 
   const handleUpgradeStandard = () => {
-    if (onUpgradeClick) {
-      onUpgradeClick("standard");
-    }
+    if (onUpgradeClick) onUpgradeClick("standard");
   };
 
   const handleUpgradePremium = () => {
-    if (onUpgradeClick) {
-      onUpgradeClick("premium");
-    }
+    if (onUpgradeClick) onUpgradeClick("premium");
   };
 
   // ✅ Hard wrap safety so NO text can spill outside cards
@@ -56,6 +50,16 @@ export default function ModeSelector({
     marginTop: "0.15rem",
     letterSpacing: "0.02em",
     textTransform: "uppercase",
+  };
+
+  // ✅ Small label like the See Plans & Deep Dive cards
+  const tierLabelStyle = {
+    ...wrapText,
+    fontSize: "0.72rem",
+    letterSpacing: "0.14em",
+    textTransform: "uppercase",
+    color: "#94a3b8",
+    marginBottom: "0.45rem",
   };
 
   return (
@@ -84,9 +88,11 @@ export default function ModeSelector({
         >
           RealYou Snapshot™
         </p>
+
         <h1 className="page-title" style={{ fontSize: "1.9rem" }}>
           Get your RealYou personality snapshot
         </h1>
+
         <p
           className="page-subtitle"
           style={{ maxWidth: "640px", color: "#e5e7eb", marginTop: "0.35rem" }}
@@ -127,14 +133,12 @@ export default function ModeSelector({
           maxWidth: "960px",
           margin: "0 auto",
           display: "grid",
-          // ✅ Auto-wrap: 1 col on phones, 2 on tablets, 3 on desktop (if space)
           gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
           gap: "1rem",
           alignItems: "stretch",
         }}
       >
-        {/* RealYou Snapshot (Free)
- */}
+        {/* FREE PLAN */}
         <div
           style={{
             borderRadius: "20px",
@@ -150,16 +154,19 @@ export default function ModeSelector({
           }}
         >
           <div style={{ minWidth: 0 }}>
+            <div style={tierLabelStyle}>FREE</div>
+
             <h2
               style={{
                 ...wrapText,
-                fontSize: "1.1rem",
-                fontWeight: 700,
-                marginBottom: "0.35rem",
+                fontSize: "1.25rem",
+                fontWeight: 800,
+                marginBottom: "0.45rem",
               }}
             >
-              Free
+              RealYou Starter
             </h2>
+
             <p
               style={{
                 ...wrapText,
@@ -171,7 +178,6 @@ export default function ModeSelector({
               $0
             </p>
 
-            {/* ✅ Added: clear "no subs" line even on Free */}
             <div style={{ ...oneTimeLineStyle, textTransform: "none" }}>
               No subscriptions • Start instantly
             </div>
@@ -191,6 +197,7 @@ export default function ModeSelector({
               <li style={wrapText}>Upgrade any time</li>
             </ul>
           </div>
+
           <button
             type="button"
             className="primary-btn"
@@ -198,12 +205,11 @@ export default function ModeSelector({
             onClick={handleChooseFree}
             disabled={isFree}
           >
-            {isFree ? "Current Plan" : "Choose Free"}
+            {isFree ? "Current Plan" : "Try Free"}
           </button>
         </div>
 
-        {/* RealYou Core Insight (Standard)
- */}
+        {/* STANDARD PLAN */}
         <div
           style={{
             borderRadius: "20px",
@@ -238,16 +244,20 @@ export default function ModeSelector({
             >
               Most Popular
             </div>
+
+            <div style={tierLabelStyle}>STANDARD</div>
+
             <h2
               style={{
                 ...wrapText,
-                fontSize: "1.1rem",
-                fontWeight: 700,
-                marginBottom: "0.35rem",
+                fontSize: "1.25rem",
+                fontWeight: 800,
+                marginBottom: "0.45rem",
               }}
             >
-              Standard
+              RealYou Insight
             </h2>
+
             <p
               style={{
                 ...wrapText,
@@ -259,7 +269,6 @@ export default function ModeSelector({
               $6.99
             </p>
 
-            {/* ✅ Added: ONE-TIME / NO SUBS */}
             <div style={oneTimeLineStyle}>ONE-TIME PURCHASE • NO SUBSCRIPTIONS</div>
 
             <ul
@@ -277,6 +286,7 @@ export default function ModeSelector({
               <li style={wrapText}>Relationship & work insights</li>
             </ul>
           </div>
+
           <button
             type="button"
             className="primary-btn"
@@ -284,12 +294,11 @@ export default function ModeSelector({
             onClick={handleUpgradeStandard}
             disabled={isStandard}
           >
-            {isStandard ? "Current Plan" : "Unlock Standard"}
+            {isStandard ? "Current Plan" : "Unlock Standard – $6.99"}
           </button>
         </div>
 
-        {/* RealYou Deep Dive (Premium)
- */}
+        {/* PREMIUM PLAN */}
         <div
           style={{
             borderRadius: "20px",
@@ -306,16 +315,19 @@ export default function ModeSelector({
           }}
         >
           <div style={{ minWidth: 0 }}>
+            <div style={tierLabelStyle}>PREMIUM</div>
+
             <h2
               style={{
                 ...wrapText,
-                fontSize: "1.1rem",
-                fontWeight: 700,
-                marginBottom: "0.35rem",
+                fontSize: "1.25rem",
+                fontWeight: 800,
+                marginBottom: "0.45rem",
               }}
             >
-              Premium
+              RealYou DeepDive
             </h2>
+
             <p
               style={{
                 ...wrapText,
@@ -327,7 +339,6 @@ export default function ModeSelector({
               $14.99
             </p>
 
-            {/* ✅ Added: ONE-TIME / NO SUBS */}
             <div style={oneTimeLineStyle}>ONE-TIME PURCHASE • NO SUBSCRIPTIONS</div>
 
             <ul
@@ -345,6 +356,7 @@ export default function ModeSelector({
               <li style={wrapText}>Downloadable RealYou PDF report</li>
             </ul>
           </div>
+
           <button
             type="button"
             className="secondary-btn"
@@ -352,7 +364,7 @@ export default function ModeSelector({
             onClick={handleUpgradePremium}
             disabled={isPremium}
           >
-            {isPremium ? "Current Plan" : "Unlock Premium"}
+            {isPremium ? "Current Plan" : "Unlock Premium – $14.99"}
           </button>
         </div>
       </div>
@@ -371,12 +383,7 @@ export default function ModeSelector({
               color: "#f9fafb",
             }}
           >
-            <header
-              style={{
-                marginBottom: "1.3rem",
-                textAlign: "left",
-              }}
-            >
+            <header style={{ marginBottom: "1.3rem", textAlign: "left" }}>
               <h2
                 style={{
                   fontSize: "1.5rem",
@@ -395,13 +402,7 @@ export default function ModeSelector({
               >
                 Same RealYou personality engine — just different wording vibes.
               </p>
-              <p
-                style={{
-                  fontSize: "0.9rem",
-                  color: "#9ca3af",
-                  margin: 0,
-                }}
-              >
+              <p style={{ fontSize: "0.9rem", color: "#9ca3af", margin: 0 }}>
                 Current plan: <strong>{currentPlanLabel}</strong>
               </p>
             </header>

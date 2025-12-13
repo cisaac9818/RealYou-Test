@@ -17,7 +17,9 @@ export default function PricingTierCard({ plan, onClick, isCurrent }) {
   };
 
   const oneTimeLine =
-    isFree ? "No card required • Start instantly" : "ONE-TIME PURCHASE • NO SUBSCRIPTIONS";
+    isFree
+      ? "No card required • Start instantly"
+      : "ONE-TIME PURCHASE • NO SUBSCRIPTIONS";
 
   return (
     <div
@@ -61,7 +63,6 @@ export default function PricingTierCard({ plan, onClick, isCurrent }) {
         {!isFree && <span className="pricing-card__price-note">/one-time</span>}
       </div>
 
-      {/* ✅ NEW: loud clarity line */}
       <div
         style={{
           marginTop: "0.35rem",
@@ -74,7 +75,10 @@ export default function PricingTierCard({ plan, onClick, isCurrent }) {
         {oneTimeLine}
       </div>
 
-      <p className="pricing-card__description" style={{ ...wrapText, marginTop: "0.75rem" }}>
+      <p
+        className="pricing-card__description"
+        style={{ ...wrapText, marginTop: "0.75rem" }}
+      >
         {plan.description}
       </p>
 
