@@ -10,18 +10,19 @@ export default function PricingTierCard({ plan, onClick, isCurrent }) {
     buttonLabel = "Get started";
   }
 
-  // ✅ Text wrap safety (prevents spill no matter what CSS is doing)
   const wrapText = {
     overflowWrap: "anywhere",
     wordBreak: "break-word",
     whiteSpace: "normal",
   };
 
+  const oneTimeLine =
+    isFree ? "No card required • Start instantly" : "ONE-TIME PURCHASE • NO SUBSCRIPTIONS";
+
   return (
     <div
       className={`pricing-card ${isCurrent ? "pricing-card--current" : ""}`}
       style={{
-        // ✅ Make the card layout stable and prevent internal overflow
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -34,7 +35,6 @@ export default function PricingTierCard({ plan, onClick, isCurrent }) {
         <h3 className="pricing-card__name" style={wrapText}>
           {plan.name}
         </h3>
-
         {plan.badgeLabel && (
           <span
             className="pricing-card__badge"
@@ -58,27 +58,35 @@ export default function PricingTierCard({ plan, onClick, isCurrent }) {
         <span className="pricing-card__price" style={wrapText}>
           {isFree ? "Free" : `$ ${plan.priceMonthly}`}
         </span>
-        {!isFree && (
-          <span className="pricing-card__price-note" style={wrapText}>
-            /one-time
-          </span>
-        )}
+        {!isFree && <span className="pricing-card__price-note">/one-time</span>}
       </div>
 
-      <p className="pricing-card__description" style={wrapText}>
+      {/* ✅ NEW: loud clarity line */}
+      <div
+        style={{
+          marginTop: "0.35rem",
+          fontSize: "0.82rem",
+          color: "#cbd5f5",
+          letterSpacing: "0.02em",
+          ...wrapText,
+        }}
+      >
+        {oneTimeLine}
+      </div>
+
+      <p className="pricing-card__description" style={{ ...wrapText, marginTop: "0.75rem" }}>
         {plan.description}
       </p>
 
       <ul
         className="pricing-card__features"
         style={{
-          // ✅ Allow wrapping; never overflow the card
           ...wrapText,
           minWidth: 0,
           paddingLeft: 0,
           margin: 0,
           listStyle: "none",
-          flex: "1 1 auto", // ✅ lets features take space but not break layout
+          flex: "1 1 auto",
         }}
       >
         {plan.features.map((item) => (
@@ -105,10 +113,7 @@ export default function PricingTierCard({ plan, onClick, isCurrent }) {
         className="pricing-card__button"
         onClick={onClick}
         disabled={isCurrent}
-        style={{
-          marginTop: "16px",
-          flex: "0 0 auto",
-        }}
+        style={{ marginTop: "16px", flex: "0 0 auto" }}
       >
         {buttonLabel}
       </button>

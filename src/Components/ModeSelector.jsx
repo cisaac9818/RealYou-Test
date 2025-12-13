@@ -133,7 +133,8 @@ export default function ModeSelector({
           alignItems: "stretch",
         }}
       >
-        {/* FREE PLAN */}
+        {/* RealYou Snapshot (Free)
+ */}
         <div
           style={{
             borderRadius: "20px",
@@ -201,7 +202,8 @@ export default function ModeSelector({
           </button>
         </div>
 
-        {/* STANDARD PLAN */}
+        {/* RealYou Core Insight (Standard)
+ */}
         <div
           style={{
             borderRadius: "20px",
@@ -286,7 +288,8 @@ export default function ModeSelector({
           </button>
         </div>
 
-        {/* PREMIUM PLAN */}
+        {/* RealYou Deep Dive (Premium)
+ */}
         <div
           style={{
             borderRadius: "20px",
