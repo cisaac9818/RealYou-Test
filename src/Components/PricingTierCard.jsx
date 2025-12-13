@@ -16,10 +16,10 @@ export default function PricingTierCard({ plan, onClick, isCurrent }) {
     whiteSpace: "normal",
   };
 
-  const oneTimeLine =
-    isFree
-      ? "No card required • Start instantly"
-      : "ONE-TIME PURCHASE • NO SUBSCRIPTIONS";
+  // 🔒 HARD CLARITY LINE
+  const oneTimeLine = isFree
+    ? "No card required • Start instantly"
+    : "ONE-TIME PURCHASE • NO SUBSCRIPTIONS";
 
   return (
     <div
@@ -29,67 +29,66 @@ export default function PricingTierCard({ plan, onClick, isCurrent }) {
         flexDirection: "column",
         height: "100%",
         minWidth: 0,
-        maxWidth: "100%",
         overflow: "hidden",
       }}
     >
+      {/* HEADER */}
       <div className="pricing-card__header" style={{ minWidth: 0 }}>
         <h3 className="pricing-card__name" style={wrapText}>
           {plan.name}
         </h3>
         {plan.badgeLabel && (
-          <span
-            className="pricing-card__badge"
-            style={{
-              ...wrapText,
-              maxWidth: "100%",
-              display: "inline-flex",
-              alignItems: "center",
-            }}
-          >
+          <span className="pricing-card__badge">
             {isCurrent ? "Active" : plan.badgeLabel}
           </span>
         )}
       </div>
 
+      {/* TAGLINE */}
       <p className="pricing-card__tagline" style={wrapText}>
         {plan.tagline}
       </p>
 
-      <div className="pricing-card__price-row" style={{ minWidth: 0 }}>
-        <span className="pricing-card__price" style={wrapText}>
-          {isFree ? "Free" : `$ ${plan.priceMonthly}`}
+      {/* PRICE */}
+      <div className="pricing-card__price-row">
+        <span className="pricing-card__price">
+          {isFree ? "Free" : `$${plan.priceMonthly}`}
         </span>
-        {!isFree && <span className="pricing-card__price-note">/one-time</span>}
+        {!isFree && (
+          <span className="pricing-card__price-note"> / one-time</span>
+        )}
       </div>
 
+      {/* 🔥 ONE-TIME / NO SUBS — VISUALLY LOUD */}
       <div
         style={{
-          marginTop: "0.35rem",
-          fontSize: "0.82rem",
-          color: "#cbd5f5",
-          letterSpacing: "0.02em",
+          marginTop: "0.4rem",
+          fontSize: "0.85rem",
+          fontWeight: 700,
+          color: "#c7d2fe",
+          letterSpacing: "0.03em",
+          textTransform: "uppercase",
           ...wrapText,
         }}
       >
         {oneTimeLine}
       </div>
 
+      {/* DESCRIPTION */}
       <p
         className="pricing-card__description"
-        style={{ ...wrapText, marginTop: "0.75rem" }}
+        style={{ ...wrapText, marginTop: "0.8rem" }}
       >
         {plan.description}
       </p>
 
+      {/* FEATURES */}
       <ul
         className="pricing-card__features"
         style={{
-          ...wrapText,
-          minWidth: 0,
-          paddingLeft: 0,
-          margin: 0,
           listStyle: "none",
+          padding: 0,
+          margin: 0,
           flex: "1 1 auto",
         }}
       >
@@ -101,23 +100,21 @@ export default function PricingTierCard({ plan, onClick, isCurrent }) {
               display: "flex",
               gap: "10px",
               alignItems: "flex-start",
-              minWidth: 0,
               ...wrapText,
             }}
           >
-            <span className="pricing-card__check" style={{ flex: "0 0 auto" }}>
-              ✓
-            </span>
-            <span style={{ minWidth: 0, ...wrapText }}>{item}</span>
+            <span>✓</span>
+            <span>{item}</span>
           </li>
         ))}
       </ul>
 
+      {/* CTA */}
       <button
         className="pricing-card__button"
         onClick={onClick}
         disabled={isCurrent}
-        style={{ marginTop: "16px", flex: "0 0 auto" }}
+        style={{ marginTop: "16px" }}
       >
         {buttonLabel}
       </button>
