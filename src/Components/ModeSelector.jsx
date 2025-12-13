@@ -39,6 +39,14 @@ export default function ModeSelector({
     }
   };
 
+  // ✅ Hard wrap safety so NO text can spill outside cards
+  const wrapText = {
+    overflowWrap: "anywhere",
+    wordBreak: "break-word",
+    whiteSpace: "normal",
+    minWidth: 0,
+  };
+
   return (
     <div
       className="mode-selector-page"
@@ -102,14 +110,16 @@ export default function ModeSelector({
         </p>
       </section>
 
-      {/* PLAN CARDS INLINE (replacing PricingSection) */}
+      {/* ✅ PLAN CARDS INLINE — RESPONSIVE (NO MORE 3 SKINNY BOXES) */}
       <div
         style={{
           maxWidth: "960px",
           margin: "0 auto",
           display: "grid",
-          gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+          // ✅ Auto-wrap: 1 col on phones, 2 on tablets, 3 on desktop (if space)
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
           gap: "1rem",
+          alignItems: "stretch",
         }}
       >
         {/* FREE PLAN */}
@@ -123,11 +133,14 @@ export default function ModeSelector({
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            minWidth: 0,
+            overflow: "hidden",
           }}
         >
-          <div>
+          <div style={{ minWidth: 0 }}>
             <h2
               style={{
+                ...wrapText,
                 fontSize: "1.1rem",
                 fontWeight: 700,
                 marginBottom: "0.35rem",
@@ -137,6 +150,7 @@ export default function ModeSelector({
             </h2>
             <p
               style={{
+                ...wrapText,
                 fontSize: "1.4rem",
                 fontWeight: 800,
                 marginBottom: "0.3rem",
@@ -146,15 +160,16 @@ export default function ModeSelector({
             </p>
             <ul
               style={{
+                ...wrapText,
                 fontSize: "0.9rem",
                 color: "#e5e7eb",
                 paddingLeft: "1.1rem",
                 margin: 0,
               }}
             >
-              <li>Core type & basic trait breakdown</li>
-              <li>Good for a quick snapshot</li>
-              <li>Upgrade any time</li>
+              <li style={wrapText}>Core type & basic trait breakdown</li>
+              <li style={wrapText}>Good for a quick snapshot</li>
+              <li style={wrapText}>Upgrade any time</li>
             </ul>
           </div>
           <button
@@ -181,9 +196,11 @@ export default function ModeSelector({
             flexDirection: "column",
             justifyContent: "space-between",
             position: "relative",
+            minWidth: 0,
+            overflow: "hidden",
           }}
         >
-          <div>
+          <div style={{ minWidth: 0 }}>
             <div
               style={{
                 position: "absolute",
@@ -196,12 +213,14 @@ export default function ModeSelector({
                 color: "#22c55e",
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
+                ...wrapText,
               }}
             >
               Most Popular
             </div>
             <h2
               style={{
+                ...wrapText,
                 fontSize: "1.1rem",
                 fontWeight: 700,
                 marginBottom: "0.35rem",
@@ -211,6 +230,7 @@ export default function ModeSelector({
             </h2>
             <p
               style={{
+                ...wrapText,
                 fontSize: "1.4rem",
                 fontWeight: 800,
                 marginBottom: "0.3rem",
@@ -220,15 +240,16 @@ export default function ModeSelector({
             </p>
             <ul
               style={{
+                ...wrapText,
                 fontSize: "0.9rem",
                 color: "#e5e7eb",
                 paddingLeft: "1.1rem",
                 margin: 0,
               }}
             >
-              <li>Full RealYou core report</li>
-              <li>Deeper explanations of your type</li>
-              <li>Relationship & work insights</li>
+              <li style={wrapText}>Full RealYou core report</li>
+              <li style={wrapText}>Deeper explanations of your type</li>
+              <li style={wrapText}>Relationship & work insights</li>
             </ul>
           </div>
           <button
@@ -254,11 +275,14 @@ export default function ModeSelector({
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            minWidth: 0,
+            overflow: "hidden",
           }}
         >
-          <div>
+          <div style={{ minWidth: 0 }}>
             <h2
               style={{
+                ...wrapText,
                 fontSize: "1.1rem",
                 fontWeight: 700,
                 marginBottom: "0.35rem",
@@ -268,6 +292,7 @@ export default function ModeSelector({
             </h2>
             <p
               style={{
+                ...wrapText,
                 fontSize: "1.4rem",
                 fontWeight: 800,
                 marginBottom: "0.3rem",
@@ -277,15 +302,16 @@ export default function ModeSelector({
             </p>
             <ul
               style={{
+                ...wrapText,
                 fontSize: "0.9rem",
                 color: "#e5e7eb",
                 paddingLeft: "1.1rem",
                 margin: 0,
               }}
             >
-              <li>Everything in Standard</li>
-              <li>Deep Dive Story & Coach Mode</li>
-              <li>Downloadable RealYou PDF report</li>
+              <li style={wrapText}>Everything in Standard</li>
+              <li style={wrapText}>Deep Dive Story & Coach Mode</li>
+              <li style={wrapText}>Downloadable RealYou PDF report</li>
             </ul>
           </div>
           <button
@@ -352,7 +378,7 @@ export default function ModeSelector({
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                 gap: "1rem",
               }}
             >
@@ -368,11 +394,14 @@ export default function ModeSelector({
                   flexDirection: "column",
                   justifyContent: "space-between",
                   minHeight: "170px",
+                  minWidth: 0,
+                  overflow: "hidden",
                 }}
               >
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <h3
                     style={{
+                      ...wrapText,
                       fontSize: "1.1rem",
                       fontWeight: 700,
                       marginBottom: "0.35rem",
@@ -382,6 +411,7 @@ export default function ModeSelector({
                   </h3>
                   <p
                     style={{
+                      ...wrapText,
                       fontSize: "0.92rem",
                       color: "#e5e7eb",
                       marginBottom: "0.75rem",
@@ -412,11 +442,14 @@ export default function ModeSelector({
                   flexDirection: "column",
                   justifyContent: "space-between",
                   minHeight: "170px",
+                  minWidth: 0,
+                  overflow: "hidden",
                 }}
               >
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <h3
                     style={{
+                      ...wrapText,
                       fontSize: "1.1rem",
                       fontWeight: 700,
                       marginBottom: "0.35rem",
@@ -426,6 +459,7 @@ export default function ModeSelector({
                   </h3>
                   <p
                     style={{
+                      ...wrapText,
                       fontSize: "0.92rem",
                       color: "#e5e7eb",
                       marginBottom: "0.75rem",
