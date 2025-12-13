@@ -47,6 +47,17 @@ export default function ModeSelector({
     minWidth: 0,
   };
 
+  // ✅ ONE-TIME / NO SUBS line styles
+  const oneTimeLineStyle = {
+    ...wrapText,
+    fontSize: "0.82rem",
+    color: "#cbd5f5",
+    opacity: 0.95,
+    marginTop: "0.15rem",
+    letterSpacing: "0.02em",
+    textTransform: "uppercase",
+  };
+
   return (
     <div
       className="mode-selector-page"
@@ -158,13 +169,20 @@ export default function ModeSelector({
             >
               $0
             </p>
+
+            {/* ✅ Added: clear "no subs" line even on Free */}
+            <div style={{ ...oneTimeLineStyle, textTransform: "none" }}>
+              No subscriptions • Start instantly
+            </div>
+
             <ul
               style={{
                 ...wrapText,
                 fontSize: "0.9rem",
                 color: "#e5e7eb",
                 paddingLeft: "1.1rem",
-                margin: 0,
+                marginTop: "0.65rem",
+                marginBottom: 0,
               }}
             >
               <li style={wrapText}>Core type & basic trait breakdown</li>
@@ -238,13 +256,18 @@ export default function ModeSelector({
             >
               $6.99
             </p>
+
+            {/* ✅ Added: ONE-TIME / NO SUBS */}
+            <div style={oneTimeLineStyle}>ONE-TIME PURCHASE • NO SUBSCRIPTIONS</div>
+
             <ul
               style={{
                 ...wrapText,
                 fontSize: "0.9rem",
                 color: "#e5e7eb",
                 paddingLeft: "1.1rem",
-                margin: 0,
+                marginTop: "0.65rem",
+                marginBottom: 0,
               }}
             >
               <li style={wrapText}>Full RealYou core report</li>
@@ -300,13 +323,18 @@ export default function ModeSelector({
             >
               $14.99
             </p>
+
+            {/* ✅ Added: ONE-TIME / NO SUBS */}
+            <div style={oneTimeLineStyle}>ONE-TIME PURCHASE • NO SUBSCRIPTIONS</div>
+
             <ul
               style={{
                 ...wrapText,
                 fontSize: "0.9rem",
                 color: "#e5e7eb",
                 paddingLeft: "1.1rem",
-                margin: 0,
+                marginTop: "0.65rem",
+                marginBottom: 0,
               }}
             >
               <li style={wrapText}>Everything in Standard</li>
