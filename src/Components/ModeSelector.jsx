@@ -12,7 +12,7 @@ export default function ModeSelector({
   const isPremium = plan === "premium";
   const isFree = !isStandard && !isPremium;
 
-  // Classic/Modern only appears AFTER a plan is considered chosen
+  // Snapshot style only appears AFTER a plan is considered chosen
   const showStyleCard = hasChosenPlan;
 
   const currentPlanLabel = isPremium
@@ -127,7 +127,7 @@ export default function ModeSelector({
         </p>
       </section>
 
-      {/* ✅ PLAN CARDS INLINE — RESPONSIVE (NO MORE 3 SKINNY BOXES) */}
+      {/* ✅ PLAN CARDS INLINE — RESPONSIVE */}
       <div
         style={{
           maxWidth: "960px",
@@ -383,7 +383,7 @@ export default function ModeSelector({
               color: "#f9fafb",
             }}
           >
-            <header style={{ marginBottom: "1.3rem", textAlign: "left" }}>
+            <header style={{ marginBottom: "1.1rem", textAlign: "left" }}>
               <h2
                 style={{
                   fontSize: "1.5rem",
@@ -393,16 +393,24 @@ export default function ModeSelector({
               >
                 Choose Your Snapshot Style
               </h2>
+
+              {/* ✅ NEW: Better framing so results differences feel intentional */}
               <p
                 style={{
                   fontSize: "0.95rem",
                   color: "#e5e7eb",
-                  marginBottom: "0.4rem",
+                  marginBottom: "0.35rem",
                 }}
               >
-                Same RealYou personality engine — just different wording vibes.
+                Two angles on you — depending on the situation.
               </p>
+
               <p style={{ fontSize: "0.9rem", color: "#9ca3af", margin: 0 }}>
+                <strong>Why two snapshots?</strong> One reflects how you see
+                yourself. The other reflects how you tend to show up socially.
+              </p>
+
+              <p style={{ fontSize: "0.9rem", color: "#9ca3af", marginTop: "0.45rem" }}>
                 Current plan: <strong>{currentPlanLabel}</strong>
               </p>
             </header>
@@ -414,7 +422,7 @@ export default function ModeSelector({
                 gap: "1rem",
               }}
             >
-              {/* CLASSIC MODE */}
+              {/* SELF-PERCEPTION (formerly Classic/Pro) */}
               <div
                 style={{
                   borderRadius: "18px",
@@ -425,7 +433,7 @@ export default function ModeSelector({
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
-                  minHeight: "170px",
+                  minHeight: "180px",
                   minWidth: 0,
                   overflow: "hidden",
                 }}
@@ -434,13 +442,27 @@ export default function ModeSelector({
                   <h3
                     style={{
                       ...wrapText,
-                      fontSize: "1.1rem",
-                      fontWeight: 700,
-                      marginBottom: "0.35rem",
+                      fontSize: "1.12rem",
+                      fontWeight: 800,
+                      marginBottom: "0.25rem",
                     }}
                   >
-                    Classic Mode
+                    Self-Perception Snapshot
                   </h3>
+
+                  <p
+                    style={{
+                      ...wrapText,
+                      fontSize: "0.9rem",
+                      color: "#cbd5f5",
+                      marginTop: 0,
+                      marginBottom: "0.65rem",
+                      opacity: 0.95,
+                    }}
+                  >
+                    How you see yourself
+                  </p>
+
                   <p
                     style={{
                       ...wrapText,
@@ -449,20 +471,21 @@ export default function ModeSelector({
                       marginBottom: "0.75rem",
                     }}
                   >
-                    Clean, timeless wording. Great for work, coaching, job
-                    insight, and serious personal development.
+                    Clean, timeless wording. Great for work, coaching, and serious
+                    self-development.
                   </p>
                 </div>
+
                 <button
                   type="button"
                   className="primary-btn"
                   onClick={() => onSelect("pro")}
                 >
-                  Use Classic Mode
+                  Use Self-Perception
                 </button>
               </div>
 
-              {/* MODERN MODE */}
+              {/* SOCIAL SNAPSHOT (formerly Modern/GenZ) */}
               <div
                 style={{
                   borderRadius: "18px",
@@ -473,7 +496,7 @@ export default function ModeSelector({
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
-                  minHeight: "170px",
+                  minHeight: "180px",
                   minWidth: 0,
                   overflow: "hidden",
                 }}
@@ -482,13 +505,27 @@ export default function ModeSelector({
                   <h3
                     style={{
                       ...wrapText,
-                      fontSize: "1.1rem",
-                      fontWeight: 700,
-                      marginBottom: "0.35rem",
+                      fontSize: "1.12rem",
+                      fontWeight: 800,
+                      marginBottom: "0.25rem",
                     }}
                   >
-                    Modern Mode
+                    Social Snapshot
                   </h3>
+
+                  <p
+                    style={{
+                      ...wrapText,
+                      fontSize: "0.9rem",
+                      color: "#cbd5f5",
+                      marginTop: 0,
+                      marginBottom: "0.65rem",
+                      opacity: 0.95,
+                    }}
+                  >
+                    How you tend to show up socially
+                  </p>
+
                   <p
                     style={{
                       ...wrapText,
@@ -498,15 +535,16 @@ export default function ModeSelector({
                     }}
                   >
                     Relaxed, conversational wording. Great for everyday life,
-                    friendships, dating, and social media sharing.
+                    friendships, dating, and sharing.
                   </p>
                 </div>
+
                 <button
                   type="button"
                   className="secondary-btn"
                   onClick={() => onSelect("genz")}
                 >
-                  Use Modern Mode
+                  Use Social Snapshot
                 </button>
               </div>
             </div>
