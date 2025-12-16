@@ -19,8 +19,12 @@ export default function Assessment({ mode, onComplete, plan }) {
   const [answers, setAnswers] = useState({}); // { [questionId]: number }
   const [isFinished, setIsFinished] = useState(false);
 
-  // ✅ checkpoint banner state
-  const [checkpoint, setCheckpoint] = useState(null); // { title, lines[] }
+  // ✅ PAUSE MODAL state (interruptive checkpoint)
+  const [showPause, setShowPause] = useState(false);
+  const [pauseReady, setPauseReady] = useState(false);
+  const [pauseTitle, setPauseTitle] = useState("");
+  const [pauseLines, setPauseLines] = useState([]);
+  const [pendingNextIndex, setPendingNextIndex] = useState(null);
 
   const didFinishRef = useRef(false);
 
@@ -112,21 +116,49 @@ export default function Assessment({ mode, onComplete, plan }) {
     return null;
   }
 
-  // ✅ Show checkpoint briefly, then proceed
-  function maybeShowCheckpointThen(nextIndex, justAnsweredIndex) {
+  // ✅ Open interruptive pause modal; user must continue
+  function openCheckpointPause(nextIndex, justAnsweredIndex) {
     const copy = getCheckpointCopy(justAnsweredIndex);
+
+    // If no copy exists, just proceed normally
     if (!copy) {
       setCurrentIndex(nextIndex);
       return;
     }
 
-    setCheckpoint(copy);
+    setPauseTitle(copy.title);
+    setPauseLines(copy.lines || []);
+    setPendingNextIndex(nextIndex);
 
-    // Keep it short so it motivates without feeling like a popup
-    setTimeout(() => {
-      setCheckpoint(null);
-      setCurrentIndex(nextIndex);
-    }, 1100);
+    setPauseReady(false);
+    setShowPause(true);
+  }
+
+  // ✅ When pause modal opens, enforce minimum read time (mobile-visible)
+  useEffect(() => {
+    if (!showPause) return;
+
+    const t = setTimeout(() => {
+      setPauseReady(true);
+    }, 2000); // ✅ 2 seconds minimum
+
+    return () => clearTimeout(t);
+  }, [showPause]);
+
+  function handleContinueAfterPause() {
+    if (!pauseReady) return;
+
+    setShowPause(false);
+
+    // advance to the stored next index
+    if (typeof pendingNextIndex === "number") {
+      setCurrentIndex(pendingNextIndex);
+    }
+
+    setPendingNextIndex(null);
+    setPauseTitle("");
+    setPauseLines([]);
+    setPauseReady(false);
   }
 
   // ---- AUTO-ADVANCE HANDLER ----
@@ -147,22 +179,18 @@ export default function Assessment({ mode, onComplete, plan }) {
 
     // Small delay so the user sees the selection before moving
     setTimeout(() => {
-      // ✅ boundary check: after Q14/Q28/Q42 show checkpoint then continue
+      // only proceed if we’re still on the same index
+      if (currentIndex !== indexAtClick) return;
+
       const nextIndex = indexAtClick + 1;
 
-      setCurrentIndex((old) => {
-        // only proceed if we’re still on the same index
-        if (old !== indexAtClick) return old;
+      // ✅ boundary check: after Q14/Q28/Q42 show interruptive pause
+      if (CHECKPOINTS.has(indexAtClick)) {
+        openCheckpointPause(nextIndex, indexAtClick);
+        return;
+      }
 
-        if (CHECKPOINTS.has(indexAtClick)) {
-          // temporarily keep the same question while we show checkpoint
-          // then we will advance via maybeShowCheckpointThen
-          maybeShowCheckpointThen(nextIndex, indexAtClick);
-          return old;
-        }
-
-        return nextIndex;
-      });
+      setCurrentIndex(nextIndex);
     }, 150);
   }
 
@@ -174,7 +202,7 @@ export default function Assessment({ mode, onComplete, plan }) {
       const nextIndex = currentIndex + 1;
 
       if (CHECKPOINTS.has(currentIndex)) {
-        maybeShowCheckpointThen(nextIndex, currentIndex);
+        openCheckpointPause(nextIndex, currentIndex);
         return;
       }
 
@@ -204,39 +232,108 @@ export default function Assessment({ mode, onComplete, plan }) {
         overflowX: "hidden", // ✅ stop any horizontal spill
       }}
     >
-      {/* ✅ Checkpoint banner (non-blocking) */}
-      {checkpoint && (
+      {/* ✅ Interruptive Checkpoint Pause Modal */}
+      {showPause && (
         <div
           style={{
-            position: "absolute",
-            top: "16px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "min(900px, calc(100% - 2rem))",
-            borderRadius: "18px",
-            padding: "0.9rem 1rem",
-            background: "rgba(2, 6, 23, 0.92)",
-            border: "1px solid rgba(99, 102, 241, 0.35)",
-            boxShadow: "0 18px 60px rgba(0,0,0,0.65)",
-            color: "#f9fafb",
-            zIndex: 50,
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.78)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "18px",
+            zIndex: 9999,
           }}
+          role="dialog"
+          aria-modal="true"
         >
-          <div style={{ fontWeight: 900, marginBottom: "0.25rem" }}>
-            {checkpoint.title}
-          </div>
-          {checkpoint.lines.map((line) => (
+          <div
+            style={{
+              width: "min(560px, 100%)",
+              borderRadius: "22px",
+              padding: "18px",
+              background: "rgba(2, 6, 23, 0.96)",
+              border: "1px solid rgba(99, 102, 241, 0.35)",
+              boxShadow: "0 18px 70px rgba(0,0,0,0.75)",
+              color: "#f9fafb",
+            }}
+          >
+            {/* Progress bar */}
             <div
-              key={line}
               style={{
-                fontSize: "0.92rem",
-                color: "#e5e7eb",
-                lineHeight: 1.25,
+                height: "8px",
+                borderRadius: "999px",
+                background: "rgba(255,255,255,0.10)",
+                overflow: "hidden",
+                marginBottom: "14px",
               }}
             >
-              {line}
+              <div
+                style={{
+                  height: "100%",
+                  width: `${Math.round(((currentIndex + 1) / total) * 100)}%`,
+                  borderRadius: "999px",
+                  background: "rgba(255,255,255,0.88)",
+                  transition: "width 250ms ease",
+                }}
+              />
             </div>
-          ))}
+
+            <div style={{ fontWeight: 900, fontSize: "1.15rem", marginBottom: "10px" }}>
+              {pauseTitle}
+            </div>
+
+            <div style={{ marginBottom: "14px" }}>
+              {pauseLines.map((line) => (
+                <div
+                  key={line}
+                  style={{
+                    fontSize: "1.0rem",
+                    color: "#e5e7eb",
+                    lineHeight: 1.45,
+                    marginBottom: "6px",
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {line}
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleContinueAfterPause}
+              disabled={!pauseReady}
+              style={{
+                width: "100%",
+                border: "none",
+                borderRadius: "16px",
+                padding: "12px 14px",
+                fontSize: "1.02rem",
+                fontWeight: 900,
+                cursor: pauseReady ? "pointer" : "not-allowed",
+                background: pauseReady ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0.35)",
+                color: pauseReady ? "#0f172a" : "rgba(15, 23, 42, 0.6)",
+              }}
+            >
+              Continue →
+            </button>
+
+            {!pauseReady && (
+              <div
+                style={{
+                  marginTop: "10px",
+                  textAlign: "center",
+                  fontSize: "0.92rem",
+                  color: "rgba(255,255,255,0.55)",
+                }}
+              >
+                Hold up…
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -343,6 +440,7 @@ export default function Assessment({ mode, onComplete, plan }) {
                 key={val}
                 type="button"
                 onClick={() => handleSelect(val)}
+                disabled={isFinished || showPause}
                 style={{
                   width: "100%",
                   padding: "0.9rem 0.75rem",
@@ -353,7 +451,7 @@ export default function Assessment({ mode, onComplete, plan }) {
                   textAlign: "center",
                   fontSize: "0.92rem",
                   fontWeight: 700,
-                  cursor: "pointer",
+                  cursor: isFinished || showPause ? "default" : "pointer",
 
                   // ✅ allow wrapping on small screens
                   whiteSpace: "normal",
@@ -368,6 +466,7 @@ export default function Assessment({ mode, onComplete, plan }) {
                   boxShadow: isSelected
                     ? `0 16px 40px rgba(56,189,248,0.45)`
                     : "0 10px 30px rgba(0,0,0,0.6)",
+                  opacity: isFinished || showPause ? 0.85 : 1,
                 }}
               >
                 {/* ✅ label only — no numbers */}
@@ -402,17 +501,17 @@ export default function Assessment({ mode, onComplete, plan }) {
         >
           <button
             onClick={handleBack}
-            disabled={currentIndex === 0 || isFinished}
+            disabled={currentIndex === 0 || isFinished || showPause}
             style={{
               padding: "0.75rem 1.5rem",
               borderRadius: "999px",
               background:
-                currentIndex === 0 || isFinished ? "#27272a" : "#334155",
+                currentIndex === 0 || isFinished || showPause ? "#27272a" : "#334155",
               color: "#e5e7eb",
-              cursor: currentIndex === 0 || isFinished ? "default" : "pointer",
+              cursor: currentIndex === 0 || isFinished || showPause ? "default" : "pointer",
               border: "none",
               fontWeight: 600,
-              opacity: currentIndex === 0 || isFinished ? 0.5 : 1,
+              opacity: currentIndex === 0 || isFinished || showPause ? 0.5 : 1,
               width: "min(220px, 100%)",
             }}
           >
@@ -421,18 +520,18 @@ export default function Assessment({ mode, onComplete, plan }) {
 
           <button
             onClick={handleNext}
-            disabled={!selected || isFinished}
+            disabled={!selected || isFinished || showPause}
             style={{
               padding: "0.75rem 1.9rem",
               borderRadius: "999px",
-              background: !selected || isFinished ? "#27272a" : "#e0f2fe",
-              color: !selected || isFinished ? "#a1a1aa" : "#0f172a",
-              cursor: !selected || isFinished ? "default" : "pointer",
+              background: !selected || isFinished || showPause ? "#27272a" : "#e0f2fe",
+              color: !selected || isFinished || showPause ? "#a1a1aa" : "#0f172a",
+              cursor: !selected || isFinished || showPause ? "default" : "pointer",
               border: "none",
               fontWeight: 800,
-              opacity: !selected || isFinished ? 0.7 : 1,
+              opacity: !selected || isFinished || showPause ? 0.7 : 1,
               boxShadow:
-                !selected || isFinished
+                !selected || isFinished || showPause
                   ? "none"
                   : "0 18px 50px rgba(59,130,246,0.55)",
               width: "min(260px, 100%)",
