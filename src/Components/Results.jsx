@@ -193,7 +193,6 @@ const MBTI_LETTER_INFO = {
 };
 
 // 🔹 Helpers for compatibility engine
-
 function normalizeMbtiType(raw) {
   if (!raw) return "";
   return raw.toUpperCase().replace(/[^A-Z]/g, "");
@@ -399,7 +398,7 @@ export default function Results({
   onUpgradeClick,
   hasCompletedAssessment, // reserved for future logic
   onDownloadPdf, // Premium PDF handler
-  justUpgradedTier, // "standard" | "premium" when arriving back from Stripe
+  justUpgradedTier, // "standard" | "premium" | "premium_upgrade" when arriving back from Stripe
 }) {
   const safeResults = results || {};
   const { mbtiType, traitScores = {}, profile = {} } = safeResults;
@@ -409,6 +408,11 @@ export default function Results({
   const isPremium = plan === "premium";
 
   const [premiumView, setPremiumView] = useState("story"); // "story" | "coach"
+
+  // Treat premium_upgrade as a premium unlock for messaging
+  const upgradedToPremium =
+    justUpgradedTier === "premium" || justUpgradedTier === "premium_upgrade";
+
   const [showUpgradeToast, setShowUpgradeToast] = useState(!!justUpgradedTier);
 
   // NEW: compatibility state (Premium)
@@ -465,15 +469,12 @@ export default function Results({
     (Array.isArray(profile.blindspots) && profile.blindspots[0]) ||
     "your most common stress habits";
 
-  const upgradeTitle =
-    justUpgradedTier === "premium"
-      ? "Premium unlocked"
-      : "Standard unlocked";
+  // Upgrade toast copy
+  const upgradeTitle = upgradedToPremium ? "✅ Premium unlocked" : "Standard unlocked";
 
-  const upgradeBody =
-    justUpgradedTier === "premium"
-      ? "You’ve unlocked the full Deep Dive: Story Mode, Coach Mode, trait flexibility insights, and the downloadable PDF."
-      : "You’ve unlocked the full core report: all strengths, blindspots, relationship style, communication tips, and growth focus.";
+  const upgradeBody = upgradedToPremium
+    ? "— your full RealYou profile is now available"
+    : "You’ve unlocked the full core report: all strengths, blindspots, relationship style, communication tips, and growth focus.";
 
   // Split MBTI into letters for explanation
   const mbtiLetters = (mbtiType || "").split("");
@@ -670,10 +671,9 @@ export default function Results({
               marginBottom: "1.1rem",
               padding: "0.85rem 1rem",
               borderRadius: "999px",
-              background:
-                justUpgradedTier === "premium"
-                  ? "linear-gradient(90deg, rgba(56,189,248,0.18), rgba(129,140,248,0.3))"
-                  : "linear-gradient(90deg, rgba(59,130,246,0.22), rgba(96,165,250,0.3))",
+              background: upgradedToPremium
+                ? "linear-gradient(90deg, rgba(34,197,94,0.16), rgba(129,140,248,0.28))"
+                : "linear-gradient(90deg, rgba(59,130,246,0.22), rgba(96,165,250,0.3))",
               border: "1px solid rgba(129,140,248,0.7)",
               display: "flex",
               alignItems: "center",
@@ -728,6 +728,7 @@ export default function Results({
             >
               Standard Plan
             </p>
+
             <p
               style={{
                 fontSize: "0.9rem",
@@ -735,14 +736,23 @@ export default function Results({
                 color: "#e5e7eb",
               }}
             >
-              You&apos;ve unlocked the full insight suite — deeper explanations
-              and actionable takeaways to help you understand your natural
-              patterns.
+              You&apos;ve unlocked most of your RealYou profile. Finish the deep
+              dive for <strong>$8</strong>.
             </p>
+
+            <button
+              type="button"
+              className="primary-btn"
+              onClick={() => onUpgradeClick && onUpgradeClick("premium")}
+            >
+              Finish the Deep Dive — $8 Upgrade
+            </button>
+
             <p
               style={{
                 fontSize: "0.88rem",
-                margin: 0,
+                marginTop: "0.8rem",
+                marginBottom: 0,
                 color: "#c7d2fe",
               }}
             >
@@ -837,18 +847,15 @@ export default function Results({
                     color: "#dbeafe",
                   }}
                 >
-                  You&apos;ve unlocked the full core{" "}
-                  <strong>RealYou report</strong>. Upgrade to{" "}
-                  <strong>Premium</strong> to add the{" "}
-                  <strong>Deep Dive Story + Coach Mode</strong> and trait
-                  flexibility insights, plus your full downloadable PDF.
+                  You&apos;ve unlocked most of your RealYou profile. Finish the
+                  deep dive for <strong>$8</strong>.
                 </p>
                 <button
                   type="button"
                   className="primary-btn"
                   onClick={() => onUpgradeClick && onUpgradeClick("premium")}
                 >
-                  Unlock Premium Deep Dive – $14.99
+                  Finish Deep Dive – $8 Upgrade
                 </button>
                 <p
                   style={{
@@ -1102,7 +1109,7 @@ export default function Results({
                   className="primary-btn"
                   onClick={() => onUpgradeClick && onUpgradeClick("premium")}
                 >
-                  Upgrade to Premium Deep Dive – $14.99
+                  Finish Deep Dive – $8 Upgrade
                 </button>
               )}
             </div>
@@ -1429,8 +1436,7 @@ export default function Results({
                         }}
                       >
                         You ({mbtiType}) + {compatResult.otherType} →{" "}
-                        {compatResult.score}% Natural Fit (
-                        {compatResult.label})
+                        {compatResult.score}% Natural Fit ({compatResult.label})
                       </p>
 
                       {/* Good Fit vs Challenge bar */}
@@ -1448,14 +1454,8 @@ export default function Results({
                             color: "#e5e7eb",
                           }}
                         >
-                          <span>
-                            Good Fit: {compatResult.score}
-                            %
-                          </span>
-                          <span>
-                            Challenging: {100 - compatResult.score}
-                            %
-                          </span>
+                          <span>Good Fit: {compatResult.score}%</span>
+                          <span>Challenging: {100 - compatResult.score}%</span>
                         </div>
                         <div
                           style={{
@@ -1513,12 +1513,7 @@ export default function Results({
                               ))}
                             </ul>
                           ) : (
-                            <p
-                              style={{
-                                margin: 0,
-                                fontSize: "0.86rem",
-                              }}
-                            >
+                            <p style={{ margin: 0, fontSize: "0.86rem" }}>
                               This pairing can bring balance when you both stay
                               curious instead of assuming you&apos;re the only
                               one who&apos;s right.
@@ -1549,12 +1544,7 @@ export default function Results({
                               ))}
                             </ul>
                           ) : (
-                            <p
-                              style={{
-                                margin: 0,
-                                fontSize: "0.86rem",
-                              }}
-                            >
+                            <p style={{ margin: 0, fontSize: "0.86rem" }}>
                               The main friction here will be pace, decisions,
                               and how directly you talk about what you both
                               need.
@@ -1604,11 +1594,7 @@ export default function Results({
                       pointerEvents: "none",
                     }}
                   />
-                  <div
-                    style={{
-                      position: "relative",
-                    }}
-                  >
+                  <div style={{ position: "relative" }}>
                     <h3
                       style={{
                         fontSize: "0.96rem",
@@ -1628,18 +1614,16 @@ export default function Results({
                       In <strong>Premium</strong> you can plug in a friend,
                       partner, or situationship&apos;s type and see a{" "}
                       <strong>Good Fit vs Challenge %</strong>, with a breakdown
-                      of where your combo wins and where it blows up fast. It&apos;s
-                      designed to help you have real conversations — not just
-                      vibes and guessing.
+                      of where your combo wins and where it blows up fast.
+                      It&apos;s designed to help you have real conversations —
+                      not just vibes and guessing.
                     </p>
                     <button
                       type="button"
                       className="primary-btn"
-                      onClick={() =>
-                        onUpgradeClick && onUpgradeClick("premium")
-                      }
+                      onClick={() => onUpgradeClick && onUpgradeClick("premium")}
                     >
-                      Unlock Live Compatibility Matchups in Premium – $14.99
+                      Finish Deep Dive — $8 Upgrade
                     </button>
                   </div>
                 </div>
@@ -2076,12 +2060,7 @@ export default function Results({
                           <strong>Big life events that move it:</strong>{" "}
                           {line.major}
                         </p>
-                        <p
-                          style={{
-                            margin: 0,
-                            color: "#9ca3af",
-                          }}
-                        >
+                        <p style={{ margin: 0, color: "#9ca3af" }}>
                           <strong>Smaller daily shifts that nudge it:</strong>{" "}
                           {line.minor}
                         </p>
@@ -2142,8 +2121,8 @@ export default function Results({
                   time, or money — and how to stop.
                 </li>
                 <li>
-                  A &quot;flexibility map&quot; that shows which traits are most likely
-                  to shift as your life changes.
+                  A &quot;flexibility map&quot; that shows which traits are most
+                  likely to shift as your life changes.
                 </li>
               </ul>
               <button
@@ -2151,7 +2130,7 @@ export default function Results({
                 className="primary-btn"
                 onClick={() => onUpgradeClick && onUpgradeClick("premium")}
               >
-                Unlock Full Premium Deep Dive
+                {isStandard ? "Finish Deep Dive — $8 Upgrade" : "Unlock Full Premium Deep Dive"}
               </button>
             </div>
           )}
@@ -2167,11 +2146,7 @@ export default function Results({
             marginTop: "0.5rem",
           }}
         >
-          <button
-            type="button"
-            className="secondary-btn"
-            onClick={onRestart}
-          >
+          <button type="button" className="secondary-btn" onClick={onRestart}>
             Retake Assessment
           </button>
 
@@ -2197,10 +2172,11 @@ export default function Results({
                 className="primary-btn"
                 onClick={() => onUpgradeClick && onUpgradeClick("premium")}
               >
-                Go Premium for Full Deep Dive
+                {isStandard ? "Finish Deep Dive — $8 Upgrade" : "Go Premium for Full Deep Dive"}
               </button>
             )}
           </div>
+
           {!isPremium && (
             <p
               style={{

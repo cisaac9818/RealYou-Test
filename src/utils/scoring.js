@@ -4,7 +4,7 @@ import questions from "../data/questions.json";
 
 /**
  * answers: Array<{ id: string, value: 1|2|3|4|5 }>
- * We reconstruct the dimension (EI/SN/TF/JP) from questions.json by id.
+ * We reconstruct dimension + positiveTrait from questions.json by id.
  */
 export function scoreAssessment(answers) {
   const traitScores = {
@@ -14,28 +14,50 @@ export function scoreAssessment(answers) {
     JP: 0, // + = J, - = P
   };
 
-  // Build map from question id -> dimension ("EI", "SN", "TF", "JP")
-  const dimensionById = {};
+  // "Positive" direction letter for each dimension (+ side in traitScores)
+  const POSITIVE_LETTER = {
+    EI: "E",
+    SN: "N",
+    TF: "T",
+    JP: "J",
+  };
+
+  // Build map from question id -> { dimension, positiveTrait }
+  const metaById = {};
   questions.forEach((q) => {
     if (q.id && q.dimension) {
-      dimensionById[q.id] = q.dimension;
+      metaById[q.id] = {
+        dimension: q.dimension,
+        positiveTrait: q.positiveTrait, // may be undefined in old packs (we handle that)
+      };
     }
   });
 
-  // Walk through the answers the user gave
   answers.forEach((ans) => {
     const { id, value } = ans;
-    const dimension = dimensionById[id];
-    if (!dimension) return;
+    const meta = metaById[id];
+    if (!meta) return;
 
-    // Only update if this dimension is one of the four keys
+    const { dimension, positiveTrait } = meta;
     if (!Object.prototype.hasOwnProperty.call(traitScores, dimension)) return;
 
     const numeric = Number(value);
     if (Number.isNaN(numeric)) return;
 
-    const delta = numeric - 3; // 1..5 -> -2..+2
-    traitScores[dimension] += delta;
+    // 1..5 -> -2..+2
+    const delta = numeric - 3;
+
+    // If pack doesn't provide positiveTrait (older files), fall back to old behavior
+    // (agree pushes the "+" side).
+    if (!positiveTrait) {
+      traitScores[dimension] += delta;
+      return;
+    }
+
+    // If the question’s positiveTrait matches the "+" letter, keep delta sign.
+    // Otherwise flip it (agree pushes the negative side).
+    const sign = positiveTrait === POSITIVE_LETTER[dimension] ? 1 : -1;
+    traitScores[dimension] += sign * delta;
   });
 
   const mbtiType = inferMbtiType(traitScores);

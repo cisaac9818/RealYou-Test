@@ -1,11 +1,16 @@
 // src/Components/LandingPage.jsx
-import React from "react";
+import React, { useState } from "react";
 
 export default function LandingPage({
   onStartTest, // optional: start the free test (e.g. setStage("mode"))
   onStandardClick, // optional: trigger Standard upgrade flow
   onPremiumClick, // optional: trigger Premium upgrade flow
+  onRecoverByEmail, // ✅ NEW: restore results by email
 }) {
+  const [showRecover, setShowRecover] = useState(false);
+  const [recoverEmail, setRecoverEmail] = useState("");
+  const [recoverError, setRecoverError] = useState("");
+
   function scrollToId(id) {
     const el = document.getElementById(id);
     if (el) {
@@ -26,6 +31,25 @@ export default function LandingPage({
   function handlePremiumClick() {
     if (onPremiumClick) onPremiumClick();
     else scrollToId("plans");
+  }
+
+  function toggleRecover() {
+    setRecoverError("");
+    setShowRecover((v) => !v);
+  }
+
+  function handleRecoverSubmit(e) {
+    e.preventDefault();
+    const email = String(recoverEmail || "").trim().toLowerCase();
+    const ok = /^\S+@\S+\.\S+$/.test(email);
+
+    if (!ok) {
+      setRecoverError("Enter the email you used before.");
+      return;
+    }
+
+    setRecoverError("");
+    if (onRecoverByEmail) onRecoverByEmail(email);
   }
 
   // ✅ Shared line style for "one-time / no subs"
@@ -144,7 +168,7 @@ export default function LandingPage({
                 flexWrap: "wrap",
                 gap: "0.8rem",
                 alignItems: "center",
-                marginBottom: "0.9rem",
+                marginBottom: "0.55rem",
               }}
             >
               <button
@@ -162,6 +186,96 @@ export default function LandingPage({
               >
                 See Plans &amp; Deep Dive
               </button>
+            </div>
+
+            {/* ✅ NEW: Recover previous snapshot */}
+            <div style={{ marginBottom: "0.95rem" }}>
+              {/* ✅ FIX: bigger + more prominent */}
+              <div style={{ marginTop: "0.35rem" }}>
+                <button
+                  type="button"
+                  onClick={toggleRecover}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    padding: 0,
+                    cursor: "pointer",
+                    color: "#e0e7ff",
+                    textDecoration: "underline",
+                    fontSize: "1.05rem",
+                    fontWeight: 600,
+                    letterSpacing: "0.01em",
+                    textUnderlineOffset: "3px",
+                    textDecorationThickness: "2px",
+                  }}
+                >
+                  {showRecover ? "Hide recovery" : "Recover my previous Snapshot"}
+                </button>
+              </div>
+
+              {showRecover && (
+                <form onSubmit={handleRecoverSubmit} style={{ marginTop: "0.7rem" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
+                    <input
+                      type="email"
+                      value={recoverEmail}
+                      onChange={(e) => setRecoverEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      style={{
+                        flex: "1 1 240px",
+                        padding: "0.7rem 0.85rem",
+                        borderRadius: "14px",
+                        background: "rgba(15,23,42,0.85)",
+                        border: recoverError
+                          ? "1px solid rgba(248,113,113,0.85)"
+                          : "1px solid rgba(148,163,184,0.45)",
+                        color: "#e5e7eb",
+                        outline: "none",
+                      }}
+                    />
+                    <button
+                      type="submit"
+                      className="primary-btn btn-glow"
+                      style={{ padding: "0.7rem 1rem", borderRadius: "999px" }}
+                      disabled={!onRecoverByEmail}
+                      title={
+                        onRecoverByEmail
+                          ? "Restore your saved Snapshot"
+                          : "Restore is not wired yet"
+                      }
+                    >
+                      Restore
+                    </button>
+                  </div>
+
+                  {recoverError && (
+                    <div
+                      style={{
+                        marginTop: "0.55rem",
+                        color: "#fecaca",
+                        background: "rgba(127,29,29,0.35)",
+                        border: "1px solid rgba(248,113,113,0.7)",
+                        padding: "0.5rem 0.65rem",
+                        borderRadius: "12px",
+                        fontSize: "0.86rem",
+                        maxWidth: "520px",
+                      }}
+                    >
+                      {recoverError}
+                    </div>
+                  )}
+
+                  <div
+                    style={{
+                      marginTop: "0.5rem",
+                      color: "#9ca3af",
+                      fontSize: "0.82rem",
+                    }}
+                  >
+                    Use the same email you entered when you revealed results.
+                  </div>
+                </form>
+              )}
             </div>
 
             <p
@@ -553,7 +667,6 @@ export default function LandingPage({
                   Get your type and a full snapshot of your core wiring — free.
                 </p>
 
-                {/* ✅ Added: free clarity line */}
                 <div style={freeLineStyle}>No card required • Start instantly</div>
 
                 <ul
@@ -626,7 +739,6 @@ export default function LandingPage({
                   Deeper explanations, full lists, and clear next steps.
                 </p>
 
-                {/* ✅ Added: one-time / no subs */}
                 <div style={oneTimeLineStyle}>
                   ONE-TIME PURCHASE • NO SUBSCRIPTIONS
                 </div>
@@ -702,7 +814,6 @@ export default function LandingPage({
                   The no-BS full breakdown with live tools and a PDF you can keep.
                 </p>
 
-                {/* ✅ Added: one-time / no subs */}
                 <div style={oneTimeLineStyle}>
                   ONE-TIME PURCHASE • NO SUBSCRIPTIONS
                 </div>

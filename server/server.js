@@ -7,6 +7,9 @@ import PDFDocument from "pdfkit";
 import { Buffer } from "buffer";
 import nodemailer from "nodemailer";
 
+console.log("✅ LOADED server.js (duplicate-fix) —", new Date().toISOString());
+console.log("✅ LOADED server.js version: 2025-12-16 duplicate-fix-v3 (snapshot routes)");
+
 dotenv.config();
 
 const app = express();
@@ -31,6 +34,20 @@ app.use(express.json());
 app.get("/health", (req, res) => {
   res.json({ ok: true });
 });
+
+function normalizeEmail(email) {
+  return String(email || "").trim().toLowerCase();
+}
+
+function getSupabaseServerConfig() {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    return null;
+  }
+  return { supabaseUrl, supabaseServiceKey };
+}
 
 // -----------------------------
 // Stripe
@@ -72,14 +89,14 @@ app.post("/api/create-checkout-session", async (req, res) => {
 });
 
 // ----------------------------------------------
-// NEW: Lead capture -> Supabase + Gmail notify
+// Lead capture -> Supabase + Gmail notify
 // ----------------------------------------------
 /**
  * Requires these SERVER env vars (do NOT put service key in Vite):
  *  SUPABASE_URL=https://xxxxx.supabase.co
  *  SUPABASE_SERVICE_ROLE_KEY=xxxxx
  *
- * You already have these in .env (based on your upload):
+ * Gmail env vars (optional):
  *  GMAIL_USER=...
  *  GMAIL_APP_PASSWORD=...
  *  ADMIN_NOTIFICATION_EMAIL=...
@@ -93,18 +110,17 @@ app.post("/api/lead-capture", async (req, res) => {
       return res.status(400).json({ error: "Missing email" });
     }
 
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseServiceKey) {
+    const cfg = getSupabaseServerConfig();
+    if (!cfg) {
       return res.status(500).json({
-        error:
-          "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY on the server.",
+        error: "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY on the server.",
       });
     }
+    const { supabaseUrl, supabaseServiceKey } = cfg;
+
+    const cleanEmail = normalizeEmail(payload.email);
 
     // 1) Insert into Supabase securely (server-side)
-    // NOTE: Node 18+ has global fetch. If you're on older Node, upgrade.
     const insertRes = await fetch(`${supabaseUrl}/rest/v1/realyou_leads`, {
       method: "POST",
       headers: {
@@ -115,11 +131,13 @@ app.post("/api/lead-capture", async (req, res) => {
       },
       body: JSON.stringify({
         name: payload.name ?? null,
-        email: payload.email,
+        email: cleanEmail,
         agree_to_emails: payload.agree_to_emails ?? payload.agreeToEmails ?? null,
         plan_at_signup: payload.plan_at_signup ?? payload.planAtSignup ?? null,
         has_completed_assessment:
-          payload.has_completed_assessment ?? payload.hasCompletedAssessment ?? false,
+          payload.has_completed_assessment ??
+          payload.hasCompletedAssessment ??
+          false,
         referral_code: payload.referral_code ?? null,
         utm_source: payload.utm_source ?? null,
         utm_medium: payload.utm_medium ?? null,
@@ -130,6 +148,21 @@ app.post("/api/lead-capture", async (req, res) => {
 
     if (!insertRes.ok) {
       const text = await insertRes.text();
+
+      // ✅ treat duplicate email as success (status OR body)
+      const isDuplicate =
+        insertRes.status === 409 ||
+        text.includes('"code":"23505"') ||
+        text.includes("duplicate key value") ||
+        text.includes("realyou_leads_email_unique") ||
+        text.includes("Key (email)=");
+
+      if (isDuplicate) {
+        console.log("[lead-capture] Duplicate email. Treating as success.");
+        // Still continue to Gmail notify? Usually no. We’ll just return success.
+        return res.status(200).json({ ok: true, duplicate: true });
+      }
+
       console.error("[lead-capture] Supabase insert failed:", insertRes.status, text);
       return res.status(500).json({
         error: "Supabase insert failed",
@@ -138,7 +171,7 @@ app.post("/api/lead-capture", async (req, res) => {
       });
     }
 
-    // 2) Send admin notification via Gmail (optional but recommended)
+    // 2) Send admin notification via Gmail (optional)
     const gmailUser = process.env.GMAIL_USER;
     const gmailPass = process.env.GMAIL_APP_PASSWORD;
     const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL;
@@ -149,12 +182,12 @@ app.post("/api/lead-capture", async (req, res) => {
         auth: { user: gmailUser, pass: gmailPass },
       });
 
-      const subject = `New RealYou lead: ${payload.email}`;
+      const subject = `New RealYou lead: ${cleanEmail}`;
       const body = `
 New lead captured:
 
 Name: ${payload.name || ""}
-Email: ${payload.email || ""}
+Email: ${cleanEmail || ""}
 Plan at signup: ${payload.plan_at_signup || payload.planAtSignup || ""}
 Completed assessment: ${
         payload.has_completed_assessment || payload.hasCompletedAssessment ? "Yes" : "No"
@@ -185,6 +218,120 @@ Captured at: ${payload.captured_at || ""}
   } catch (err) {
     console.error("[lead-capture] route error:", err);
     return res.status(500).json({ error: "Lead capture failed" });
+  }
+});
+
+// ----------------------------------------------
+// ✅ NEW: Save result_snapshot securely (SERVER SIDE)
+// ----------------------------------------------
+/**
+ * This fixes your RLS 401 problem by NEVER writing snapshots from the browser.
+ * Frontend will call this route instead.
+ */
+app.post("/api/save-snapshot", async (req, res) => {
+  try {
+    const { email, name, results } = req.body || {};
+    const cleanEmail = normalizeEmail(email);
+
+    if (!cleanEmail) return res.status(400).json({ error: "Missing email" });
+    if (!results) return res.status(400).json({ error: "Missing results snapshot" });
+
+    const cfg = getSupabaseServerConfig();
+    if (!cfg) {
+      return res.status(500).json({
+        error: "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY on the server.",
+      });
+    }
+    const { supabaseUrl, supabaseServiceKey } = cfg;
+
+    const payload = {
+      email: cleanEmail,
+      name: name || null,
+      result_snapshot: results,
+      last_completed_at: new Date().toISOString(),
+    };
+
+    // Upsert by email (merge)
+    const upsertRes = await fetch(
+      `${supabaseUrl}/rest/v1/realyou_leads?on_conflict=email`,
+      {
+        method: "POST",
+        headers: {
+          apikey: supabaseServiceKey,
+          Authorization: `Bearer ${supabaseServiceKey}`,
+          "Content-Type": "application/json",
+          Prefer: "resolution=merge-duplicates,return=minimal",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!upsertRes.ok) {
+      const text = await upsertRes.text();
+      console.error("[save-snapshot] Supabase upsert failed:", upsertRes.status, text);
+      return res.status(500).json({
+        error: "Snapshot upsert failed",
+        status: upsertRes.status,
+        details: text,
+      });
+    }
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("[save-snapshot] route error:", err);
+    return res.status(500).json({ error: "Save snapshot failed" });
+  }
+});
+
+// ----------------------------------------------
+// ✅ NEW: Recover snapshot securely by email (SERVER SIDE)
+// ----------------------------------------------
+app.get("/api/recover-snapshot", async (req, res) => {
+  try {
+    const cleanEmail = normalizeEmail(req.query?.email);
+    if (!cleanEmail) return res.status(400).json({ error: "Missing email" });
+
+    const cfg = getSupabaseServerConfig();
+    if (!cfg) {
+      return res.status(500).json({
+        error: "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY on the server.",
+      });
+    }
+    const { supabaseUrl, supabaseServiceKey } = cfg;
+
+    const url =
+      `${supabaseUrl}/rest/v1/realyou_leads` +
+      `?select=email,name,result_snapshot,last_completed_at` +
+      `&email=eq.${encodeURIComponent(cleanEmail)}` +
+      `&limit=1`;
+
+    const readRes = await fetch(url, {
+      method: "GET",
+      headers: {
+        apikey: supabaseServiceKey,
+        Authorization: `Bearer ${supabaseServiceKey}`,
+      },
+    });
+
+    if (!readRes.ok) {
+      const text = await readRes.text();
+      console.error("[recover-snapshot] Supabase read failed:", readRes.status, text);
+      return res.status(500).json({
+        error: "Recover snapshot failed",
+        status: readRes.status,
+        details: text,
+      });
+    }
+
+    const rows = await readRes.json();
+    if (!rows || !rows.length || !rows[0]?.result_snapshot) {
+      return res.status(404).json({ ok: false, message: "No snapshot found." });
+    }
+
+    return res.json({ ok: true, row: rows[0] });
+  } catch (err) {
+    console.error("[recover-snapshot] route error:", err);
+    return res.status(500).json({ error: "Recover snapshot failed" });
   }
 });
 
@@ -358,23 +505,6 @@ app.post("/api/generate-pdf", async (req, res) => {
       (a, b) => Math.abs(a.value || 0) - Math.abs(b.value || 0)
     );
 
-    const joinedCareers = (profile.idealCareers || []).join(", ");
-    const bestTypes = (profile.compatibility?.bestTypes || []).join(", ");
-    const challengingTypes = (profile.compatibility?.challengingTypes || []).join(
-      ", "
-    );
-    const friendsPerception =
-      profile.friendsPerception ||
-      "Someone people watch, even if they don’t always say it out loud.";
-
-    const dominantTrait =
-      (profile.coreTraits && profile.coreTraits[0]) || "your strongest traits";
-    const secondaryTrait =
-      (profile.coreTraits && profile.coreTraits[1]) || "your backup traits";
-    const topBlindspot =
-      (profile.blindspots && profile.blindspots[0]) ||
-      "your most common stress habits";
-
     const doc = new PDFDocument({ margin: 50 });
 
     // Buffer the PDF output
@@ -385,33 +515,27 @@ app.post("/api/generate-pdf", async (req, res) => {
       res
         .writeHead(200, {
           "Content-Type": "application/pdf",
-          "Content-Disposition":
-            'attachment; filename="realyou-personality-report.pdf"',
+          "Content-Disposition": 'attachment; filename="realyou-personality-report.pdf"',
           "Content-Length": pdfData.length,
         })
         .end(pdfData);
     });
 
-    // ------------- PAGE 1: CORE / FREE + STANDARD INFO -------------
+    // ------------- PAGE 1 -------------
     doc.fontSize(22).text("RealYou Test – Personality Report", { align: "center" });
     doc.moveDown(0.4);
     doc.fontSize(13).text("Plan: Premium (includes all insights)", { align: "center" });
     doc.moveDown(1);
 
     doc.fontSize(16).text(`Type: ${mbtiType}`, { align: "left" });
-    if (profile.label) {
+    if (profile?.label) {
       doc.moveDown(0.2);
       doc.fontSize(12).text(`Profile: ${profile.label}`);
     }
     doc.moveDown(1);
 
     doc.fontSize(14).text("Summary", { underline: true }).moveDown(0.4);
-    doc.fontSize(11).text(profile.summary || "No summary available.");
-    doc.moveDown(0.4);
-
-    doc.fontSize(10).text(
-      `Standard Summary: Your responses show a clear pattern: you lead with ${dominantTrait}, rely on ${secondaryTrait}, and struggle most when ${topBlindspot}. This version of your report helps you understand why these patterns show up — and what to do with them.`
-    );
+    doc.fontSize(11).text(profile?.summary || "No summary available.");
     doc.moveDown(0.8);
 
     doc.fontSize(14).text("Trait Scores & Balance", { underline: true });
@@ -423,11 +547,9 @@ app.post("/api/generate-pdf", async (req, res) => {
     doc.moveDown(0.3);
 
     axes.forEach((axis) => {
-      doc
-        .fontSize(11)
-        .text(
-          `${axis.code}: ${axis.firstPercent}% ${axis.firstLetter} / ${axis.secondPercent}% ${axis.secondLetter}`
-        );
+      doc.fontSize(11).text(
+        `${axis.code}: ${axis.firstPercent}% ${axis.firstLetter} / ${axis.secondPercent}% ${axis.secondLetter}`
+      );
     });
     doc.moveDown(0.4);
 
@@ -436,161 +558,17 @@ app.post("/api/generate-pdf", async (req, res) => {
       doc.fontSize(10).text("• " + buildAxisSummary(axis.code, axis.value));
     });
 
-    doc.moveDown(0.4);
-    doc.fontSize(10).text(
-      "Standard Insight: Your patterns show where you make your best decisions, but also where you might overplay your strengths. Focus on balancing these traits to unlock your next level."
-    );
-    doc.moveDown(0.8);
-
-    doc.fontSize(14).text("Strengths", { underline: true }).moveDown(0.3);
-    (profile.strengths || []).forEach((s) => doc.fontSize(11).text(`• ${s}`));
-    doc.moveDown(0.3);
-    doc
-      .fontSize(10)
-      .text(
-        "Standard Insight: Leaning into these strengths is how your type wins at work and in relationships. Overuse any one of them and it can flip into a blindspot."
-      )
-      .moveDown(0.2)
-      .text(
-        "Bonus Strength Insight: Your type thrives when people give you trust early. You perform best when you're not micromanaged."
-      );
-    doc.moveDown(0.8);
-
-    doc.fontSize(14).text("Blindspots", { underline: true }).moveDown(0.3);
-    (profile.blindspots || []).forEach((b) => doc.fontSize(11).text(`• ${b}`));
-    doc.moveDown(0.3);
-    doc.fontSize(10).text(
-      "Standard Insight: Blindspots don’t mean flaws. They’re early warning signs that you’re tired, stressed, or overextending yourself."
-    );
-    doc.moveDown(0.8);
-
-    doc.fontSize(14).text("Relationship Style", { underline: true }).moveDown(0.3);
-    doc.fontSize(11).text(
-      profile.relationshipStyle ||
-        "Your type has a distinct way of showing up in relationships and the kinds of bonds you build most naturally."
-    );
-    doc.moveDown(0.3);
-    doc.fontSize(10).text(
-      "Standard Insight: Here’s the secret to your type’s best relationships — and why people sometimes misunderstand your intentions."
-    );
-    doc.moveDown(0.8);
-
-    doc.fontSize(14).text("Communication Tips", { underline: true }).moveDown(0.3);
-    (profile.communicationTips || []).forEach((tip) => doc.fontSize(11).text(`• ${tip}`));
-    doc.moveDown(0.3);
-    doc
-      .fontSize(10)
-      .text(
-        "Standard Insight: If you master these communication patterns, you stop arguments before they happen."
-      )
-      .moveDown(0.2)
-      .text("Bonus Communication Insight: You connect deeply when conversations have meaning — not when they stay on the surface.");
-    doc.moveDown(0.8);
-
-    doc.fontSize(14).text("Growth Focus", { underline: true }).moveDown(0.3);
-    (profile.growthFocus || []).forEach((g) => doc.fontSize(11).text(`• ${g}`));
-    doc.moveDown(0.3);
-    doc.fontSize(10).text(
-      "Standard Insight: Your biggest growth edge is about choosing intention over autopilot."
-    );
-
-    // ------------- PAGE 2: PREMIUM DEEP DIVE + COACH + FLEX -------------
+    // ------------- PAGE 2 -------------
     doc.addPage();
 
     doc.fontSize(16).text("Premium Deep Dive", { underline: true });
     doc.moveDown(0.6);
 
-    doc.fontSize(12).text(
-      `As a ${mbtiType}, you don’t move through life on default. You move through it as ${
-        profile.label || "a specific pattern of energy, focus, and instinct"
-      }.`
-    );
-    doc.moveDown(0.3);
     doc.fontSize(11).text(
-      profile.summary ||
+      profile?.summary ||
         "You bring a specific mix of strengths, blindspots, and patterns to how you work, relate, and make decisions."
     );
-    doc.moveDown(0.5);
-
-    doc.fontSize(11)
-      .text(
-        `Career & Money: You do your best work in roles like ${
-          joinedCareers ||
-          "places that actually use your brain instead of treating you like a robot"
-        }. If a job keeps you small, bored, or boxed in, your energy drops fast.`
-      )
-      .moveDown(0.3);
-
-    doc.fontSize(11)
-      .text(
-        `Relationships: You click fastest with types such as ${
-          bestTypes || "people who respect your pace and style"
-        }. The tougher mix is ${
-          challengingTypes ||
-          "people who shut down, explode, or demand constant emotional labor when you’re already stretched"
-        }.`
-      )
-      .moveDown(0.3);
-
-    doc.fontSize(11).text(
-      "Stress & Reset: When you’re not okay, your blindspots don’t whisper — they get loud. The more you see those patterns early, the less you let one bad week turn into a bad season."
-    );
-    doc.moveDown(0.8);
-
-    doc.fontSize(14).text("Coach Mode Playbook", { underline: true });
-    doc.moveDown(0.4);
-
-    doc.fontSize(12).text("Career & Money Focus");
-    doc.moveDown(0.2);
-    doc.fontSize(11).text(
-      `• Best environments: Places where your mind is actually needed — not “just clock in, clock out” work. Think roles where your judgment, ideas, or strategy matter every day${
-        joinedCareers ? ` (for you, that often looks like: ${joinedCareers}).` : "."
-      }`
-    );
-    doc.fontSize(11).text(
-      "• Watch out for: Staying loyal to the wrong situation. If a job keeps asking for your time but never uses your real strengths, that’s not dedication — that’s a slow leak on your confidence and your money."
-    );
-    doc.fontSize(11).text(
-      "• Power move: Pick one move this month that stretches you but also respects your wiring — a new project, a skill upgrade, or a conversation about money and role. Don’t wait for “perfect timing”; move when the window opens."
-    );
     doc.moveDown(0.6);
-
-    doc.fontSize(12).text("Relationships & Social Energy");
-    doc.moveDown(0.2);
-    doc.fontSize(11).text(
-      "• How you show up: You don’t do fake. People feel your energy right away — whether that’s calm, intense, playful, or focused. When you’re present, you’re really present, and the room adjusts around you."
-    );
-    doc.fontSize(11).text(
-      `• Best matches: ${bestTypes || "People who give you space to be yourself and don’t punish you for how you recharge."}`
-    );
-    doc.fontSize(11).text(
-      `• Tricky dynamics: ${challengingTypes || "People who demand constant access, constant reassurance, or constant drama when you’re already drained."}`
-    );
-    doc.fontSize(11).text(
-      "• Social upgrade: Don’t assume people “just know” what’s going on with you. Say it once, clearly. The right people lean in when you’re honest; the wrong people fall off — and that’s a win too."
-    );
-    doc.moveDown(0.6);
-
-    doc.fontSize(12).text("Growth & Self-Management");
-    doc.moveDown(0.2);
-    doc.fontSize(11).text(
-      `• Stress warning sign: ${
-        profile.blindspots && profile.blindspots.length
-          ? profile.blindspots[0]
-          : "You catch yourself reacting fast, overthinking everything, or shutting down instead of choosing your moves."
-      }`
-    );
-    doc.fontSize(11).text(
-      `• Reset move: ${
-        profile.growthFocus && profile.growthFocus.length > 1
-          ? profile.growthFocus[1]
-          : "Pull back for a short, intentional reset — sleep, water, one clean meal, and one small task finished start to finish. Your brain needs a “win” to get back in gear."
-      }`
-    );
-    doc.fontSize(11).text(
-      `• How people really see you: ${friendsPerception} Most of the time, you’re harder on yourself than anybody else is.`
-    );
-    doc.moveDown(0.8);
 
     doc.fontSize(14).text("Trait Flexibility & Life Events");
     doc.moveDown(0.4);
@@ -610,9 +588,11 @@ app.post("/api/generate-pdf", async (req, res) => {
       doc.moveDown(0.4);
     });
 
-    doc.moveDown(0.5).fontSize(10).text(
-      "The goal isn’t to become a different person. It’s to use what you’ve got on purpose — so your wiring works for you, not against you."
-    );
+    doc.moveDown(0.5)
+      .fontSize(10)
+      .text(
+        "The goal isn’t to become a different person. It’s to use what you’ve got on purpose — so your wiring works for you, not against you."
+      );
 
     doc.end();
   } catch (err) {
