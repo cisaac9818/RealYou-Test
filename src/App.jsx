@@ -31,7 +31,8 @@ const PREMIUM_UPGRADE_FROM_STANDARD_URL =
 
 // ✅ Supabase constants (used for token results table ONLY here)
 const SUPABASE_URL = "https://zjjctmwatmpkjjgzyqen.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_ybG6FAO6rPYLJPSX0oJmsg_AVRFqVJf"; // publishable key
+const SUPABASE_ANON_KEY =
+  "sb_publishable_ybG6FAO6rPYLJPSX0oJmsg_AVRFqVJf"; // publishable key
 
 // ✅ API base for Supabase Edge Functions
 const API_BASE = `${SUPABASE_URL}/functions/v1`;
@@ -41,7 +42,8 @@ const API_BASE = `${SUPABASE_URL}/functions/v1`;
 // ===========================
 
 function makeToken() {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+  if (typeof crypto !== "undefined" && crypto.randomUUID)
+    return crypto.randomUUID();
   return `tok_${Math.random().toString(16).slice(2)}_${Date.now()}`;
 }
 
@@ -170,9 +172,7 @@ async function saveLeadToBackend(
 
   // 2) Optional fallback to Supabase REST (only works if your RLS/policies allow)
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    console.warn(
-      "[RealYou] Supabase keys missing; skipping fallback lead capture."
-    );
+    console.warn("[RealYou] Supabase keys missing; skipping fallback lead capture.");
     return;
   }
 
@@ -213,7 +213,6 @@ function getInitialPlan() {
   }
 
   const storedPlan = localStorage.getItem("pp_plan");
-
   if (storedPlan === "standard" || storedPlan === "premium" || storedPlan === "free") {
     return storedPlan;
   }
@@ -333,7 +332,8 @@ function App() {
 
       params.delete("token");
       const newSearch = params.toString();
-      const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "");
+      const newUrl =
+        window.location.pathname + (newSearch ? `?${newSearch}` : "");
       window.history.replaceState({}, "", newUrl);
 
       console.log("[RealYou] Restored results via token.");
@@ -355,7 +355,8 @@ function App() {
       setHasChosenPlan(true);
 
       const hasResults = !!localStorage.getItem("pp_results");
-      const hasCompleted = localStorage.getItem("pp_hasCompletedAssessment") === "true";
+      const hasCompleted =
+        localStorage.getItem("pp_hasCompletedAssessment") === "true";
       if (hasResults && hasCompleted) setStage("results");
     }
 
@@ -368,7 +369,8 @@ function App() {
 
     ["admin", "key"].forEach((k) => params.delete(k));
     const newSearch = params.toString();
-    const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "");
+    const newUrl =
+      window.location.pathname + (newSearch ? `?${newSearch}` : "");
     window.history.replaceState({}, "", newUrl);
   }, []);
 
@@ -422,7 +424,8 @@ function App() {
 
     params.delete("debug");
     const newSearch = params.toString();
-    const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "");
+    const newUrl =
+      window.location.pathname + (newSearch ? `?${newSearch}` : "");
     window.history.replaceState({}, "", newUrl);
   }, []);
 
@@ -442,7 +445,10 @@ function App() {
       unlocked = tier;
     }
 
-    if (checkoutStatus === "success" && (tier === "premium_upgrade" || tier === "upgrade_premium")) {
+    if (
+      checkoutStatus === "success" &&
+      (tier === "premium_upgrade" || tier === "upgrade_premium")
+    ) {
       unlocked = "premium";
     }
 
@@ -456,7 +462,8 @@ function App() {
       handleTierUnlocked(unlocked);
       setJustUpgradedTier(unlocked);
 
-      const hasCompleted = localStorage.getItem("pp_hasCompletedAssessment") === "true";
+      const hasCompleted =
+        localStorage.getItem("pp_hasCompletedAssessment") === "true";
       const hasResults = !!localStorage.getItem("pp_results");
 
       if (hasCompleted && hasResults) setStage("results");
@@ -464,7 +471,8 @@ function App() {
 
       ["checkout", "tier", "upgrade", "from"].forEach((k) => params.delete(k));
       const newSearch = params.toString();
-      const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : "");
+      const newUrl =
+        window.location.pathname + (newSearch ? `?${newSearch}` : "");
       window.history.replaceState({}, "", newUrl);
     }
   }, []);
@@ -590,7 +598,11 @@ function App() {
       }
 
       const data = await res.json();
-      const snap = data?.results;
+
+      // ✅ Match the Edge Function response shape:
+      // { row: { email, name, result_snapshot } }
+      const row = data?.row;
+      const snap = row?.result_snapshot;
 
       if (!snap) {
         alert(
@@ -609,7 +621,7 @@ function App() {
 
       // Treat recovery as “email already provided”
       const restoredProfile = {
-        name: data?.name || "",
+        name: row?.name || "",
         email: cleanEmail,
         agreeToEmails: true,
       };
@@ -643,9 +655,11 @@ function App() {
     }
 
     // 1) Capture lead (Edge first, fallback second)
-    saveLeadToBackend(profile, referralInfo, plan, hasCompletedAssessment).catch((err) => {
-      console.error("[RealYou] Lead capture failed:", err);
-    });
+    saveLeadToBackend(profile, referralInfo, plan, hasCompletedAssessment).catch(
+      (err) => {
+        console.error("[RealYou] Lead capture failed:", err);
+      }
+    );
 
     // ✅ 2) Save email-based snapshot via Edge Function
     if (results && profile.email) {
@@ -664,7 +678,9 @@ function App() {
           const text = await snapRes.text();
           console.warn("[RealYou] Snapshot save failed:", snapRes.status, text);
         } else {
-          console.log("[RealYou] Snapshot saved via Edge Function (email recovery ready).");
+          console.log(
+            "[RealYou] Snapshot saved via Edge Function (email recovery ready)."
+          );
         }
       } catch (e) {
         console.warn("[RealYou] Snapshot save error:", e);
@@ -684,9 +700,7 @@ function App() {
         if (token) {
           localStorage.setItem("pp_resultsToken", token);
 
-          const restoreLink =
-            `${window.location.origin}${window.location.pathname}?token=${token}`;
-
+          const restoreLink = `${window.location.origin}${window.location.pathname}?token=${token}`;
           console.log("[RealYou] Restore link:", restoreLink);
         }
       } catch (e) {
@@ -763,11 +777,7 @@ function App() {
       )}
 
       {stage === "assessment" && mode && (
-        <Assessment
-          mode={mode}
-          onComplete={handleAssessmentComplete}
-          plan={plan}
-        />
+        <Assessment mode={mode} onComplete={handleAssessmentComplete} plan={plan} />
       )}
 
       {stage === "results" && results && !hasEmailCaptureCompleted && (
