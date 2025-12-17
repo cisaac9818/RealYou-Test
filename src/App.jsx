@@ -42,8 +42,7 @@ const API_BASE = `${SUPABASE_URL}/functions/v1`;
 // ===========================
 
 function makeToken() {
-  if (typeof crypto !== "undefined" && crypto.randomUUID)
-    return crypto.randomUUID();
+  if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
   return `tok_${Math.random().toString(16).slice(2)}_${Date.now()}`;
 }
 
@@ -122,12 +121,7 @@ async function loadResultsSnapshotByToken(token) {
  *
  * NOTE: Snapshot saving is now via Edge Functions (/save-snapshot).
  */
-async function saveLeadToBackend(
-  profile,
-  referralInfo,
-  plan,
-  hasCompletedAssessment
-) {
+async function saveLeadToBackend(profile, referralInfo, plan, hasCompletedAssessment) {
   const payload = {
     name: profile.name || null,
     email: profile.email,
@@ -252,6 +246,7 @@ function App() {
     return localStorage.getItem("pp_hasCompletedAssessment") === "true";
   });
 
+  // ✅ stages: landing | mode | assessment | email | results
   const [stage, setStage] = useState(() => getInitialStage());
   const [justUpgradedTier, setJustUpgradedTier] = useState(null);
 
@@ -355,8 +350,7 @@ function App() {
       setHasChosenPlan(true);
 
       const hasResults = !!localStorage.getItem("pp_results");
-      const hasCompleted =
-        localStorage.getItem("pp_hasCompletedAssessment") === "true";
+      const hasCompleted = localStorage.getItem("pp_hasCompletedAssessment") === "true";
       if (hasResults && hasCompleted) setStage("results");
     }
 
@@ -462,8 +456,7 @@ function App() {
       handleTierUnlocked(unlocked);
       setJustUpgradedTier(unlocked);
 
-      const hasCompleted =
-        localStorage.getItem("pp_hasCompletedAssessment") === "true";
+      const hasCompleted = localStorage.getItem("pp_hasCompletedAssessment") === "true";
       const hasResults = !!localStorage.getItem("pp_results");
 
       if (hasCompleted && hasResults) setStage("results");
@@ -544,6 +537,7 @@ function App() {
     setStage("assessment");
   }
 
+  // ✅ FIX: Assessment complete now routes to a dedicated EMAIL stage
   function handleAssessmentComplete(rawAnswers) {
     setLastRawAnswers(rawAnswers);
     try {
@@ -553,11 +547,17 @@ function App() {
     const scored = scoreAssessment(rawAnswers);
 
     setResults(scored);
-    setStage("results");
-
     localStorage.setItem("pp_results", JSON.stringify(scored));
     localStorage.setItem("pp_hasCompletedAssessment", "true");
     setHasCompletedAssessment(true);
+
+    // If we already have an email saved, go straight to results.
+    // Otherwise force email capture (no more "skips").
+    const alreadyHasEmail =
+      !!(userProfile?.email && /^\S+@\S+\.\S+$/.test(userProfile.email)) &&
+      hasEmailCaptureCompleted;
+
+    setStage(alreadyHasEmail ? "results" : "email");
   }
 
   function handleRestart() {
@@ -638,6 +638,7 @@ function App() {
     }
   }
 
+  // ✅ FIX: Email submit now moves from EMAIL stage -> RESULTS stage
   async function handleEmailCaptureSubmit({ name, email, agreeToEmails }) {
     const profile = {
       name: name || "",
@@ -655,11 +656,9 @@ function App() {
     }
 
     // 1) Capture lead (Edge first, fallback second)
-    saveLeadToBackend(profile, referralInfo, plan, hasCompletedAssessment).catch(
-      (err) => {
-        console.error("[RealYou] Lead capture failed:", err);
-      }
-    );
+    saveLeadToBackend(profile, referralInfo, plan, hasCompletedAssessment).catch((err) => {
+      console.error("[RealYou] Lead capture failed:", err);
+    });
 
     // ✅ 2) Save email-based snapshot via Edge Function
     if (results && profile.email) {
@@ -678,9 +677,7 @@ function App() {
           const text = await snapRes.text();
           console.warn("[RealYou] Snapshot save failed:", snapRes.status, text);
         } else {
-          console.log(
-            "[RealYou] Snapshot saved via Edge Function (email recovery ready)."
-          );
+          console.log("[RealYou] Snapshot saved via Edge Function (email recovery ready).");
         }
       } catch (e) {
         console.warn("[RealYou] Snapshot save error:", e);
@@ -699,7 +696,6 @@ function App() {
 
         if (token) {
           localStorage.setItem("pp_resultsToken", token);
-
           const restoreLink = `${window.location.origin}${window.location.pathname}?token=${token}`;
           console.log("[RealYou] Restore link:", restoreLink);
         }
@@ -707,6 +703,9 @@ function App() {
         console.warn("[RealYou] Token save failed:", e);
       }
     }
+
+    // ✅ Now go to results
+    setStage("results");
   }
 
   function handleDownloadPdf() {
@@ -780,7 +779,8 @@ function App() {
         <Assessment mode={mode} onComplete={handleAssessmentComplete} plan={plan} />
       )}
 
-      {stage === "results" && results && !hasEmailCaptureCompleted && (
+      {/* ✅ NEW: dedicated Email stage */}
+      {stage === "email" && results && (
         <EmailCapture
           onSubmit={handleEmailCaptureSubmit}
           initialName={userProfile.name}
@@ -788,7 +788,7 @@ function App() {
         />
       )}
 
-      {stage === "results" && results && hasEmailCaptureCompleted && (
+      {stage === "results" && results && (
         <Results
           plan={plan}
           results={results}
