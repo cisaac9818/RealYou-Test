@@ -29,12 +29,12 @@ const PREMIUM_CHECKOUT_URL =
 const PREMIUM_UPGRADE_FROM_STANDARD_URL =
   "https://buy.stripe.com/3cIbJ38S397Rdf44VM1gs02";
 
-// ✅ API base (dev vs prod). In production set VITE_API_BASE=https://yourdomain.com
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4242";
-
 // ✅ Supabase constants (used for token results table ONLY here)
 const SUPABASE_URL = "https://zjjctmwatmpkjjgzyqen.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_ybG6FAO6rPYLJPSX0oJmsg_AVRFqVJf"; // publishable key
+
+// ✅ API base for Supabase Edge Functions
+const API_BASE = `${SUPABASE_URL}/functions/v1`;
 
 // ===========================
 // ✅ TOKEN RESTORE HELPERS (B)
@@ -115,10 +115,10 @@ async function loadResultsSnapshotByToken(token) {
 
 /**
  * Lead capture:
- * 1) Try your server first (so Gmail can send + server inserts securely)
- * 2) If server fails, fallback to Supabase REST (your original working method)
+ * 1) Use Supabase Edge Function first (secure insert with service role)
+ * 2) If it fails, fallback to Supabase REST (optional safety net)
  *
- * NOTE: Snapshot saving is now SERVER ONLY via /api/save-snapshot (fixes RLS).
+ * NOTE: Snapshot saving is now via Edge Functions (/save-snapshot).
  */
 async function saveLeadToBackend(
   profile,
@@ -143,35 +143,35 @@ async function saveLeadToBackend(
     captured_at: new Date().toISOString(),
   };
 
-  // 1) Try SERVER route first
+  // 1) Try Edge Function first
   try {
-    const res = await fetch(`${API_BASE}/api/lead-capture`, {
+    const res = await fetch(`${API_BASE}/lead-capture`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
     if (res.ok) {
-      console.log("[RealYou] Lead captured via SERVER.");
+      console.log("[RealYou] Lead captured via Edge Function.");
       return;
     }
 
     // ✅ Treat duplicates as success
     if (res.status === 409) {
-      console.log("[RealYou] Lead already exists (SERVER). Treating as success.");
+      console.log("[RealYou] Lead already exists (Edge). Treating as success.");
       return;
     }
 
     const text = await res.text();
-    console.warn("[RealYou] Server lead-capture failed:", res.status, text);
+    console.warn("[RealYou] Edge lead-capture failed:", res.status, text);
   } catch (err) {
-    console.warn("[RealYou] Server lead-capture error:", err);
+    console.warn("[RealYou] Edge lead-capture error:", err);
   }
 
-  // 2) Fallback to SUPABASE REST
+  // 2) Optional fallback to Supabase REST (only works if your RLS/policies allow)
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     console.warn(
-      "[RealYou] Supabase env vars missing; skipping fallback lead capture."
+      "[RealYou] Supabase keys missing; skipping fallback lead capture."
     );
     return;
   }
@@ -570,10 +570,9 @@ function App() {
       return;
     }
 
-    // ✅ SERVER recovery (bypasses RLS)
     try {
       const res = await fetch(
-        `${API_BASE}/api/recover-snapshot?email=${encodeURIComponent(cleanEmail)}`
+        `${API_BASE}/recover-snapshot?email=${encodeURIComponent(cleanEmail)}`
       );
 
       if (res.status === 404) {
@@ -591,8 +590,7 @@ function App() {
       }
 
       const data = await res.json();
-      const row = data?.row;
-      const snap = row?.result_snapshot;
+      const snap = data?.results;
 
       if (!snap) {
         alert(
@@ -611,7 +609,7 @@ function App() {
 
       // Treat recovery as “email already provided”
       const restoredProfile = {
-        name: row?.name || "",
+        name: data?.name || "",
         email: cleanEmail,
         agreeToEmails: true,
       };
@@ -622,8 +620,8 @@ function App() {
       setStage("results");
       return;
     } catch (e) {
-      console.warn("[RealYou] Recover snapshot server error:", e);
-      alert("Could not recover Snapshot right now. Make sure the server is running.");
+      console.warn("[RealYou] Recover snapshot error:", e);
+      alert("Could not recover Snapshot right now. Try again in a moment.");
       return;
     }
   }
@@ -644,15 +642,15 @@ function App() {
       console.error("Failed to cache profile", e);
     }
 
-    // 1) Capture lead (server first, fallback second)
+    // 1) Capture lead (Edge first, fallback second)
     saveLeadToBackend(profile, referralInfo, plan, hasCompletedAssessment).catch((err) => {
       console.error("[RealYou] Lead capture failed:", err);
     });
 
-    // ✅ 2) Save email-based snapshot via SERVER (fixes your RLS 401 issue)
+    // ✅ 2) Save email-based snapshot via Edge Function
     if (results && profile.email) {
       try {
-        const snapRes = await fetch(`${API_BASE}/api/save-snapshot`, {
+        const snapRes = await fetch(`${API_BASE}/save-snapshot`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -664,12 +662,12 @@ function App() {
 
         if (!snapRes.ok) {
           const text = await snapRes.text();
-          console.warn("[RealYou] Server snapshot save failed:", snapRes.status, text);
+          console.warn("[RealYou] Snapshot save failed:", snapRes.status, text);
         } else {
-          console.log("[RealYou] Snapshot saved via SERVER (email recovery ready).");
+          console.log("[RealYou] Snapshot saved via Edge Function (email recovery ready).");
         }
       } catch (e) {
-        console.warn("[RealYou] Server snapshot save error:", e);
+        console.warn("[RealYou] Snapshot save error:", e);
       }
     }
 
@@ -750,7 +748,7 @@ function App() {
           onStartTest={handleLandingStartFree}
           onStandardClick={handleLandingStandardClick}
           onPremiumClick={handleLandingPremiumClick}
-          onRecoverByEmail={handleRecoverByEmail} // ✅ NEW (server-based recovery)
+          onRecoverByEmail={handleRecoverByEmail}
         />
       )}
 
