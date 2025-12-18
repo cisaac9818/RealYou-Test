@@ -70,6 +70,19 @@ export default function LandingPage({
     letterSpacing: "0.02em",
   };
 
+  // ✅ 16 types list (display order: classic 4x4)
+  const TYPE_GRID = [
+    ["ESTJ", "ISTJ", "ENTJ", "INTJ"],
+    ["ESTP", "ISTP", "ENTP", "INTP"],
+    ["ESFJ", "ISFJ", "ENFJ", "INFJ"],
+    ["ESFP", "ISFP", "ENFP", "INFP"],
+  ];
+
+  function handleTypeClick(type) {
+    // Keep it simple: clicking a type scrolls to plans (curiosity hook → action)
+    scrollToId("plans");
+  }
+
   return (
     <div
       className="landing-shell"
@@ -161,6 +174,99 @@ export default function LandingPage({
               how people actually experience you, and the hidden traits that
               drive your decisions.
             </p>
+
+            {/* ✅ 16 TYPE GRID + HOOK (compact curiosity block) */}
+            <div
+              style={{
+                marginBottom: "1rem",
+                padding: "0.9rem 1rem",
+                borderRadius: "18px",
+                background:
+                  "linear-gradient(135deg, rgba(2,6,23,0.92), rgba(15,23,42,0.92))",
+                border: "1px solid rgba(148,163,184,0.35)",
+                boxShadow: "0 18px 55px rgba(0,0,0,0.35)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "0.92rem",
+                  color: "#e5e7eb",
+                  fontWeight: 800,
+                  marginBottom: "0.55rem",
+                  lineHeight: 1.25,
+                }}
+              >
+                There are 16 possible personality snapshots. <br />
+                RealYou shows where you land.
+              </div>
+
+              <div
+                className="type-grid"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+                  gap: "0.45rem",
+                }}
+              >
+                {TYPE_GRID.flat().map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => handleTypeClick(t)}
+                    style={{
+                      width: "100%",
+                      borderRadius: "12px",
+                      padding: "0.55rem 0.5rem",
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(148,163,184,0.22)",
+                      color: "#f8fafc",
+                      fontWeight: 900,
+                      letterSpacing: "0.06em",
+                      fontSize: "0.86rem",
+                      cursor: "pointer",
+                      userSelect: "none",
+                      transition:
+                        "transform 0.08s ease, background 0.15s ease, border-color 0.15s ease",
+                    }}
+                    onMouseDown={(e) => {
+                      // tiny press feedback without breaking mobile
+                      e.currentTarget.style.transform = "scale(0.98)";
+                    }}
+                    onMouseUp={(e) => {
+                      e.currentTarget.style.transform = "scale(1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "scale(1)";
+                    }}
+                    aria-label={`Type ${t}`}
+                    title={`See where you land (${t})`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+
+              <div
+                style={{
+                  marginTop: "0.55rem",
+                  fontSize: "0.82rem",
+                  color: "rgba(203,213,245,0.85)",
+                  lineHeight: 1.35,
+                }}
+              >
+                Tap any type — then take the snapshot to see which one matches
+                your patterns.
+              </div>
+
+              {/* Responsive tweak: 4 columns → 2 columns on small screens */}
+              <style>{`
+                @media (max-width: 560px) {
+                  .type-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                  }
+                }
+              `}</style>
+            </div>
 
             <div
               style={{

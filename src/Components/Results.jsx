@@ -391,6 +391,111 @@ function buildFlexibilityLine(axis, rankIndex) {
   };
 }
 
+/** ✅ NEW: Compact 16-type grid (small, curiosity hook, highlights user type) */
+function MbtiTypeGrid({ activeType }) {
+  const rows = [
+    ["ESTJ", "ISTJ", "ENTJ", "INTJ"],
+    ["ESTP", "ISTP", "ENTP", "INTP"],
+    ["ESFJ", "ISFJ", "ENFJ", "INFJ"],
+    ["ESFP", "ISFP", "ENFP", "INFP"],
+  ];
+
+  const active = normalizeMbtiType(activeType);
+
+  return (
+    <section
+      style={{
+        marginTop: "1.1rem",
+        marginBottom: "1.5rem",
+        padding: "1rem 1.1rem",
+        borderRadius: "18px",
+        background: "#020617",
+        border: "1px solid rgba(148,163,184,0.4)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          gap: "0.75rem",
+          flexWrap: "wrap",
+          marginBottom: "0.65rem",
+        }}
+      >
+        <div>
+          <h2 style={{ fontSize: "1rem", margin: 0 }}>
+            16 Types (Quick Map)
+          </h2>
+          <p style={{ fontSize: "0.86rem", margin: "0.25rem 0 0", color: "#e5e7eb" }}>
+            A quick glance at what’s possible — your type highlights when available.
+          </p>
+        </div>
+
+        {isValidMbtiType(active) ? (
+          <div
+            style={{
+              fontSize: "0.85rem",
+              color: "#e5e7eb",
+              padding: "0.35rem 0.65rem",
+              borderRadius: "999px",
+              border: "1px solid rgba(148,163,184,0.45)",
+              background: "rgba(15,23,42,0.75)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Your type: <strong>{active}</strong>
+          </div>
+        ) : null}
+      </div>
+
+      <div style={{ display: "grid", gap: "0.45rem" }}>
+        {rows.map((row, i) => (
+          <div
+            key={i}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+              gap: "0.45rem",
+            }}
+          >
+            {row.map((t) => {
+              const isActive = active === t;
+              return (
+                <div
+                  key={t}
+                  style={{
+                    padding: "0.55rem 0.35rem",
+                    borderRadius: "12px",
+                    textAlign: "center",
+                    fontWeight: 800,
+                    letterSpacing: "0.5px",
+                    fontSize: "0.9rem",
+                    color: "#f9fafb",
+                    background: isActive
+                      ? "linear-gradient(135deg, rgba(59,130,246,0.35), rgba(129,140,248,0.22))"
+                      : "rgba(15,23,42,0.75)",
+                    border: isActive
+                      ? "1px solid rgba(129,140,248,0.85)"
+                      : "1px solid rgba(148,163,184,0.25)",
+                    boxShadow: isActive ? "0 10px 28px rgba(0,0,0,0.35)" : "none",
+                  }}
+                >
+                  {t}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      <p style={{ margin: "0.7rem 0 0", fontSize: "0.8rem", color: "#9ca3af" }}>
+        This is just a curiosity hook — your report below is where the real breakdown lives.
+      </p>
+    </section>
+  );
+}
+
 export default function Results({
   plan,
   results,
@@ -578,6 +683,9 @@ export default function Results({
             {profile.summary}
           </p>
         </header>
+
+        {/* ✅ NEW: 16-type quick grid right under header */}
+        <MbtiTypeGrid activeType={mbtiType} />
 
         {/* NEW: Quick MBTI letter explanation block */}
         {mbtiLetters.length === 4 && (
