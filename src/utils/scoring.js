@@ -24,14 +24,28 @@ export function scoreAssessment(answers) {
 
   // Build map from question id -> { dimension, positiveTrait }
   const metaById = {};
+  const seen = new Set();
+  const dupes = [];
+
   questions.forEach((q) => {
-    if (q.id && q.dimension) {
-      metaById[q.id] = {
-        dimension: q.dimension,
-        positiveTrait: q.positiveTrait, // may be undefined in old packs (we handle that)
-      };
-    }
+    if (!q || !q.id || !q.dimension) return;
+
+    if (seen.has(q.id)) dupes.push(q.id);
+    seen.add(q.id);
+
+    metaById[q.id] = {
+      dimension: q.dimension,
+      positiveTrait: q.positiveTrait, // may be undefined in old packs (we handle that)
+    };
   });
+
+  // Helpful warning (won't break production)
+  if (dupes.length && typeof console !== "undefined") {
+    console.warn(
+      `[RealYou] Duplicate question ids found in questions.json (last one wins):`,
+      dupes
+    );
+  }
 
   answers.forEach((ans) => {
     const { id, value } = ans;

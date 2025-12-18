@@ -12,7 +12,8 @@ const SCALE_LABELS = {
 };
 
 // ✅ Checkpoint boundaries (0-based index of the question just answered)
-const CHECKPOINTS = new Set([13, 27, 41]); // after Q14, Q28, Q42
+// NEW: after Q16, Q32, Q48 (for 64-question structure)
+const CHECKPOINTS = new Set([15, 31, 47]);
 
 export default function Assessment({ mode, onComplete, plan }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,6 +28,12 @@ export default function Assessment({ mode, onComplete, plan }) {
   const [pendingNextIndex, setPendingNextIndex] = useState(null);
 
   const didFinishRef = useRef(false);
+
+  // ✅ FIX: live index ref so timeout guards actually work
+  const currentIndexRef = useRef(0);
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
 
   const total = questions.length;
   const current = questions[currentIndex];
@@ -56,8 +63,8 @@ export default function Assessment({ mode, onComplete, plan }) {
   function getCheckpointCopy(justAnsweredIndex) {
     const isModern = mode === "genz";
 
-    // After Q14
-    if (justAnsweredIndex === 13) {
+    // After Q16
+    if (justAnsweredIndex === 15) {
       return isModern
         ? {
             title: "Nice — you’re locked in.",
@@ -75,8 +82,8 @@ export default function Assessment({ mode, onComplete, plan }) {
           };
     }
 
-    // After Q28
-    if (justAnsweredIndex === 27) {
+    // After Q32
+    if (justAnsweredIndex === 31) {
       return isModern
         ? {
             title: "This is getting interesting 👀",
@@ -94,8 +101,8 @@ export default function Assessment({ mode, onComplete, plan }) {
           };
     }
 
-    // After Q42 — user-specified soft signal
-    if (justAnsweredIndex === 41) {
+    // After Q48 — final stretch checkpoint for 64-question structure
+    if (justAnsweredIndex === 47) {
       return isModern
         ? {
             title: "Almost there.",
@@ -179,12 +186,12 @@ export default function Assessment({ mode, onComplete, plan }) {
 
     // Small delay so the user sees the selection before moving
     setTimeout(() => {
-      // only proceed if we’re still on the same index
-      if (currentIndex !== indexAtClick) return;
+      // ✅ only proceed if we’re still on the same index (REAL check)
+      if (currentIndexRef.current !== indexAtClick) return;
 
       const nextIndex = indexAtClick + 1;
 
-      // ✅ boundary check: after Q14/Q28/Q42 show interruptive pause
+      // ✅ boundary check: after Q16/Q32/Q48 show interruptive pause
       if (CHECKPOINTS.has(indexAtClick)) {
         openCheckpointPause(nextIndex, indexAtClick);
         return;
@@ -352,13 +359,7 @@ export default function Assessment({ mode, onComplete, plan }) {
         }}
       >
         {/* Top pill */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "1rem",
-          }}
-        >
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
           <span
             style={{
               padding: "0.25rem 0.9rem",
@@ -376,7 +377,7 @@ export default function Assessment({ mode, onComplete, plan }) {
 
         <h1
           style={{
-            fontSize: "clamp(1.7rem, 5vw, 2.6rem)", // ✅ responsive title
+            fontSize: "clamp(1.7rem, 5vw, 2.6rem)",
             fontWeight: 800,
             marginBottom: "0.25rem",
             textAlign: "center",
@@ -385,7 +386,7 @@ export default function Assessment({ mode, onComplete, plan }) {
           Personality Assessment
         </h1>
 
-        {/* ✅ Removed the "Question X of 56" counter entirely */}
+        {/* ✅ Removed the "Question X of Y" counter entirely */}
         <p
           style={{
             opacity: 0.78,
@@ -401,7 +402,7 @@ export default function Assessment({ mode, onComplete, plan }) {
         {/* Question text */}
         <p
           style={{
-            fontSize: "clamp(1.15rem, 4vw, 1.6rem)", // ✅ responsive question size
+            fontSize: "clamp(1.15rem, 4vw, 1.6rem)",
             fontWeight: 600,
             textAlign: "center",
             marginBottom: "clamp(1.25rem, 3vw, 2.5rem)",
@@ -413,7 +414,7 @@ export default function Assessment({ mode, onComplete, plan }) {
 
         {/* ✅ Answer choices — desktop 5-col, tablet 2-col, mobile 1-col */}
         <div
-          className="realyou-answers-grid" // ✅ FIX: class added so media queries work
+          className="realyou-answers-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
@@ -426,13 +427,7 @@ export default function Assessment({ mode, onComplete, plan }) {
             const isSelected = selected === val;
             const label = SCALE_LABELS[val];
 
-            const accentColors = [
-              "#f97373", // red
-              "#fb923c", // orange
-              "#eab308", // yellow
-              "#22c55e", // green
-              "#38bdf8", // blue
-            ];
+            const accentColors = ["#f97373", "#fb923c", "#eab308", "#22c55e", "#38bdf8"];
             const accent = accentColors[val - 1];
 
             return (
@@ -452,15 +447,12 @@ export default function Assessment({ mode, onComplete, plan }) {
                   fontSize: "0.92rem",
                   fontWeight: 700,
                   cursor: isFinished || showPause ? "default" : "pointer",
-
-                  // ✅ allow wrapping on small screens
                   whiteSpace: "normal",
                   overflow: "hidden",
                   textOverflow: "clip",
                   overflowWrap: "anywhere",
                   wordBreak: "break-word",
                   lineHeight: 1.2,
-
                   transition:
                     "background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease",
                   boxShadow: isSelected
@@ -469,7 +461,6 @@ export default function Assessment({ mode, onComplete, plan }) {
                   opacity: isFinished || showPause ? 0.85 : 1,
                 }}
               >
-                {/* ✅ label only — no numbers */}
                 {label}
               </button>
             );
@@ -505,8 +496,7 @@ export default function Assessment({ mode, onComplete, plan }) {
             style={{
               padding: "0.75rem 1.5rem",
               borderRadius: "999px",
-              background:
-                currentIndex === 0 || isFinished || showPause ? "#27272a" : "#334155",
+              background: currentIndex === 0 || isFinished || showPause ? "#27272a" : "#334155",
               color: "#e5e7eb",
               cursor: currentIndex === 0 || isFinished || showPause ? "default" : "pointer",
               border: "none",
@@ -530,10 +520,7 @@ export default function Assessment({ mode, onComplete, plan }) {
               border: "none",
               fontWeight: 800,
               opacity: !selected || isFinished || showPause ? 0.7 : 1,
-              boxShadow:
-                !selected || isFinished || showPause
-                  ? "none"
-                  : "0 18px 50px rgba(59,130,246,0.55)",
+              boxShadow: !selected || isFinished || showPause ? "none" : "0 18px 50px rgba(59,130,246,0.55)",
               width: "min(260px, 100%)",
               marginLeft: "auto",
             }}

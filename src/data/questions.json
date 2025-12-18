@@ -2,291 +2,339 @@
   { "id": "B1_Q1", "dimension": "EI", "positiveTrait": "I",
     "pro": "I recharge best when I have uninterrupted time alone.",
     "genz": "You need solo time to reset — too much people time drains you.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B1_Q2", "dimension": "EI", "positiveTrait": "E",
-    "pro": "Being around people gives me energy rather than draining it.",
-    "genz": "People time usually boosts you instead of wearing you out.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B1_Q3", "dimension": "SN", "positiveTrait": "N",
     "pro": "I enjoy exploring ideas even when they don’t have immediate real-world application.",
     "genz": "You like thinking about what *could be*, even before it’s practical.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B1_Q4", "dimension": "SN", "positiveTrait": "S",
-    "pro": "I prefer focusing on what is concrete and observable.",
-    "genz": "You trust what you can see and experience, not just theories.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B1_Q5", "dimension": "TF", "positiveTrait": "F",
     "pro": "I consider how decisions affect people emotionally.",
     "genz": "You think about how things land on people, not just the outcome.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B1_Q6", "dimension": "TF", "positiveTrait": "T",
-    "pro": "I prioritize logical consistency when making decisions.",
-    "genz": "If something doesn’t make sense logically, it bugs you.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B1_Q7", "dimension": "JP", "positiveTrait": "P",
     "pro": "I like keeping my options open rather than locking decisions early.",
     "genz": "You’d rather stay flexible than decide too soon.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+
+  { "id": "B1_Q2", "dimension": "EI", "positiveTrait": "E",
+    "pro": "Being around people gives me energy rather than draining it.",
+    "genz": "People time usually boosts you instead of wearing you out.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B1_Q4", "dimension": "SN", "positiveTrait": "S",
+    "pro": "I prefer focusing on what is concrete and observable.",
+    "genz": "You trust what you can see and experience, not just theories.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B1_Q6", "dimension": "TF", "positiveTrait": "T",
+    "pro": "I prioritize logical consistency when making decisions.",
+    "genz": "If something doesn’t make sense logically, it bugs you.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B1_Q8", "dimension": "JP", "positiveTrait": "J",
     "pro": "I feel calmer once plans are clearly defined.",
     "genz": "Once there’s a plan, your brain finally relaxes.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
 
   { "id": "B1_Q9", "dimension": "EI", "positiveTrait": "I",
     "pro": "I prefer starting new situations quietly and observing before engaging.",
     "genz": "You like to watch the vibe first before you jump in.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B1_Q10", "dimension": "EI", "positiveTrait": "E",
-    "pro": "I feel comfortable initiating conversation with new people.",
-    "genz": "Starting a convo with new people doesn’t really scare you.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B1_Q11", "dimension": "SN", "positiveTrait": "N",
     "pro": "I enjoy imagining future possibilities more than reviewing past details.",
     "genz": "You’re more ‘what’s next?’ than ‘let’s replay what happened.’",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B1_Q12", "dimension": "SN", "positiveTrait": "S",
-    "pro": "I feel more confident when instructions are clear and specific.",
-    "genz": "You need the details—vague plans annoy you.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B1_Q13", "dimension": "TF", "positiveTrait": "F",
     "pro": "I try to keep the emotional tone respectful, even when I disagree.",
     "genz": "Even when you disagree, you try not to make it feel personal.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B1_Q14", "dimension": "JP", "positiveTrait": "J",
-    "pro": "I prefer making decisions early so I can move forward.",
-    "genz": "You’d rather decide and move than stay stuck choosing forever.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-
-  { "id": "B2_Q1", "dimension": "EI", "positiveTrait": "I",
-    "pro": "I think things through internally before speaking.",
-    "genz": "You process in your head before jumping into conversations.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B2_Q2", "dimension": "EI", "positiveTrait": "E",
-    "pro": "I tend to speak up quickly in group settings.",
-    "genz": "If something needs to be said, you usually say it.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B2_Q3", "dimension": "SN", "positiveTrait": "N",
-    "pro": "I notice patterns and connections others often miss.",
-    "genz": "You pick up on trends and meanings before they’re obvious.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B2_Q4", "dimension": "SN", "positiveTrait": "S",
-    "pro": "I focus on details to avoid mistakes.",
-    "genz": "You’d rather double-check details than assume it’ll work out.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B2_Q5", "dimension": "TF", "positiveTrait": "F",
-    "pro": "I sometimes compromise logic to preserve harmony.",
-    "genz": "You’ll bend a little if it keeps the peace.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B2_Q6", "dimension": "TF", "positiveTrait": "T",
-    "pro": "I push for clarity even if it makes people uncomfortable.",
-    "genz": "You’d rather clear the air than let things stay awkward.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B2_Q7", "dimension": "JP", "positiveTrait": "P",
     "pro": "I adjust my approach as situations change.",
     "genz": "You’re cool switching plans mid-way if needed.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+
+  { "id": "B1_Q10", "dimension": "EI", "positiveTrait": "E",
+    "pro": "I feel comfortable initiating conversation with new people.",
+    "genz": "Starting a convo with new people doesn’t really scare you.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B1_Q12", "dimension": "SN", "positiveTrait": "S",
+    "pro": "I feel more confident when instructions are clear and specific.",
+    "genz": "You need the details—vague plans annoy you.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B2_Q5", "dimension": "TF", "positiveTrait": "F",
+    "pro": "I sometimes compromise logic to preserve harmony.",
+    "genz": "You’ll bend a little if it keeps the peace.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B1_Q14", "dimension": "JP", "positiveTrait": "J",
+    "pro": "I prefer making decisions early so I can move forward.",
+    "genz": "You’d rather decide and move than stay stuck choosing forever.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+
+
+  { "id": "B2_Q1", "dimension": "EI", "positiveTrait": "I",
+    "pro": "I think things through internally before speaking.",
+    "genz": "You process in your head before jumping into conversations.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B2_Q3", "dimension": "SN", "positiveTrait": "N",
+    "pro": "I notice patterns and connections others often miss.",
+    "genz": "You pick up on trends and meanings before they’re obvious.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B2_Q6", "dimension": "TF", "positiveTrait": "T",
+    "pro": "I push for clarity even if it makes people uncomfortable.",
+    "genz": "You’d rather clear the air than let things stay awkward.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B2_Q8", "dimension": "JP", "positiveTrait": "J",
     "pro": "I organize tasks to prevent future stress.",
     "genz": "You plan ahead so things don’t blow up later.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+
+  { "id": "B2_Q2", "dimension": "EI", "positiveTrait": "E",
+    "pro": "I tend to speak up quickly in group settings.",
+    "genz": "If something needs to be said, you usually say it.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B2_Q4", "dimension": "SN", "positiveTrait": "S",
+    "pro": "I focus on details to avoid mistakes.",
+    "genz": "You’d rather double-check details than assume it’ll work out.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B2_Q13", "dimension": "TF", "positiveTrait": "T",
+    "pro": "When making a decision, I focus more on what is fair than what feels nice.",
+    "genz": "You choose fairness over ‘making it feel good.’",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B2_Q14", "dimension": "JP", "positiveTrait": "P",
+    "pro": "I prefer leaving room for changes rather than finalizing everything early.",
+    "genz": "You like leaving wiggle room instead of locking everything down too soon.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
 
   { "id": "B2_Q9", "dimension": "EI", "positiveTrait": "I",
     "pro": "I prefer working independently rather than collaborating constantly.",
     "genz": "You do your best work when you’re not being pulled into group stuff nonstop.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B2_Q10", "dimension": "EI", "positiveTrait": "E",
-    "pro": "I feel more motivated when I can talk ideas out with others.",
-    "genz": "You get momentum by talking things out with people.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B2_Q11", "dimension": "SN", "positiveTrait": "N",
     "pro": "I enjoy brainstorming new approaches even when the current one works.",
     "genz": "Even if it works, you’re like ‘but what if we did it better?’",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
-  { "id": "B2_Q12", "dimension": "SN", "positiveTrait": "S",
-    "pro": "I rely on proven methods more than experimenting in the moment.",
-    "genz": "You trust what’s already been tested more than random experiments.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B2_Q13", "dimension": "TF", "positiveTrait": "T",
-    "pro": "When making a decision, I focus more on what is fair than what feels nice.",
-    "genz": "You choose fairness over ‘making it feel good.’",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B2_Q14", "dimension": "JP", "positiveTrait": "P",
-    "pro": "I prefer leaving room for changes rather than finalizing everything early.",
-    "genz": "You like leaving wiggle room instead of locking everything down too soon.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-
   { "id": "B3_Q1", "dimension": "TF", "positiveTrait": "T",
     "pro": "I prioritize objective truth even when it creates emotional distance.",
     "genz": "You’ll say what’s real — even if it makes things awkward.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B3_Q2", "dimension": "TF", "positiveTrait": "F",
-    "pro": "I adjust how I express truth to protect emotional trust.",
-    "genz": "How something lands matters more to you than just being right.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B3_Q3", "dimension": "JP", "positiveTrait": "J",
     "pro": "Unexpected changes disrupt my focus and productivity.",
     "genz": "Last-minute changes throw your whole rhythm off.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+
+  { "id": "B2_Q10", "dimension": "EI", "positiveTrait": "E",
+    "pro": "I feel more motivated when I can talk ideas out with others.",
+    "genz": "You get momentum by talking things out with people.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B2_Q12", "dimension": "SN", "positiveTrait": "S",
+    "pro": "I rely on proven methods more than experimenting in the moment.",
+    "genz": "You trust what’s already been tested more than random experiments.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B3_Q2", "dimension": "TF", "positiveTrait": "F",
+    "pro": "I adjust how I express truth to protect emotional trust.",
+    "genz": "How something lands matters more to you than just being right.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B3_Q4", "dimension": "JP", "positiveTrait": "P",
     "pro": "I find last-minute changes energizing rather than stressful.",
     "genz": "Curveballs don’t stress you — they wake you up.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
-  { "id": "B3_Q5", "dimension": "SN", "positiveTrait": "N",
-    "pro": "I trust insights even before I can fully explain them.",
-    "genz": "Sometimes you just *know* where things are headed.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B3_Q6", "dimension": "SN", "positiveTrait": "S",
-    "pro": "I hesitate to act without clear evidence.",
-    "genz": "If there’s no proof yet, you slow things down.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
+
 
   { "id": "B3_Q7", "dimension": "EI", "positiveTrait": "I",
     "pro": "When tension rises, I withdraw to think before responding.",
     "genz": "If things get heated, you step back and process before talking.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
-  { "id": "B3_Q8", "dimension": "EI", "positiveTrait": "E",
-    "pro": "In conflict, I tend to speak immediately to resolve it.",
-    "genz": "If there’s an issue, you’d rather talk it out right now.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B3_Q9", "dimension": "EI", "positiveTrait": "I",
-    "pro": "After intense social situations, I need quiet time to recover.",
-    "genz": "After a lot of people/time, you need silence to recharge.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B3_Q10", "dimension": "EI", "positiveTrait": "E",
-    "pro": "When I’m stressed, I feel better after talking to someone.",
-    "genz": "When you’re stressed, talking it out helps you reset.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B3_Q11", "dimension": "SN", "positiveTrait": "N",
-    "pro": "I often see how current choices could lead to future consequences.",
-    "genz": "You see where things are headed before other people do.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B3_Q12", "dimension": "SN", "positiveTrait": "S",
-    "pro": "I prefer decisions based on what has worked before.",
-    "genz": "You trust what’s been proven more than ‘hope it works.’",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+  { "id": "B3_Q5", "dimension": "SN", "positiveTrait": "N",
+    "pro": "I trust insights even before I can fully explain them.",
+    "genz": "Sometimes you just *know* where things are headed.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B3_Q13", "dimension": "TF", "positiveTrait": "T",
     "pro": "I would rather be consistent than be liked in the moment.",
     "genz": "You’d rather be solid and consistent than popular for a second.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B3_Q14", "dimension": "JP", "positiveTrait": "P",
     "pro": "Even under pressure, I keep options open instead of committing too early.",
     "genz": "Even stressed, you still want choices—not a forced decision.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
 
-  { "id": "B4_Q1", "dimension": "EI", "positiveTrait": "E",
-    "pro": "I naturally guide group conversations.",
-    "genz": "Once you’re comfortable, you help steer the convo.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+  { "id": "B3_Q8", "dimension": "EI", "positiveTrait": "E",
+    "pro": "In conflict, I tend to speak immediately to resolve it.",
+    "genz": "If there’s an issue, you’d rather talk it out right now.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
-  { "id": "B4_Q2", "dimension": "EI", "positiveTrait": "I",
-    "pro": "I prefer depth in one-on-one conversations over group talk.",
-    "genz": "You’d rather go deep with one person than work a whole room.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+  { "id": "B3_Q6", "dimension": "SN", "positiveTrait": "S",
+    "pro": "I hesitate to act without clear evidence.",
+    "genz": "If there’s no proof yet, you slow things down.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B4_Q11", "dimension": "TF", "positiveTrait": "T",
+    "pro": "I am comfortable making tough calls based on principles.",
+    "genz": "You can make the hard call if it’s the right call.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B4_Q3", "dimension": "JP", "positiveTrait": "J",
     "pro": "I feel most effective when structure is in place.",
     "genz": "Organization helps you move faster, not slower.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+
+  { "id": "B3_Q9", "dimension": "EI", "positiveTrait": "I",
+    "pro": "After intense social situations, I need quiet time to recover.",
+    "genz": "After a lot of people/time, you need silence to recharge.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B3_Q11", "dimension": "SN", "positiveTrait": "N",
+    "pro": "I often see how current choices could lead to future consequences.",
+    "genz": "You see where things are headed before other people do.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B4_Q12", "dimension": "TF", "positiveTrait": "F",
+    "pro": "I feel responsible for keeping relationships emotionally safe.",
+    "genz": "You care about keeping people emotionally good, not just ‘technically right.’",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B4_Q4", "dimension": "JP", "positiveTrait": "P",
     "pro": "Too much structure limits my creativity.",
     "genz": "Rules help — until they start boxing you in.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+
+  { "id": "B3_Q10", "dimension": "EI", "positiveTrait": "E",
+    "pro": "When I’m stressed, I feel better after talking to someone.",
+    "genz": "When you’re stressed, talking it out helps you reset.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B3_Q12", "dimension": "SN", "positiveTrait": "S",
+    "pro": "I prefer decisions based on what has worked before.",
+    "genz": "You trust what’s been proven more than ‘hope it works.’",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B4_Q13", "dimension": "TF", "positiveTrait": "T",
+    "pro": "When deciding, I focus on what will work best, not what sounds nicest.",
+    "genz": "You choose what works over what sounds sweet.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B4_Q14", "dimension": "JP", "positiveTrait": "J",
+    "pro": "I like closing loops and finishing what I start.",
+    "genz": "You like things DONE—unfinished stuff bugs you.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+
+
+  { "id": "B4_Q1", "dimension": "EI", "positiveTrait": "E",
+    "pro": "I naturally guide group conversations.",
+    "genz": "Once you’re comfortable, you help steer the convo.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B4_Q7", "dimension": "SN", "positiveTrait": "N",
+    "pro": "I enjoy connecting ideas to form a bigger picture.",
+    "genz": "You’re always linking things together like ‘wait… that connects.’",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B5_Q3", "dimension": "TF", "positiveTrait": "F",
+    "pro": "In conflict, I focus on protecting trust even if it slows down resolution.",
+    "genz": "In drama, keeping the relationship safe matters—even if it takes longer to fix.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B5_Q4", "dimension": "JP", "positiveTrait": "P",
+    "pro": "When plans change suddenly, I can adapt quickly without feeling thrown off.",
+    "genz": "When plans flip last minute, you can pivot without crashing out.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+
+  { "id": "B4_Q2", "dimension": "EI", "positiveTrait": "I",
+    "pro": "I prefer depth in one-on-one conversations over group talk.",
+    "genz": "You’d rather go deep with one person than work a whole room.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B4_Q8", "dimension": "SN", "positiveTrait": "S",
+    "pro": "I trust what is measurable and observable over speculation.",
+    "genz": "If there are no receipts, you’re not convinced.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B5_Q7", "dimension": "TF", "positiveTrait": "T",
+    "pro": "When emotions run high, I focus more on what is accurate than what feels good.",
+    "genz": "When feelings are loud, you still care most about what’s true and makes sense.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B5_Q8", "dimension": "JP", "positiveTrait": "J",
+    "pro": "I feel more at ease once a decision is made and the next steps are clear.",
+    "genz": "Once the decision is locked and the steps are clear, your brain relaxes.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
 
   { "id": "B4_Q5", "dimension": "EI", "positiveTrait": "E",
     "pro": "I feel energized when I’m actively contributing in a group.",
     "genz": "When you’re part of the action, you light up.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B4_Q6", "dimension": "EI", "positiveTrait": "I",
-    "pro": "I prefer listening carefully before sharing my perspective.",
-    "genz": "You like to listen first and then speak when it counts.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-
-  { "id": "B4_Q7", "dimension": "SN", "positiveTrait": "N",
-    "pro": "I enjoy connecting ideas to form a bigger picture.",
-    "genz": "You’re always linking things together like ‘wait… that connects.’",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B4_Q8", "dimension": "SN", "positiveTrait": "S",
-    "pro": "I trust what is measurable and observable over speculation.",
-    "genz": "If there are no receipts, you’re not convinced.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B4_Q9", "dimension": "SN", "positiveTrait": "N",
     "pro": "I like exploring new perspectives even if they challenge what I know.",
     "genz": "You’re open to new perspectives—even if it flips your viewpoint.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B5_Q2", "dimension": "SN", "positiveTrait": "S",
+    "pro": "When learning something new, I prefer clear examples before abstract theories.",
+    "genz": "You want real examples first — then you’ll care about the big concepts.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+  { "id": "B5_Q1", "dimension": "EI", "positiveTrait": "I",
+    "pro": "After a highly social day, I recover best with quiet time away from people.",
+    "genz": "After heavy people time, you need silence/solo time to come back to normal.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
+  },
+
+  { "id": "B4_Q6", "dimension": "EI", "positiveTrait": "I",
+    "pro": "I prefer listening carefully before sharing my perspective.",
+    "genz": "You like to listen first and then speak when it counts.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
   { "id": "B4_Q10", "dimension": "SN", "positiveTrait": "S",
     "pro": "I prefer focusing on practical steps that can be executed right away.",
     "genz": "You’re like ‘cool idea—what’s the actual next step?’",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
-
-  { "id": "B4_Q11", "dimension": "TF", "positiveTrait": "T",
-    "pro": "I am comfortable making tough calls based on principles.",
-    "genz": "You can make the hard call if it’s the right call.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+  { "id": "B5_Q6", "dimension": "SN", "positiveTrait": "N",
+    "pro": "I often spot patterns in situations before I can explain them clearly.",
+    "genz": "You catch patterns early, even before you can fully explain the ‘why.’",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   },
-  { "id": "B4_Q12", "dimension": "TF", "positiveTrait": "F",
-    "pro": "I feel responsible for keeping relationships emotionally safe.",
-    "genz": "You care about keeping people emotionally good, not just ‘technically right.’",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-  { "id": "B4_Q13", "dimension": "TF", "positiveTrait": "T",
-    "pro": "When deciding, I focus on what will work best, not what sounds nicest.",
-    "genz": "You choose what works over what sounds sweet.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
-  },
-
-  { "id": "B4_Q14", "dimension": "JP", "positiveTrait": "J",
-    "pro": "I like closing loops and finishing what I start.",
-    "genz": "You like things DONE—unfinished stuff bugs you.",
-    "options": { "1":"Strongly disagree","2":"Disagree","3":"Neutral","4":"Agree","5":"Strongly agree" }
+  { "id": "B5_Q5", "dimension": "EI", "positiveTrait": "E",
+    "pro": "When I feel stressed, talking it out with someone usually helps me reset.",
+    "genz": "When you’re stressed, talking it out helps you breathe again.",
+    "options": { "1": "Strongly disagree", "2": "Disagree", "3": "Neutral", "4": "Agree", "5": "Strongly agree" }
   }
 ]

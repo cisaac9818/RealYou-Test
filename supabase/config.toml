@@ -1,0 +1,21 @@
+# ----------------------------------------------------
+# Supabase project configuration
+# ----------------------------------------------------
+
+[functions.lead-capture]
+enabled = true
+verify_jwt = false
+import_map = "./functions/lead-capture/deno.json"
+entrypoint = "./functions/lead-capture/index.ts"
+
+[functions.save-snapshot]
+enabled = true
+verify_jwt = false
+import_map = "./functions/save-snapshot/deno.json"
+entrypoint = "./functions/save-snapshot/index.ts"
+
+[functions.recover-snapshot]
+enabled = true
+verify_jwt = false
+import_map = "./functions/recover-snapshot/deno.json"
+entrypoint = "./functions/recover-snapshot/index.ts"
