@@ -6,6 +6,7 @@ import Assessment from "./Components/Assessment";
 import Results from "./Components/Results";
 import LandingPage from "./Components/LandingPage";
 import EmailCapture from "./Components/EmailCapture";
+import PremiumRestorer from "./Components/PremiumRestorer";
 import { scoreAssessment } from "./utils/scoring";
 
 // ===========================
@@ -500,6 +501,21 @@ function App() {
     }
   }, []);
 
+  function handleVerifiedPurchase({ plan: paidPlan, email }) {
+    // Recovered premium belongs to the verified Stripe payment email,
+    // not the old Free assessment email from this browser.
+    const tier = paidPlan === "premium" ? "premium" : (plan === "premium" ? "premium" : "standard");
+    handleTierUnlocked(tier);
+    const updatedProfile = {
+      ...userProfile,
+      email,
+      agreeToEmails: userProfile.agreeToEmails ?? false,
+    };
+    setUserProfile(updatedProfile);
+    setHasEmailCaptureCompleted(true);
+    localStorage.setItem("pp_userProfile", JSON.stringify(updatedProfile));
+  }
+
   function handleTierUnlocked(tier) {
     if (tier === "premium") {
       setPlan("premium");
@@ -541,7 +557,7 @@ function App() {
   }
 
   // ✅ FIX: Assessment complete now routes to a dedicated EMAIL stage
-  function handleAssessmentComplete(rawAnswers) {
+  async function handleAssessmentComplete(rawAnswers) {
     setLastRawAnswers(rawAnswers);
     try {
       localStorage.setItem("pp_lastRawAnswers", JSON.stringify(rawAnswers));
@@ -559,6 +575,26 @@ function App() {
     const alreadyHasEmail =
       !!(userProfile?.email && /^\S+@\S+\.\S+$/.test(userProfile.email)) &&
       hasEmailCaptureCompleted;
+
+    // Every retake must update the cloud snapshot even if email capture
+    // was completed on a previous visit.
+    if (alreadyHasEmail) {
+      try {
+        const save = await fetch(API_BASE + "/save-snapshot", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userProfile.email.trim().toLowerCase(),
+            name: userProfile.name || "",
+            results: scored,
+          }),
+        });
+        if (!save.ok) throw new Error("Snapshot save failed: " + save.status);
+      } catch (error) {
+        console.warn("[RealYou] Retake cloud backup failed", error);
+        alert("Your new results are saved on this device, but the cloud backup could not complete. Please try again later.");
+      }
+    }
 
     setStage(alreadyHasEmail ? "results" : "email");
   }
@@ -759,6 +795,12 @@ function App() {
 
   return (
     <div className="app-shell">
+      <PremiumRestorer
+        plan={plan}
+        onVerified={handleVerifiedPurchase}
+        supabaseUrl={SUPABASE_URL}
+        publishableKey={SUPABASE_ANON_KEY}
+      />
       {stage === "landing" && (
         <LandingPage
           onStartTest={handleLandingStartFree}
