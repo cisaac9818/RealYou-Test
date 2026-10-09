@@ -1,17 +1,18 @@
 // src/Components/EmailCapture.jsx
 import React, { useState } from "react";
 
-export default function EmailCapture({ onSubmit, initialName = "", initialEmail = "" }) {
+export default function EmailCapture({ onSubmit, initialName = "", initialEmail = "", purpose = "results" }) {
   const [name, setName] = useState(initialName);
   const [email, setEmail] = useState(initialEmail);
-  const [agree, setAgree] = useState(true);
+  // Entering an email is not consent to marketing emails.
+  const agree = false;
   const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const trimmedName = name.trim();
-    const trimmedEmail = email.trim();
+    const trimmedEmail = email.trim().toLowerCase();
     const emailValid = /^\S+@\S+\.\S+$/.test(trimmedEmail);
 
     if (!emailValid) {
@@ -78,7 +79,7 @@ export default function EmailCapture({ onSubmit, initialName = "", initialEmail 
               boxShadow: "0 0 0 4px rgba(34,197,94,0.22)",
             }}
           />
-          <span>Almost there</span>
+          <span>{purpose === "start" ? "Before you begin" : "Almost there"}</span>
         </div>
 
         <h1
@@ -89,7 +90,7 @@ export default function EmailCapture({ onSubmit, initialName = "", initialEmail 
             marginBottom: "0.45rem",
           }}
         >
-          Unlock your full{" "}
+          {purpose === "start" ? "Save your " : "Unlock your full "}{" "}
           <span
             style={{
               background:
@@ -109,7 +110,9 @@ export default function EmailCapture({ onSubmit, initialName = "", initialEmail 
             marginBottom: "1.15rem",
           }}
         >
-          Enter your details to reveal your results and get your saved copy.
+          {purpose === "start"
+            ? "Enter your email before starting. We will use it to save your results so you can find them later. For purchased plans, use your checkout email and verify it with Restore Premium Purchase."
+            : "Enter your details to reveal your results and get your saved copy."}
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -125,6 +128,7 @@ export default function EmailCapture({ onSubmit, initialName = "", initialEmail 
             onChange={(e) => setName(e.target.value)}
             style={{
               width: "100%",
+              boxSizing: "border-box",
               padding: "0.6rem 0.8rem",
               borderRadius: "0.9rem",
               background: "rgba(15,23,42,0.85)",
@@ -150,6 +154,7 @@ export default function EmailCapture({ onSubmit, initialName = "", initialEmail 
             onChange={(e) => setEmail(e.target.value)}
             style={{
               width: "100%",
+              boxSizing: "border-box",
               padding: "0.6rem 0.8rem",
               borderRadius: "0.9rem",
               background: "rgba(15,23,42,0.85)",
@@ -190,7 +195,7 @@ export default function EmailCapture({ onSubmit, initialName = "", initialEmail 
               marginTop: "0.4rem",
             }}
           >
-            Show My Results
+            {purpose === "start" ? "Continue to Current Plan" : "Show My Results"}
           </button>
         </form>
       </div>
