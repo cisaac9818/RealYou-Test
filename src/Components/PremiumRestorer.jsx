@@ -124,7 +124,7 @@ export default function PremiumRestorer({
           "Unable to send the verification email.");
       }
       localStorage.setItem("pp_pendingPremiumEmail", address);
-      setMessage("Check your email for the sign-in link or code. Return to RealYou after verifying. You will not be charged.");
+      setMessage("Check your email for your six-digit RealYou verification code. Enter it below to restore your purchase. You will not be charged.");
     } catch (err) {
       setMessage(err.message || "Unable to send email.");
     } finally {
@@ -216,17 +216,17 @@ export default function PremiumRestorer({
               onChange={(e) => setEmail(e.target.value)} />
             <button type="submit" disabled={busy}
               style={{ ...primary, display: "block", width: "100%", marginTop: "0.7rem" }}>
-              {busy ? "Please wait..." : "Send secure sign-in email"}
+              {busy ? "Please wait..." : "Send RealYou verification code"}
             </button>
           </form>
           <form onSubmit={submitCode} style={{ marginTop: "1rem" }}>
             <label htmlFor="premium-restore-code" style={{ display: "block", marginBottom: "0.4rem" }}>
-              If the email contains a code, enter it here
+              Enter the six-digit code from your RealYou email
             </label>
             <input id="premium-restore-code" value={code}
               style={field} inputMode="numeric" autoComplete="one-time-code"
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Verification code" />
+              placeholder="6-digit verification code" />
             <button type="submit" disabled={busy || !code.trim()}
               style={{ ...primary, marginTop: "0.6rem", background: "#334155" }}>
               Verify code
