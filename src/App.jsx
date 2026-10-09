@@ -250,7 +250,7 @@ function App() {
     return localStorage.getItem("pp_hasCompletedAssessment") === "true";
   });
 
-  // ✅ stages: landing | mode | assessment | email | results
+  // Stages: landing | emailStart | mode | assessment | email (legacy recovery) | results
   const [stage, setStage] = useState(() => getInitialStage());
   const [justUpgradedTier, setJustUpgradedTier] = useState(null);
 
@@ -388,14 +388,14 @@ function App() {
       handleTierUnlocked("standard");
       setJustUpgradedTier("standard");
       const hasResults = !!localStorage.getItem("pp_results");
-      setStage(hasResults ? "results" : "mode");
+      setStage(hasResults ? "results" : "emailStart");
     }
 
     if (debug === "premium") {
       handleTierUnlocked("premium");
       setJustUpgradedTier("premium");
       const hasResults = !!localStorage.getItem("pp_results");
-      setStage(hasResults ? "results" : "mode");
+      setStage(hasResults ? "results" : "emailStart");
     }
 
     if (debug === "reset") {
@@ -464,7 +464,7 @@ function App() {
       const hasResults = !!localStorage.getItem("pp_results");
 
       if (hasCompleted && hasResults) setStage("results");
-      else setStage("mode");
+      else setStage("emailStart");
 
       ["checkout", "tier", "upgrade", "from"].forEach((k) => params.delete(k));
       const newSearch = params.toString();
@@ -553,11 +553,17 @@ function App() {
   }
 
   function handleModeSelect(selectedMode) {
+    // Never start an assessment without a recoverable contact address.
+    const email = String(userProfile?.email || "").trim().toLowerCase();
+    if (!hasEmailCaptureCompleted || !/^\S+@\S+\.\S+$/.test(email)) {
+      setStage("emailStart");
+      return;
+    }
     setMode(selectedMode);
     setStage("assessment");
   }
 
-  // ✅ FIX: Assessment complete now routes to a dedicated EMAIL stage
+  // Results are saved to the email collected before starting the assessment.
   async function handleAssessmentComplete(rawAnswers) {
     setLastRawAnswers(rawAnswers);
     try {
@@ -577,8 +583,7 @@ function App() {
       !!(userProfile?.email && /^\S+@\S+\.\S+$/.test(userProfile.email)) &&
       hasEmailCaptureCompleted;
 
-    // Every retake must update the cloud snapshot even if email capture
-    // was completed on a previous visit.
+    // Always save the new results under the email chosen before starting.
     if (alreadyHasEmail) {
       try {
         const save = await fetch(API_BASE + "/save-snapshot", {
@@ -601,13 +606,10 @@ function App() {
   }
 
   function handleRestart() {
-    setResults(null);
+    // Preserve the previous snapshot until a new assessment is completed.
+    // Browser refresh halfway through a retake must not lose prior results.
     setMode(null);
-    setStage("landing");
-
-    localStorage.removeItem("pp_results");
-    localStorage.setItem("pp_hasCompletedAssessment", "false");
-    setHasCompletedAssessment(false);
+    setStage("emailStart");
   }
 
   // ✅ Email restore handler (LandingPage uses this)
@@ -786,8 +788,34 @@ function App() {
     }
   }
 
-  function handleLandingStartFree() {
+  function handleStartEmailCaptureSubmit({ name, email, agreeToEmails }) {
+    const normalizedEmail = String(email || "").trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(normalizedEmail)) return;
+
+    // Paid access remains bound to the verified checkout email.
+    const savedVerifiedSession = localStorage.getItem("pp_verifiedAuthSession");
+    if (plan === "premium" && savedVerifiedSession &&
+        userProfile?.email && normalizedEmail !== userProfile.email.toLowerCase()) {
+      alert("Your Premium purchase is linked to " + userProfile.email +
+        ". Use that email for this assessment or restore a different purchase.");
+      return;
+    }
+
+    const profile = {
+      name: String(name || "").trim(),
+      email: normalizedEmail,
+      agreeToEmails: !!agreeToEmails,
+    };
+    setUserProfile(profile);
+    setHasEmailCaptureCompleted(true);
+    localStorage.setItem("pp_userProfile", JSON.stringify(profile));
+
+    // Previous results are not overwritten during email entry.
     setStage("mode");
+  }
+
+  function handleLandingStartFree() {
+    setStage("emailStart");
   }
 
   function handleLandingStandardClick() {
@@ -812,6 +840,16 @@ function App() {
           onStandardClick={handleLandingStandardClick}
           onPremiumClick={handleLandingPremiumClick}
           onRecoverByEmail={handleRecoverByEmail}
+        />
+      )}
+
+      {stage === "emailStart" && (
+        <EmailCapture
+          key={"emailStart:" + (userProfile?.email || "")}
+          purpose="start"
+          onSubmit={handleStartEmailCaptureSubmit}
+          initialName={userProfile?.name || ""}
+          initialEmail={userProfile?.email || ""}
         />
       )}
 
