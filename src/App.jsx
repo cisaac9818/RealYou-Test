@@ -505,6 +505,7 @@ function App() {
     // Recovered premium belongs to the verified Stripe payment email,
     // not the old Free assessment email from this browser.
     const tier = paidPlan === "premium" ? "premium" : (plan === "premium" ? "premium" : "standard");
+    localStorage.removeItem("pp_adminViewPlan");
     handleTierUnlocked(tier);
     const updatedProfile = {
       ...userProfile,
@@ -659,10 +660,14 @@ function App() {
       localStorage.setItem("pp_hasCompletedAssessment", "true");
 
       // Treat recovery as “email already provided”
+      // If the buyer already restored a verified Premium entitlement, keep
+      // the purchased account email when viewing an older Free assessment.
+      const hasVerifiedPaidAccount =
+        plan === "premium" && !!localStorage.getItem("pp_verifiedAuthSession");
       const restoredProfile = {
         name: row?.name || "",
-        email: cleanEmail,
-        agreeToEmails: true,
+        email: hasVerifiedPaidAccount ? userProfile.email : cleanEmail,
+        agreeToEmails: userProfile.agreeToEmails ?? false,
       };
       setUserProfile(restoredProfile);
       setHasEmailCaptureCompleted(true);
