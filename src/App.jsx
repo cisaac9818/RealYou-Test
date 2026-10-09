@@ -437,34 +437,18 @@ function App() {
     const upgradeStatus = params.get("upgrade");
     const from = params.get("from");
 
-    let unlocked = null;
+    const checkoutReturn =
+      (checkoutStatus === "success" &&
+        ["standard", "premium", "premium_upgrade", "upgrade_premium"].includes(tier)) ||
+      (upgradeStatus === "success" && from === "standard");
 
-    if (checkoutStatus === "success" && (tier === "standard" || tier === "premium")) {
-      unlocked = tier;
-    }
-
-    if (
-      checkoutStatus === "success" &&
-      (tier === "premium_upgrade" || tier === "upgrade_premium")
-    ) {
-      unlocked = "premium";
-    }
-
-    if (upgradeStatus === "success" && from === "standard") {
-      unlocked = "premium";
-    }
-
-    if (unlocked) {
-      localStorage.removeItem("pp_adminViewPlan");
-
-      handleTierUnlocked(unlocked);
-      setJustUpgradedTier(unlocked);
-
+    if (checkoutReturn) {
+      // A return URL is not proof that Stripe received payment.
+      // PremiumRestorer prompts the buyer to verify their email; our server
+      // checks the Stripe-backed entitlement tied to that verified identity.
       const hasCompleted = localStorage.getItem("pp_hasCompletedAssessment") === "true";
       const hasResults = !!localStorage.getItem("pp_results");
-
-      if (hasCompleted && hasResults) setStage("results");
-      else setStage("emailStart");
+      setStage(hasCompleted && hasResults ? "results" : "emailStart");
 
       ["checkout", "tier", "upgrade", "from"].forEach((k) => params.delete(k));
       const newSearch = params.toString();
