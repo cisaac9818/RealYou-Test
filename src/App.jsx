@@ -229,7 +229,10 @@ function getInitialResults() {
 }
 
 function getInitialStage() {
-  return "landing";
+  // Returning visitors should see completed results instead of retaking the assessment.
+  const hasCompleted = localStorage.getItem("pp_hasCompletedAssessment") === "true";
+  const savedResults = getInitialResults();
+  return hasCompleted && savedResults ? "results" : "landing";
 }
 
 function App() {
